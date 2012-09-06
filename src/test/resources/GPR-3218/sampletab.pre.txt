@@ -1,0 +1,36 @@
+[MSI]
+Submission Title	Candida albicans wild type grown in YPD with 300mM NaCl
+Submission Identifier	GPR-3218
+Submission Version	1.2
+Submission Reference Layer	false
+Submission Release Date	2012/07/26
+Submission Update Date	2012/07/26
+Organization Name	Institute of Medical Sciences, University of Aberdeen	
+Organization Address		
+Organization URI		
+Organization Email		
+Organization Role		
+Person Last Name	Brown	
+Person Initials	J.P.	
+Person First Name	Alistair	
+Person Email		
+Person Role	Submitter	
+Publication PubMed ID	
+Publication DOI	
+Term Source Name	BTO	TO	NCBI Taxonomy	PRIDE	
+Term Source URI	http://obo.cvs.sourceforge.net/obo/obo/ontology/anatomy/BrendaTissue.obo	http://obo.cvs.sourceforge.net/obo/obo/ontology/phenotype/plant_traits/plant_trait.obo	http://www.ncbi.nlm.nih.gov/taxonomy/	http://pride-proteome.cvs.sourceforge.net/pride-proteome/PRIDE/schema/pride_cv.obo	
+Term Source Version					
+Database Name	
+Database ID	
+Database URI	
+
+[SCD]
+Sample Name	Database Name	Database ID	Database URI	Characteristic[logarithmic phase culture]	Term Source REF	Term Source ID	Characteristic[soluble protein content]	Term Source REF	Term Source ID	Organism	Term Source REF	Term Source ID	Characteristic[cell culture]	Term Source REF	Term Source ID	Characteristic[Project]	Term Source REF	Term Source ID	
+3218	PRIDE	3218	http://www.ebi.ac.uk/pride/showExperiment.do?experimentAccessionNumber=3218	logarithmic phase culture	BTO	BTO:0001903	soluble protein content	TO	TO:0000325	Candida albicans (Yeast)	NCBI Taxonomy	5476	cell culture	BTO	BTO:0000214	Stress response in Candida albicans	PRIDE	PRIDE:0000097	
+3219	PRIDE	3219	http://www.ebi.ac.uk/pride/showExperiment.do?experimentAccessionNumber=3219	logarithmic phase culture	BTO	BTO:0001903	soluble protein content	TO	TO:0000325	Candida albicans (Yeast)	NCBI Taxonomy	5476	cell culture	BTO	BTO:0000214	Stress response in Candida albicans	PRIDE	PRIDE:0000097	
+3220	PRIDE	3220	http://www.ebi.ac.uk/pride/showExperiment.do?experimentAccessionNumber=3220	logarithmic phase culture	BTO	BTO:0001903	soluble protein content	TO	TO:0000325	Candida albicans (Yeast)	NCBI Taxonomy	5476	cell culture	BTO	BTO:0000214	Stress response in Candida albicans	PRIDE	PRIDE:0000097	
+3221	PRIDE	3221	http://www.ebi.ac.uk/pride/showExperiment.do?experimentAccessionNumber=3221	logarithmic phase culture	BTO	BTO:0001903	soluble protein content	TO	TO:0000325	Candida albicans (Yeast)	NCBI Taxonomy	5476	cell culture	BTO	BTO:0000214	Stress response in Candida albicans	PRIDE	PRIDE:0000097	
+3222	PRIDE	3222	http://www.ebi.ac.uk/pride/showExperiment.do?experimentAccessionNumber=3222	logarithmic phase culture	BTO	BTO:0001903	soluble protein content	TO	TO:0000325	Candida albicans (Yeast)	NCBI Taxonomy	5476	cell culture	BTO	BTO:0000214	Stress response in Candida albicans	PRIDE	PRIDE:0000097	
+3223	PRIDE	3223	http://www.ebi.ac.uk/pride/showExperiment.do?experimentAccessionNumber=3223	logarithmic phase culture	BTO	BTO:0001903	soluble protein content	TO	TO:0000325	Candida albicans (Yeast)	NCBI Taxonomy	5476	cell culture	BTO	BTO:0000214	Stress response in Candida albicans	PRIDE	PRIDE:0000097	
+3224	PRIDE	3224	http://www.ebi.ac.uk/pride/showExperiment.do?experimentAccessionNumber=3224	logarithmic phase culture	BTO	BTO:0001903	soluble protein content	TO	TO:0000325	Candida albicans (Yeast)	NCBI Taxonomy	5476	cell culture	BTO	BTO:0000214	Stress response in Candida albicans	PRIDE	PRIDE:0000097	
+3225	PRIDE	3225	http://www.ebi.ac.uk/pride/showExperiment.do?experimentAccessionNumber=3225	logarithmic phase culture	BTO	BTO:0001903	soluble protein content	TO	TO:0000325	Candida albicans (Yeast)	NCBI Taxonomy	5476	cell culture	BTO	BTO:0000214	Stress response in Candida albicans	PRIDE	PRIDE:0000097	

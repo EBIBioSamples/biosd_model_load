@@ -1,0 +1,43 @@
+[MSI]
+Submission Title	Feuk et al 2002
+Submission Identifier	GVA-estd56
+Submission Description	Using the net alignments for the builds of the human and chimpanzee genome assemblies, we identified a total of 1,576 putative regions of inverted orientation, covering more than 154 mega-bases of DNA.
+Submission Version	1.2
+Submission Reference Layer	false
+Submission Release Date	2012/07/24
+Submission Update Date	2012/07/24
+Organization Name	The Centre for Applied Genomics, Department of Genetics and Genomic Biology	
+Organization Address		
+Organization URI		
+Organization Email		
+Organization Role	submitter	
+Person Last Name	Scherer	
+Person Initials		
+Person First Name	Stephen	
+Person Email	steve@genet.sickkids.on.ca	
+Person Role	submitter	
+Publication PubMed ID	16254605	
+Publication DOI		
+Term Source Name	NCBI Taxonomy	
+Term Source URI	http://www.ncbi.nlm.nih.gov/taxonomy/	
+Term Source Version		
+Database Name	DGVa	
+Database ID	estd56	
+Database URI		
+
+[SCD]
+Sample Name	Organism	Term Source REF	Term Source ID	Sex	Characteristic[Ethnicity]	Sample Name	Material	Group Name	Group Description	Organism	Term Source REF	Term Source ID	
+Subject #89072703	Gorilla	NCBI Taxonomy	9592			#89072703	DNA	G3	Chimp and Gorrila Cell lines from ECACC.	Pan troglodytes	NCBI Taxonomy	9598	
+Subject #89072704	Pan troglodytes	NCBI Taxonomy	9598			#89072704	DNA	G3	Chimp and Gorrila Cell lines from ECACC.	Pan troglodytes	NCBI Taxonomy	9598	
+Subject GM06990	Homo sapiens	NCBI Taxonomy	9606	Female	CAUCASIAN	GM06990	DNA	G2	Human CEPH lymphocyte cell lines obtained from Coriell Cell Repositories.	Homo sapiens	NCBI Taxonomy	9606	
+Subject GM10832	Homo sapiens	NCBI Taxonomy	9606	Male	CAUCASIAN	GM10832	DNA	G2	Human CEPH lymphocyte cell lines obtained from Coriell Cell Repositories.	Homo sapiens	NCBI Taxonomy	9606	
+Subject GM10834	Homo sapiens	NCBI Taxonomy	9606	Female	CAUCASIAN	GM10834	DNA	G2	Human CEPH lymphocyte cell lines obtained from Coriell Cell Repositories.	Homo sapiens	NCBI Taxonomy	9606	
+Subject GM10835	Homo sapiens	NCBI Taxonomy	9606	Male	CAUCASIAN	GM10835	DNA	G2	Human CEPH lymphocyte cell lines obtained from Coriell Cell Repositories.	Homo sapiens	NCBI Taxonomy	9606	
+Subject GM10858	Homo sapiens	NCBI Taxonomy	9606	Male	CAUCASIAN	GM10858	DNA	G2	Human CEPH lymphocyte cell lines obtained from Coriell Cell Repositories.	Homo sapiens	NCBI Taxonomy	9606	
+Subject GM10859	Homo sapiens	NCBI Taxonomy	9606	Female	CAUCASIAN	GM10859	DNA	G2	Human CEPH lymphocyte cell lines obtained from Coriell Cell Repositories.	Homo sapiens	NCBI Taxonomy	9606	
+Subject GM13114	Homo sapiens	NCBI Taxonomy	9606	Female	CAUCASIAN	GM13114	DNA	G2	Human CEPH lymphocyte cell lines obtained from Coriell Cell Repositories.	Homo sapiens	NCBI Taxonomy	9606	
+Subject GM13180	Homo sapiens	NCBI Taxonomy	9606	Male	CAUCASIAN	GM13180	DNA	G2	Human CEPH lymphocyte cell lines obtained from Coriell Cell Repositories.	Homo sapiens	NCBI Taxonomy	9606	
+Subject GM13181	Homo sapiens	NCBI Taxonomy	9606	Female	CAUCASIAN	GM13181	DNA	G2	Human CEPH lymphocyte cell lines obtained from Coriell Cell Repositories.	Homo sapiens	NCBI Taxonomy	9606	
+Subject GM7057	Homo sapiens	NCBI Taxonomy	9606		CAUCASIAN	GM7057	DNA	G2	Human CEPH lymphocyte cell lines obtained from Coriell Cell Repositories.	Homo sapiens	NCBI Taxonomy	9606	
+Subject NCBI35	Homo sapiens	NCBI Taxonomy	9606			NCBI35	Sequence	G1	Assembly sequences.	Homo sapiens	NCBI Taxonomy	9606	
+Subject panTro2	Pan troglodytes	NCBI Taxonomy	9598			panTro2	Sequence	G1	Assembly sequences.	Homo sapiens	NCBI Taxonomy	9606	
