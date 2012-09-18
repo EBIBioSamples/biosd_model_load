@@ -1,27 +1,26 @@
 package uk.ac.ebi.fg.biosd.sampletab;
 
+import static java.lang.System.out;
+
 import java.io.File;
-import java.net.URL;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOCase;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
+import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
-
-import com.google.common.io.PatternFilenameFilter;
 
 import uk.ac.ebi.arrayexpress2.magetab.exception.ParseException;
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
 import uk.ac.ebi.fg.core_model.dao.hibernate.toplevel.AccessibleDAO;
 import uk.ac.ebi.fg.core_model.resources.Resources;
 import uk.ac.ebi.utils.test.junit.TestEntityMgrProvider;
-
 import ac.uk.ebi.fg.biosd.sampletab.Load;
-
-import static junit.framework.Assert.*;
-import static java.lang.System.out;
 
 
 public class PersistenceTest
@@ -38,9 +37,8 @@ public class PersistenceTest
 	  MSI msi = load.fromSampleData ( path );
 	  
 	  em = emProvider.newEntityManager ();
+	  AccessibleDAO<MSI> dao = new AccessibleDAO<MSI> ( MSI.class,  em );
 	  EntityTransaction ts = em.getTransaction ();
-	  AccessibleDAO<MSI> dao = new AccessibleDAO<MSI> ( MSI.class,  emProvider.newEntityManager () );
-	  
 	  ts.begin ();
 	  dao.getOrCreate ( msi );
 	  ts.commit ();
@@ -51,14 +49,24 @@ public class PersistenceTest
 	private void loadDir ( String path ) throws ParseException
 	{
 		File dir = new File ( path );
-		for ( String filePath: dir.list ( new PatternFilenameFilter ( ".*\\.sampletab.txt" )  ) )
-			persistSampleTab ( path + "/" + filePath );
+		
+		for ( File file: FileUtils.listFiles ( 
+			dir, new RegexFileFilter ( "^.*\\.?sampletab\\.txt$", IOCase.INSENSITIVE ), 
+			DirectoryFileFilter.DIRECTORY 
+		))
+			persistSampleTab ( file.getAbsolutePath () );
 	}
 	
-	@Ignore ( "This is a heavy time-consuming test and it's usually disabled" )
+	@Ignore ( "Not currently working" )
 	@Test
-	public void testIMSR () throws ParseException
-	{
+	public void testIMSR () throws ParseException {
 		loadDir ( "/Users/brandizi/Documents/Work/ebi/esd/data_sets/IMSR" );
 	}
+	
+	@Ignore ( "Not currently working" )
+	@Test
+	public void testPride () throws ParseException {
+		loadDir ( "/ebi/microarray/home/biosamples/ftp/pride" );
+	}
+	
 }
