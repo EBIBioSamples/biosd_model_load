@@ -54,8 +54,7 @@ public class Load {
             //ontology
             if (ao.getTermSourceID() != null && ao.getTermSourceREF() != null){
                 TermSource t = st.msi.getTermSource(ao.getTermSourceREF());
-                
-                if (t.getURI() != null && t.getVersion() != null){
+                if (t != null && t.getURI() != null && t.getVersion() != null){
                     v.addOntologyTerm ( 
                             new OntologyEntry( ao.getTermSourceID() , 
                                     new ReferenceSource(t.getURI(), t.getVersion()) ) );
