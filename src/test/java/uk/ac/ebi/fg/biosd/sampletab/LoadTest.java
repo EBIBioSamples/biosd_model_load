@@ -32,7 +32,6 @@ public class LoadTest extends TestCase {
         return msi;
     }
     
-    
     public void testAE(){
         MSI msi = doTests("GAE-MTAB-27/sampletab.txt");
         //TODO finish writing test

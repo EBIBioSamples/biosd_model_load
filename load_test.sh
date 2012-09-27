@@ -41,7 +41,7 @@ do
   mvn exec:java \
     -Ptest.oracle_dev \
     -DargLine="-Xms1G -Xmx4G -XX:PermSize=256m -XX:MaxPermSize=2G" \
-    -Dexec.mainClass=ac.uk.ebi.fg.biosd.sampletab.test.LoadTestCmd \
+    -Dexec.mainClass=uk.ac.ebi.fg.biosd.sampletab.test.LoadTestCmd \
     -Dexec.classpathScope=test \
     -Dexec.arguments="$fpath" \
     2>&1 | tee "target/load_test_$wfpath".out
