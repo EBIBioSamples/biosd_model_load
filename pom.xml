@@ -9,6 +9,35 @@
 	<dependencies>
 
 		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.6.6</version>
+		</dependency>
+
+		<!-- Use Logback as concrete test logger -->
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>0.9.29</version>
+		</dependency>
+
+		<!-- Intercepts log4j and sends it to SL4J -->		
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>log4j-over-slf4j</artifactId>
+			<version>1.6.6</version>
+		</dependency>
+
+		<!-- Exclude older versions of log4j -->
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.9</version>
+		  <scope>provided</scope>
+		</dependency>
+
+
+		<dependency>
 			<groupId>uk.ac.ebi.fg</groupId>
 			<artifactId>biosd_model</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
@@ -87,6 +116,25 @@
 
 	</build>
 
+	<repositories>
+		
+		<repository>
+			<id>coconut.ebi.ac.uk-snapshots</id>
+			<name>Coconut Snapshot Repository</name>
+			<url>http://coconut.ebi.ac.uk:8081/artifactory/local-repo/</url>
+			<snapshots>
+			  <enabled>true</enabled>
+			</snapshots>
+		</repository>	
+		
+		<repository>
+			<id>ebi-repo</id>
+			<name>EBI repo</name>
+			<url>http://www.ebi.ac.uk/~maven/m2repo</url>
+		</repository>
+		
+	</repositories>
+
 	<profiles>
 
 		<profile>
@@ -152,9 +200,9 @@
 		<profile>
 			<id>test.mysql</id>
 			<properties>
-				<test.jdbc.username>test</test.jdbc.username>
-				<test.jdbc.password>test</test.jdbc.password>
-				<test.jdbc.url>jdbc:mysql://localhost/myequivalents_test</test.jdbc.url>
+				<test.jdbc.username>biosd</test.jdbc.username>
+				<test.jdbc.password>biosd</test.jdbc.password>
+				<test.jdbc.url>jdbc:mysql://localhost/biosd_test</test.jdbc.url>
 				<test.jdbc.driverClassName>com.mysql.jdbc.Driver</test.jdbc.driverClassName>
 				<test.hibernate.dialect>org.hibernate.dialect.MySQLDialect</test.hibernate.dialect>
 				<test.hibernate.hbm2ddl.auto>update</test.hibernate.hbm2ddl.auto>
@@ -164,6 +212,31 @@
 					<groupId>mysql</groupId>
 					<artifactId>mysql-connector-java</artifactId>
 					<version>5.1.20</version>
+				</dependency>
+			</dependencies>
+		</profile>
+
+		<!-- TODO: there is also another instance, which is the same except 'dev' has to be replaced by 'tst' -->
+		<!-- WARNING! DO NOT EXPECT THE DEV DB TO BE STABLE, data and/or schema will be deleted often as part of the testing
+				 process. PLEASE NOTIFY ALL WHO MAY BE CONCERNED BEFORE WIPING THE DEV DB OUT -->
+		<profile>
+			<id>test.oracle_dev</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<properties>
+				<test.jdbc.username>biosddev</test.jdbc.username>
+				<test.jdbc.password>biosddev</test.jdbc.password>
+				<test.jdbc.url>jdbc:oracle:thin:@burns.ebi.ac.uk:1521:dwep</test.jdbc.url>
+				<test.jdbc.driverClassName>oracle.jdbc.driver.OracleDriver</test.jdbc.driverClassName>
+				<test.hibernate.dialect>org.hibernate.dialect.Oracle10gDialect</test.hibernate.dialect>
+				<test.hibernate.hbm2ddl.auto>update</test.hibernate.hbm2ddl.auto>
+			</properties>
+			<dependencies>
+				<dependency>
+					<groupId>com.oracle</groupId>
+					<artifactId>ojdbc5</artifactId>
+					<version>11.1.0.7.0</version>
 				</dependency>
 			</dependencies>
 		</profile>
