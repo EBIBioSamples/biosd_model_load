@@ -22,7 +22,6 @@ import uk.ac.ebi.fg.core_model.terms.OntologyEntry;
 import uk.ac.ebi.fg.core_model.xref.ReferenceSource;
 
 public class Load {
-
     
     public MSI fromSampleData(String filename) throws ParseException{
         return fromSampleData(new File(filename));
@@ -37,16 +36,82 @@ public class Load {
         }
     }
     
-    
-    
     public MSI fromSampleData(URL url) throws ParseException{
         SampleTabSaferParser parser = new SampleTabSaferParser();
         SampleData sampledata;
         sampledata = parser.parse(url);
         return fromSampleData(sampledata);
     }
+    
+    private BioCharacteristicValue convertAtttribute(SCDNodeAttribute a, SampleData st){
+        
+        BioCharacteristicType h = new BioCharacteristicType ( a.getAttributeType() );
+        BioCharacteristicValue v = new BioCharacteristicValue( a.getAttributeValue(), h);
+        
+        if (AbstractNodeAttributeOntology.class.isInstance(a)){
+            AbstractNodeAttributeOntology ao = (AbstractNodeAttributeOntology) a;
+            
+            //ontology
+            if (ao.getTermSourceID() != null && ao.getTermSourceREF() != null){
+                //no conveinient way to get term source from name
+                //so do loop to find it
+                String termSourceURI = null;
+                String termSourceVersion = null;
+                for (TermSource t : st.msi.termSources){
+                    if (t.getName().equals(ao.getTermSourceREF())){
+                        termSourceURI = t.getURI();
+                        termSourceVersion = t.getVersion();
+                        break;
+                    }
+                }
+                
+                if (termSourceURI != null && termSourceVersion != null){
+                    v.addOntologyTerm ( 
+                            new OntologyEntry( ao.getTermSourceID() , 
+                                    new ReferenceSource(termSourceURI, termSourceVersion) ) );
+                }
+            }   
+        }
+        //TODO unit
+        
+        return v;
+    }
 
-    public MSI fromSampleData(SampleData st){
+    private BioSample convertSampleNode(SampleData st, MSI msi, SampleNode s){
+        //TODO check is accessioned
+        
+        BioSample bs = new BioSample(s.getSampleAccession());
+        
+        bs.addPropertyValue(
+                new BioCharacteristicValue(s.getNodeName(), 
+                        new BioCharacteristicType("Sample Name")));
+        if (s.getSampleDescription() != null){
+            bs.addPropertyValue(
+                    new BioCharacteristicValue(s.getSampleDescription(), 
+                            new BioCharacteristicType("Sample Description")));
+        }
+        
+        for(SCDNodeAttribute a: s.attributes){
+            BioCharacteristicValue v = convertAtttribute(a, st);
+            bs.addPropertyValue(v);
+        }
+        
+        //handle child nodes
+        for (Node n : s.getChildNodes()){
+            if (SampleNode.class.isInstance(n)){
+                SampleNode sn = (SampleNode) n;
+                BioSample derivedInto = convertSampleNode(st, msi, sn);
+                bs.addDerivedInto(derivedInto);
+            }
+        }
+        
+        msi.addSample(bs);
+        
+        return bs;
+        
+    }
+    
+    public synchronized MSI fromSampleData(SampleData st){
         MSI msi = new MSI(st.msi.submissionIdentifier);
         msi.setUpdateDate(st.msi.submissionUpdateDate);
         msi.setReleaseDate(st.msi.submissionReleaseDate);
@@ -55,60 +120,22 @@ public class Load {
 
         for (GroupNode g : st.scd.getNodes(GroupNode.class)){
             BioSampleGroup bg = new BioSampleGroup ( g.getGroupAccession());
-
-            //TODO add characteristics to groups
+            
+            for(SCDNodeAttribute a: g.attributes){
+                BioCharacteristicValue v = convertAtttribute(a,st);
+                //TODO make sure a value can be applied to a group
+                //bg.addPropertyValue(v);
+            }
             
             msi.addSampleGroup(bg);
         }
         
-        for (SampleNode s : st.scd.getNodes(SampleNode.class)){
-            //TODO check is accessioned
-            
-            BioSample bs = new BioSample(s.getSampleAccession());
-            
-            bs.addPropertyValue(
-                    new BioCharacteristicValue(s.getNodeName(), 
-                            new BioCharacteristicType("Sample Name")));
-            if (s.getSampleDescription() != null){
-                bs.addPropertyValue(
-                        new BioCharacteristicValue(s.getSampleDescription(), 
-                                new BioCharacteristicType("Sample Description")));
+        for (Node n : st.scd.getRootNodes()){
+            if (SampleNode.class.isInstance(n)){
+                SampleNode sn = (SampleNode) n;
+                convertSampleNode(st, msi, sn);
             }
             
-            for(SCDNodeAttribute a: s.attributes){
-                BioCharacteristicType h = new BioCharacteristicType ( a.getAttributeType() );
-                BioCharacteristicValue v = new BioCharacteristicValue( a.getAttributeValue(), h);
-                
-                if (AbstractNodeAttributeOntology.class.isInstance(a)){
-                    AbstractNodeAttributeOntology ao = (AbstractNodeAttributeOntology) a;
-                    
-                    //ontology
-                    if (ao.getTermSourceID() != null && ao.getTermSourceREF() != null){
-                        //no conveinient way to get term source from name
-                        //so do loop to find it
-                        String termSourceURI = null;
-                        String termSourceVersion = null;
-                        for (TermSource t : st.msi.termSources){
-                            if (t.getName().equals(ao.getTermSourceREF())){
-                                termSourceURI = t.getURI();
-                                termSourceVersion = t.getVersion();
-                                break;
-                            }
-                        }
-                        
-                        if (termSourceURI != null && termSourceVersion != null){
-                            v.addOntologyTerm ( 
-                                    new OntologyEntry( ao.getTermSourceID() , 
-                                            new ReferenceSource(termSourceURI, termSourceVersion) ) );
-                        }
-                    }   
-                }
-                //TODO unit
-                
-                bs.addPropertyValue(v);
-            }
-            
-            msi.addSample(bs);
         }
 
         //put BioSamples into BioSampleGroups
@@ -134,8 +161,6 @@ public class Load {
                 }
             }
         }
-        
-        
         
         //TODO sample relationships
         
