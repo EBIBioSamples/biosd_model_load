@@ -53,22 +53,12 @@ public class Load {
             
             //ontology
             if (ao.getTermSourceID() != null && ao.getTermSourceREF() != null){
-                //no conveinient way to get term source from name
-                //so do loop to find it
-                String termSourceURI = null;
-                String termSourceVersion = null;
-                for (TermSource t : st.msi.termSources){
-                    if (t.getName().equals(ao.getTermSourceREF())){
-                        termSourceURI = t.getURI();
-                        termSourceVersion = t.getVersion();
-                        break;
-                    }
-                }
+                TermSource t = st.msi.getTermSource(ao.getTermSourceREF());
                 
-                if (termSourceURI != null && termSourceVersion != null){
+                if (t.getURI() != null && t.getVersion() != null){
                     v.addOntologyTerm ( 
                             new OntologyEntry( ao.getTermSourceID() , 
-                                    new ReferenceSource(termSourceURI, termSourceVersion) ) );
+                                    new ReferenceSource(t.getURI(), t.getVersion()) ) );
                 }
             }   
         }
@@ -78,7 +68,9 @@ public class Load {
     }
 
     private BioSample convertSampleNode(SampleData st, MSI msi, SampleNode s){
-        //TODO check is accessioned
+        if (s.getSampleAccession() == null || s.getSampleAccession().length() == 0){
+            throw new IllegalArgumentException("SampleNode must be accessioned");
+        }
         
         BioSample bs = new BioSample(s.getSampleAccession());
         
