@@ -1,6 +1,7 @@
 #!/bin/sh
-#
-
+#Ê
+#ÊRuns the loading test (load_test.sh) through the EBI's LSF cluster.
+#Ê
 
 inputdir=$1
 
@@ -32,14 +33,27 @@ if [ -e "$outfpath" ]; then
 	  Cowardly refusing to overwrite "$outfpath", delete or rename this file before passing its name to me 
 	  (or pass me another one)
 EOT
-  exit 1
+	exit 1
 fi
 	 
 echo FILE EXCEPTION MESSAGE	N_ITEMS	PARSING_TIME	PERSISTENCE_TIME >$outfpath
-for fpath in $(find $inputdir -type f -name '*.sampletab.txt' -or -name 'sampletab.txt' )
+
+(for fpath in $(find $inputdir -type f -name '*.sampletab.txt' -or -name 'sampletab.txt' )
 do
 	wfpath=$(echo "$fpath"| sed s/'\/'/'_'/g)
-  ./load_test_cmd.sh "$fpath" "$outfpath" 2>&1 | bz2 "target/load_test_${wfpath}.out.bz2"
-	
-  echo "$fpath" $BIOSD_LOAD_RESULT_EXCEPTION  "$BIOSD_LOAD_RESULT_MESSAGE"	$N_ITEMS	$PARSING_TIME	$PERSISTENCE_TIME >>$outfpath
-done
+  cat <<EOT
+-K
+-oo
+target/load_test_${wfpath}.out
+-J
+$wfpath
+./load_test_cmd.sh
+$fpath
+$outfpath
+EOT
+done) | xargs -d '\n' -P 5 -n 8 -- bsub 
+
+echo
+echo 'All done.'
+echo
+echo
