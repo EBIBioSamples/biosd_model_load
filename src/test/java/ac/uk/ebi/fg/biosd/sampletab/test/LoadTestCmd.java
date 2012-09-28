@@ -13,7 +13,6 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
 
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
 import uk.ac.ebi.fg.core_model.dao.hibernate.toplevel.AccessibleDAO;
