@@ -1,7 +1,7 @@
 /*
  * 
  */
-package ac.uk.ebi.fg.biosd.sampletab.test;
+package uk.ac.ebi.fg.biosd.sampletab.test;
 
 import static java.lang.System.out;
 
