@@ -216,7 +216,6 @@
 			</dependencies>
 		</profile>
 
-		<!-- TODO: there is also another instance, which is the same except 'dev' has to be replaced by 'tst' -->
 		<!-- WARNING! DO NOT EXPECT THE DEV DB TO BE STABLE, data and/or schema will be deleted often as part of the testing
 				 process. PLEASE NOTIFY ALL WHO MAY BE CONCERNED BEFORE WIPING THE DEV DB OUT -->
 		<profile>
@@ -240,6 +239,29 @@
 				</dependency>
 			</dependencies>
 		</profile>
+		
+		
+		<profile>
+			<id>test.oracle_test</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<properties>
+				<test.jdbc.username>biosdtst</test.jdbc.username>
+				<test.jdbc.password>biosdtst</test.jdbc.password>
+				<test.jdbc.url>jdbc:oracle:thin:@burns.ebi.ac.uk:1521:dwep</test.jdbc.url>
+				<test.jdbc.driverClassName>oracle.jdbc.driver.OracleDriver</test.jdbc.driverClassName>
+				<test.hibernate.dialect>org.hibernate.dialect.Oracle10gDialect</test.hibernate.dialect>
+				<test.hibernate.hbm2ddl.auto>update</test.hibernate.hbm2ddl.auto>
+			</properties>
+			<dependencies>
+				<dependency>
+					<groupId>com.oracle</groupId>
+					<artifactId>ojdbc5</artifactId>
+					<version>11.1.0.7.0</version>
+				</dependency>
+			</dependencies>
+		</profile>		
 
 	</profiles>
 </project>
