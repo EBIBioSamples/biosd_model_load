@@ -62,6 +62,7 @@ public class Load {
             }   
         }
         //TODO unit
+        //TODO database attribute
         
         return v;
     }
@@ -111,6 +112,8 @@ public class Load {
 
         for (GroupNode g : st.scd.getNodes(GroupNode.class)){
             BioSampleGroup bg = new BioSampleGroup ( g.getGroupAccession());
+            //TODO name
+            //TODO description
             
             for(SCDNodeAttribute a: g.attributes){
                 BioCharacteristicValue v = convertAtttribute(a,st);
