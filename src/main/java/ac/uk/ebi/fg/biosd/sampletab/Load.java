@@ -11,13 +11,18 @@ import uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.TermSource;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.GroupNode;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.SampleNode;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.AbstractNodeAttributeOntology;
+import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.CharacteristicAttribute;
+import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.CommentAttribute;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.SCDNodeAttribute;
+import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.UnitAttribute;
 import uk.ac.ebi.arrayexpress2.sampletab.parser.SampleTabSaferParser;
 import uk.ac.ebi.fg.biosd.model.expgraph.BioSample;
 import uk.ac.ebi.fg.biosd.model.organizational.BioSampleGroup;
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
 import uk.ac.ebi.fg.core_model.expgraph.properties.BioCharacteristicType;
 import uk.ac.ebi.fg.core_model.expgraph.properties.BioCharacteristicValue;
+import uk.ac.ebi.fg.core_model.expgraph.properties.Unit;
+import uk.ac.ebi.fg.core_model.expgraph.properties.UnitDimension;
 import uk.ac.ebi.fg.core_model.terms.OntologyEntry;
 import uk.ac.ebi.fg.core_model.xref.ReferenceSource;
 
@@ -56,12 +61,41 @@ public class Load {
                 TermSource t = st.msi.getTermSource(ao.getTermSourceREF());
                 if (t != null && t.getURI() != null && t.getVersion() != null){
                     v.addOntologyTerm ( 
-                            new OntologyEntry( ao.getTermSourceID() , 
-                                    new ReferenceSource(t.getURI(), t.getVersion()) ) );
+                        new OntologyEntry( ao.getTermSourceID() , 
+                            new ReferenceSource(t.getURI(), t.getVersion()) ) );
                 }
-            }   
+            }
+            
+            //unit
+            UnitAttribute unit = null;
+            if (CommentAttribute.class.isInstance(a) ){
+                CommentAttribute co = (CommentAttribute) a;
+                unit = co.unit;
+            }
+            if (CharacteristicAttribute.class.isInstance(a) ){
+                CharacteristicAttribute co = (CharacteristicAttribute) a;
+                unit = co.unit;
+            }
+            if (unit != null){
+                Unit u = new Unit();
+                u.setDimension(new UnitDimension(unit.getAttributeValue()));
+                v.setUnit(u);
+                AbstractNodeAttributeOntology aou = (AbstractNodeAttributeOntology) unit;
+                
+                //unit ontology term
+                if (aou.getTermSourceID() != null && aou.getTermSourceREF() != null){
+                    TermSource t = st.msi.getTermSource(aou.getTermSourceREF());
+                    if (t != null && t.getURI() != null && t.getVersion() != null){
+                        u.addOntologyTerm ( 
+                            new OntologyEntry( aou.getTermSourceID() , 
+                                new ReferenceSource(t.getURI(), t.getVersion()) ) );
+                    }
+                }
+            }
+            
         }
-        //TODO unit
+        
+        //TODO database attribute
         
         return v;
     }
@@ -111,6 +145,8 @@ public class Load {
 
         for (GroupNode g : st.scd.getNodes(GroupNode.class)){
             BioSampleGroup bg = new BioSampleGroup ( g.getGroupAccession());
+            //TODO name
+            //TODO description
             
             for(SCDNodeAttribute a: g.attributes){
                 BioCharacteristicValue v = convertAtttribute(a,st);
