@@ -41,17 +41,8 @@ echo FILE EXCEPTION MESSAGE	N_ITEMS	PARSING_TIME	PERSISTENCE_TIME >$outfpath
 (for fpath in $(find $inputdir -type f -name '*.sampletab.txt' -or -name 'sampletab.txt' )
 do
 	wfpath=$(echo "$fpath"| sed s/'\/'/'_'/g)
-  cat <<EOT
--K
--oo
-target/load_test_${wfpath}.out
--J
-$wfpath
-./load_test_cmd.sh
-$fpath
-$outfpath
-EOT
-done) | xargs -d '\n' -P 5 -n 8 -- bsub 
+  echo bsub -K -oo target/load_test_${wfpath}.out -J $wfpath ./load_test_cmd.sh $fpath $outfpath
+done) | xargs -d '\n' -P 100 -n 1 --replace=_cmd_ -- bash -c "_cmd_; exit 0" 
 
 echo
 echo 'All done.'
