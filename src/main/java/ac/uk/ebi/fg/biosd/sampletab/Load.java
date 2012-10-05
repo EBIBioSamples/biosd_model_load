@@ -16,13 +16,16 @@ import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.CommentAtt
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.SCDNodeAttribute;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.UnitAttribute;
 import uk.ac.ebi.arrayexpress2.sampletab.parser.SampleTabSaferParser;
+
 import uk.ac.ebi.fg.biosd.model.expgraph.BioSample;
 import uk.ac.ebi.fg.biosd.model.organizational.BioSampleGroup;
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
+import uk.ac.ebi.fg.biosd.model.xref.DatabaseRefSource;
 import uk.ac.ebi.fg.core_model.expgraph.properties.BioCharacteristicType;
 import uk.ac.ebi.fg.core_model.expgraph.properties.BioCharacteristicValue;
 import uk.ac.ebi.fg.core_model.expgraph.properties.Unit;
 import uk.ac.ebi.fg.core_model.expgraph.properties.UnitDimension;
+import uk.ac.ebi.fg.core_model.organizational.ContactRole;
 import uk.ac.ebi.fg.core_model.terms.OntologyEntry;
 import uk.ac.ebi.fg.core_model.xref.ReferenceSource;
 
@@ -136,12 +139,69 @@ public class Load {
         
     }
     
+    public void convertOrganization(uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Organization org, MSI msi){
+        uk.ac.ebi.fg.core_model.organizational.Organization o = new uk.ac.ebi.fg.core_model.organizational.Organization();
+        o.setName(org.getName());
+        o.setEmail(org.getEmail());
+        o.addOrganizationRole(new ContactRole(org.getRole()));
+        o.setUrl(org.getURI());
+        msi.addOrganization(o);
+    }
+    
+    public void convertPerson(uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Person per, MSI msi){
+        uk.ac.ebi.fg.core_model.organizational.Contact con = new uk.ac.ebi.fg.core_model.organizational.Contact();
+        con.setFirstName(per.getFirstName());
+        con.setMidInitials(per.getInitials());
+        con.setLastName(per.getLastName());
+        con.setEmail(per.getEmail());
+        con.addContactRole(new ContactRole(per.getRole()));
+        msi.addContact(con);
+    }
+    
+    public void convertPublication(uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Publication pub, MSI msi){
+        uk.ac.ebi.fg.core_model.organizational.Publication p = new uk.ac.ebi.fg.core_model.organizational.Publication();
+        //TODO pub.getDOI();
+        //TODO pub.getPubMedID();
+        msi.addPublication(p);
+    }
+    
+    public void convertTermSource(uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.TermSource termsource, MSI msi){
+        uk.ac.ebi.fg.core_model.xref.ReferenceSource r = new uk.ac.ebi.fg.core_model.xref.ReferenceSource(termsource.getName(), termsource.getVersion());
+        r.setName(termsource.getName());
+        msi.addReferenceSource(r);
+    }
+    
+    public void convertDatabase(uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Database database, MSI msi){
+        //id to acc not an ideal match...
+        DatabaseRefSource d = new DatabaseRefSource(database.getName(), database.getID());
+        d.setUrl(database.getURI());
+    }
+    
     public synchronized MSI fromSampleData(SampleData st){
         MSI msi = new MSI(st.msi.submissionIdentifier);
         msi.setUpdateDate(st.msi.submissionUpdateDate);
         msi.setReleaseDate(st.msi.submissionReleaseDate);
-        //TODO other msi components
+        //TODO st.msi.submissionReferenceLayer
         
+        for (uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Organization org : st.msi.organizations){
+            convertOrganization(org, msi);
+        }
+        
+        for (uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Person per : st.msi.persons){
+            convertPerson(per, msi);
+        }
+
+        for (uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Publication pub : st.msi.publications) {
+            convertPublication(pub, msi);
+        }
+        
+        for (uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.TermSource ts : st.msi.termSources) {
+            convertTermSource(ts, msi);
+        }
+
+        for (uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Database db : st.msi.databases) {
+            convertDatabase(db, msi);
+        }
 
         for (GroupNode g : st.scd.getNodes(GroupNode.class)){
             BioSampleGroup bg = new BioSampleGroup ( g.getGroupAccession());
@@ -174,10 +234,10 @@ public class Load {
                     break;
                 }
             }
-            //TODO check bg is not null at this point
+            //check bg is not null at this point
             
             for(Node p : g.getParentNodes()){
-                //TODO check this is a sample;
+                //check this is a sample;
                 SampleNode s = (SampleNode) p;
                 
                 for (BioSample bs : msi.getSamples()){
