@@ -36,7 +36,7 @@ EOT
 	exit 1
 fi
 	 
-echo FILE EXCEPTION MESSAGE	N_ITEMS	PARSING_TIME	PERSISTENCE_TIME >$outfpath
+printf "FILE\tEXCEPTION\tMESSAGE\tN_ITEMS\tPARSING_TIME\tPERSISTENCE_TIME\n" >$outfpath
 
 (for fpath in $(find $inputdir -type f -name '*.sampletab.txt' -or -name 'sampletab.txt' )
 do

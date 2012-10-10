@@ -35,11 +35,10 @@ EOT
   exit 1
 fi
 	 
-echo FILE EXCEPTION MESSAGE	N_ITEMS	PARSING_TIME	PERSISTENCE_TIME >$outfpath
+printf "FILE\tEXCEPTION\tMESSAGE\tN_ITEMS\tPARSING_TIME\tPERSISTENCE_TIME\n" >$outfpath
 for fpath in $(find $inputdir -type f -name '*.sampletab.txt' -or -name 'sampletab.txt' )
 do
 	wfpath=$(echo "$fpath"| sed s/'\/'/'_'/g)
-  ./load_test_cmd.sh "$fpath" "$outfpath" 2>&1 | bz2 "target/load_test_${wfpath}.out.bz2"
-	
-  echo "$fpath" $BIOSD_LOAD_RESULT_EXCEPTION  "$BIOSD_LOAD_RESULT_MESSAGE"	$N_ITEMS	$PARSING_TIME	$PERSISTENCE_TIME >>$outfpath
+	echo "Working on $fpath"
+  ./load_test_cmd.sh "$fpath" "$outfpath" 2>&1 | bzip2 >"target/load_test_${wfpath}.out.bz2"	
 done
