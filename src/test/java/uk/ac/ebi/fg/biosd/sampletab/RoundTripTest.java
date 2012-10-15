@@ -1,12 +1,11 @@
 package uk.ac.ebi.fg.biosd.sampletab;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import java.net.URL;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
-
 import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,15 +15,8 @@ import uk.ac.ebi.arrayexpress2.sampletab.comparator.ComparatorSampleData;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.SampleData;
 import uk.ac.ebi.arrayexpress2.sampletab.parser.SampleTabSaferParser;
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
-import uk.ac.ebi.fg.core_model.dao.hibernate.toplevel.AccessibleDAO;
-import uk.ac.ebi.fg.core_model.resources.Resources;
-import uk.ac.ebi.utils.test.junit.TestEntityMgrProvider;
-
 import ac.uk.ebi.fg.biosd.sampletab.Export;
 import ac.uk.ebi.fg.biosd.sampletab.Load;
-
-import static org.junit.Assert.fail;
-import static org.junit.Assert.assertEquals;
 
 public class RoundTripTest {
     

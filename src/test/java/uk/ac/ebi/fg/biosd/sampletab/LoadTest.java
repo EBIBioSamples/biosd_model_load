@@ -1,10 +1,13 @@
 package uk.ac.ebi.fg.biosd.sampletab;
 
 import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -12,7 +15,11 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.ebi.arrayexpress2.magetab.exception.ParseException;
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
+import uk.ac.ebi.fg.core_model.dao.hibernate.terms.CVTermDAO;
 import uk.ac.ebi.fg.core_model.dao.hibernate.toplevel.AccessibleDAO;
+import uk.ac.ebi.fg.core_model.organizational.Contact;
+import uk.ac.ebi.fg.core_model.organizational.ContactRole;
+import uk.ac.ebi.fg.core_model.organizational.Organization;
 import uk.ac.ebi.fg.core_model.resources.Resources;
 import uk.ac.ebi.utils.test.junit.TestEntityMgrProvider;
 
@@ -28,7 +35,8 @@ public class LoadTest {
     
     private Logger log = LoggerFactory.getLogger(getClass());
     
-    private MSI doTests(String resourcePath){
+    private MSI doTests(String resourcePath)
+    {
         URL url = getClass().getClassLoader().getResource(resourcePath);
         
         Load load = new Load();
@@ -41,8 +49,46 @@ public class LoadTest {
             log.error("Problem parsing", e);
             fail();
         }
-        
+
         em = emProvider.newEntityManager ();
+
+        // TODO: this is to be done in a few cases for making persistence work.
+        //
+    		CVTermDAO<ContactRole> cvdao = new CVTermDAO<ContactRole> ( ContactRole.class, em );
+
+        for ( Contact contact: msi.getContacts () ) 
+        {
+        	Set<ContactRole> newRoles = new HashSet<ContactRole> ();
+        	for ( ContactRole role: contact.getContactRoles () )
+        	{
+        		if ( contact == null || role.getName () == null ) {
+        			log.error ( "Ignoring a contact role with null name: " + role );
+        			continue;
+        		}
+        		ContactRole roleDB = cvdao.find ( role.getName () );
+        		newRoles.add ( roleDB == null ?  role : roleDB );
+        	}
+        	contact.setContactRoles ( newRoles );
+        }
+
+        for ( Organization org: msi.getOrganizations () ) 
+        {
+        	Set<ContactRole> newRoles = new HashSet<ContactRole> ();
+        	for ( ContactRole role: org.getOrganizationRoles () )
+        	{
+        		if ( org == null || role.getName () == null ) {
+        			log.error ( "Ignoring an organization role with null name: " + role );
+        			continue;
+        		}
+        		ContactRole roleDB = cvdao.find ( role.getName () );
+        		newRoles.add ( roleDB == null ?  role : roleDB );
+        	}
+        	org.setOrganizationRoles ( newRoles );
+        }
+        
+        
+        
+        
         AccessibleDAO<MSI> dao = new AccessibleDAO<MSI> ( MSI.class,  em );
         EntityTransaction ts = em.getTransaction ();
         ts.begin ();
@@ -51,6 +97,8 @@ public class LoadTest {
         
         return msi;
     }
+    
+    
     
     @Test
     public void testAE(){
