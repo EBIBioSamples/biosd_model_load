@@ -6,19 +6,18 @@ package uk.ac.ebi.fg.biosd.sampletab.roundtrip_testing.parser;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.InputStreamReader;
-import java.io.PipedReader;
-import java.io.PipedWriter;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
-
 
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.SampleData;
 import uk.ac.ebi.arrayexpress2.sampletab.renderer.SampleTabWriter;
@@ -37,8 +36,6 @@ import au.com.bytecode.opencsv.CSVReader;
 public class SampleTabVerifier
 {
 	private File inputFile;
-	private IOException _exportedFileThreadEx;
-
 	
 	public SampleTabVerifier ( File inputFile )
 	{
@@ -50,8 +47,21 @@ public class SampleTabVerifier
 	{
 		try
 		{
+			String inputPath = inputFile.getAbsolutePath ();
+			
+			System.out.println ( ">>>>>>> Working on '" + inputPath + "'" );
 			List<String[]> input = getInputFile (), export = getExportedFile ();
-			LineCountVerifier.verify ( inputFile.getAbsolutePath (), input, export );
+			
+			int iInScd = getSCDStartIndex ( input, inputPath );
+			List<String[]> inputMSI = input.subList ( 0, iInScd ), inputSCD = input.subList ( iInScd + 1, input.size () );
+			
+			String exportPath = getExportedPath ();
+			int iExScd = getSCDStartIndex ( export, exportPath );
+			List<String[]> exportMSI = export.subList ( 0, iExScd ), exportSCD = export.subList ( iExScd + 1, export.size () );
+			
+			new SCDLineCountVerifier ( inputPath, exportPath, inputSCD, exportSCD ).verify ();
+			new MSIValuesVerifier ( inputPath, exportPath, inputMSI, exportMSI ).verify ();
+			new SCDValuesVerifier ( inputPath, exportPath, inputSCD, exportSCD ).verify ();
 		}
 		catch ( Exception ex )
 		{ 
@@ -59,12 +69,12 @@ public class SampleTabVerifier
 			ex.printStackTrace ( new PrintWriter ( sw ) );
 			
 			// "FILE", "RESULT", "MESSAGE TYPE", "FIELD", "MESSAGE/NOTES"
-			ParserTest.report.writeNext ( new String[] { 
+			ParserComparisonTest.report.writeNext ( new String[] { 
 				inputFile.getAbsolutePath (),
 				"EXCEPTION",
 				ex.getClass ().getName (),
 				"",
-				StringEscapeUtils.escapeCsv ( sw.toString () ) 
+				StringEscapeUtils.escapeCsv ( StringEscapeUtils.escapeJava ( sw.toString () ) ) 
 			});
 		}
 	}
@@ -80,34 +90,27 @@ public class SampleTabVerifier
 	{
 		Load load = new Load();
 		MSI msi = load.fromSampleData ( inputFile );
-
+		
 		Export exporter = new Export();
     final SampleData xdata = exporter.fromMSI ( msi );
 
-    // Reads what the Limpopo-baed renderer has to write, faster and memory-saving 
+    // Write to disk, might be needed for manual checking
     //
-    PipedWriter pipew = new PipedWriter ();
-    PipedReader piper = new PipedReader ( pipew );
-		final SampleTabWriter stw = new SampleTabWriter ( pipew );
+    String outFilePath = getExportedPath ();
+    Writer stwr = new FileWriter ( outFilePath );
+    new SampleTabWriter ( stwr ).write ( xdata );
     
-		
-    new Thread ( new Runnable() 
-    {
-			@Override
-			public void run () 
-			{
-				try {
-					stw.write ( xdata );
-				} 
-				catch ( IOException ex ) {
-					_exportedFileThreadEx = ex;
-				}
-			}
-		}).start ();
-    
-    if ( _exportedFileThreadEx != null ) throw _exportedFileThreadEx;
-		return readAndCleanUpSampleTab ( piper );
+    // Now, reimport it, for in-memory verification
+    Reader rdr = new FileReader ( outFilePath );
+    return readAndCleanUpSampleTab ( rdr );
 	}
+	
+	private String getExportedPath ()
+	{
+    String outFileName = inputFile.getAbsolutePath ().replace ( '/', '_' );
+    return "target/exports/" + outFileName + ".csv";
+	}
+	
 	
 	private List<String[]> readAndCleanUpSampleTab ( Reader input ) throws Exception
 	{
@@ -126,5 +129,15 @@ public class SampleTabVerifier
 			result.add ( line );
 		}
 		return result;
+	}
+	
+	
+	private int getSCDStartIndex ( List<String[]> sampleTabLines, String filePath )
+	{
+		int i = 0;
+		for ( String[] line: sampleTabLines )
+			if ( "[SCD]".equalsIgnoreCase ( line [ 0 ] ) ) return i;
+			else i++;
+		throw new RuntimeException ( "Error while reading file '" + filePath + "', cannot find the [SCD] header" );
 	}
 }
