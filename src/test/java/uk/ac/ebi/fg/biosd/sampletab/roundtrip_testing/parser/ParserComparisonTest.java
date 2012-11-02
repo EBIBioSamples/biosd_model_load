@@ -56,8 +56,7 @@ public class ParserComparisonTest
 		report.close ();
 	}
 	
-	@Test
-	//@Ignore
+	@Test @Ignore
 	public void testParser () throws Exception
 	{
 		File inputDir = new File ( TEST_FILES_PATH );
