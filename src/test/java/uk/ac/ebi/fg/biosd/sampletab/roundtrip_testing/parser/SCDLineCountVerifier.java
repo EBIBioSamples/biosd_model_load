@@ -23,13 +23,16 @@ public class SCDLineCountVerifier extends AbstractSampleTabVerifier
 	@Override
 	public void verify ()
 	{
-		int inputScdLines = inputContent.size (), exportScdLines = exportContent.size ();
-		if ( inputScdLines == exportScdLines ) return; 
+		int inputScdSz = inputContent.size (), exportScdSz = exportContent.size ();
+		// The zero-size case can be ignored here, cause there is another check into SCDValuesVerifier that takes this case
+		// into account.
+		//
+		if ( inputScdSz == exportScdSz || inputScdSz == 0 || exportScdSz == 0 ) return; 
 		
 		ParserComparisonTest.report.writeNext ( new String[] {
 			inputPath, "ERROR", "SCD row size mismatch", "", 
-			"Input SampleTab file has " + inputScdLines + " [SCD] rows, exported SampleTab has " 
-			+ exportScdLines + " rows instead"
+			"Input SampleTab file has " + inputScdSz + " [SCD] rows, exported SampleTab has " 
+			+ exportScdSz + " rows instead"
 		});
 	}
 
