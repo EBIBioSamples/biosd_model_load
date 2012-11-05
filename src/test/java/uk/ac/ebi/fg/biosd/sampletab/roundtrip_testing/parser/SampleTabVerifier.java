@@ -22,8 +22,8 @@ import org.apache.commons.lang.StringUtils;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.SampleData;
 import uk.ac.ebi.arrayexpress2.sampletab.renderer.SampleTabWriter;
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
-import ac.uk.ebi.fg.biosd.sampletab.Export;
-import ac.uk.ebi.fg.biosd.sampletab.Load;
+import ac.uk.ebi.fg.biosd.sampletab.Exporter;
+import ac.uk.ebi.fg.biosd.sampletab.Loader;
 import au.com.bytecode.opencsv.CSVReader;
 
 /**
@@ -88,10 +88,10 @@ public class SampleTabVerifier
 	
 	private List<String[]> getExportedFile () throws Exception
 	{
-		Load load = new Load();
-		MSI msi = load.fromSampleData ( inputFile );
+		Loader loader = new Loader();
+		MSI msi = loader.fromSampleData ( inputFile );
 		
-		Export exporter = new Export();
+		Exporter exporter = new Exporter();
     final SampleData xdata = exporter.fromMSI ( msi );
 
     // Write to disk, might be needed for manual checking

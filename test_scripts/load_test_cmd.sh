@@ -3,6 +3,9 @@
 # Used for load_test_lsf.sh
 #
 
+MYDIR=$(dirname "$0")
+cd "$MYDIR"/..
+
 fpath="$1"
 outfpath="$2"
 

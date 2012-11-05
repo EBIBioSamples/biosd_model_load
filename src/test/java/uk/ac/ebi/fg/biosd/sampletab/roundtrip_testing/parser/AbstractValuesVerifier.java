@@ -42,7 +42,7 @@ public abstract class AbstractValuesVerifier extends AbstractSampleTabVerifier
 			//
 			if ( exportValues != null )
 				ParserComparisonTest.report.writeNext ( new String[] {
-					inputPath, "WARNING", "Input " + sectionName + " is null and Export is not", "[" + sectionName + "]", 
+					inputPath, "WARNING", "Input " + sectionName + " is null and Exporter is not", "[" + sectionName + "]", 
 					sectionName + " section is empty in the input file, while is not null in the exported file"
 				});
 			return;
@@ -104,13 +104,13 @@ public abstract class AbstractValuesVerifier extends AbstractSampleTabVerifier
 					String displayVal = StringEscapeUtils.escapeCsv ( StringEscapeUtils.escapeJava ( 
 						StringUtils.abbreviate ( hExportVals.iterator ().next (), 40 ) ) );
 					ParserComparisonTest.report.writeNext ( new String[] {
-						inputPath, "ERROR", "Extra-value in the Export", "[" + sectionName + "] " + header, 
+						inputPath, "ERROR", "Extra-value in the Exporter", "[" + sectionName + "] " + header, 
 						"The value '" + displayVal + "' in the export file doesn't come from the input"
 					});
 				}
 				else
 					ParserComparisonTest.report.writeNext ( new String[] {
-						inputPath, "ERROR", "Header in the Export only", "[" + sectionName + "] " + header, 
+						inputPath, "ERROR", "Header in the Exporter only", "[" + sectionName + "] " + header, 
 						"The header '" + header + "' and its values in the export don't come from the input"
 					});
 				continue;
@@ -157,7 +157,7 @@ public abstract class AbstractValuesVerifier extends AbstractSampleTabVerifier
 						String displayVal = StringEscapeUtils.escapeCsv ( StringEscapeUtils.escapeJava ( 
 							StringUtils.abbreviate ( inval, 40 ) ) );
 						ParserComparisonTest.report.writeNext ( new String[] {
-							inputPath, "ERROR", "Extra-value in the Export", "[" + sectionName + "] " + header, 
+							inputPath, "ERROR", "Extra-value in the Exporter", "[" + sectionName + "] " + header, 
 							"The value '" + displayVal + "for the header '" + header + "' is not exported"
 						});
 					}
@@ -169,7 +169,7 @@ public abstract class AbstractValuesVerifier extends AbstractSampleTabVerifier
 					String displayVal = StringEscapeUtils.escapeCsv ( StringEscapeUtils.escapeJava ( 
 						StringUtils.abbreviate ( xval, 40 ) ) );
 					ParserComparisonTest.report.writeNext ( new String[] {
-						inputPath, "ERROR", "Extra-value in the Export", "[" + sectionName + "] " + header, 
+						inputPath, "ERROR", "Extra-value in the Exporter", "[" + sectionName + "] " + header, 
 						"The value '" + displayVal + "' in the export file doesn't come from the input"
 					});
 				}	
@@ -207,7 +207,7 @@ public abstract class AbstractValuesVerifier extends AbstractSampleTabVerifier
 					StringUtils.abbreviate ( hExportVals.iterator ().next (), 40 ) ) );
 				
 				ParserComparisonTest.report.writeNext ( new String[] {
-					inputPath, "ERROR", "Extra-value in the Export", "[" + sectionName + "] " + header, 
+					inputPath, "ERROR", "Extra-value in the Exporter", "[" + sectionName + "] " + header, 
 					"The value '" + displayVal + "' in the export file doesn't come from the input"
 				});
 				
@@ -217,7 +217,7 @@ public abstract class AbstractValuesVerifier extends AbstractSampleTabVerifier
 			// Multiple extra values 
 			// 
 			ParserComparisonTest.report.writeNext ( new String[] {
-				inputPath, "ERROR", "Extra-header in the Export", "[" + sectionName + "] " + header, 
+				inputPath, "ERROR", "Extra-header in the Exporter", "[" + sectionName + "] " + header, 
 				"The header in the exported file but not in the input"
 			});
 			

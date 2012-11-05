@@ -29,7 +29,7 @@ import uk.ac.ebi.fg.core_model.organizational.ContactRole;
 import uk.ac.ebi.fg.core_model.terms.OntologyEntry;
 import uk.ac.ebi.fg.core_model.xref.ReferenceSource;
 
-public class Load {
+public class Loader {
     
     public MSI fromSampleData(String filename) throws ParseException{
         return fromSampleData(new File(filename));

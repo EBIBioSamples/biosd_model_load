@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>uk.ac.ebi.fg</groupId>
-	<artifactId>biosd_sampletab</artifactId>
+	<artifactId>biosd_loader</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>SampleTab loader</name>
 
@@ -97,6 +97,43 @@
 					</properties>
 				</configuration>
 			</plugin>
+
+			<!-- The package for line commands is built through this -->
+	    <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>deps</id>
+            <configuration>
+              <finalName>biosd_loader_deps</finalName>
+              <appendAssemblyId>false</appendAssemblyId>
+              <attach>false</attach>
+              <descriptors>
+              	<descriptor>src/main/assembly/deps.xml</descriptor>
+              </descriptors>
+            </configuration>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+          <execution>
+              <id>pkg</id>
+              <configuration>
+                  <finalName>biosd_loader_shell_${project.version}</finalName>
+                  <appendAssemblyId>false</appendAssemblyId>
+                  <attach>false</attach>
+                  <descriptors>
+                      <descriptor>src/main/assembly/pkg.xml</descriptor>
+                  </descriptors>
+              </configuration>
+              <phase>package</phase>
+              <goals>
+              	<goal>single</goal>
+              </goals>
+          </execution>
+        </executions>
+	    </plugin>
 
 		</plugins>
 
@@ -298,6 +335,26 @@
 				</dependency>
 			</dependencies>
 		</profile>		
+
+
+		<profile>
+			<id>hsql_file</id>
+			<properties>
+				<jdbc.username>sa</jdbc.username>
+				<jdbc.password></jdbc.password>
+				<jdbc.url>jdbc:hsqldb:file:target/database/testdb;shutdown=true;hsqldb.write_delay=false</jdbc.url>
+				<jdbc.driverClassName>org.hsqldb.jdbcDriver</jdbc.driverClassName>
+				<hibernate.dialect>org.hibernate.dialect.HSQLDialect</hibernate.dialect>
+				<hibernate.hbm2ddl.auto>update</hibernate.hbm2ddl.auto>
+			</properties>
+			<dependencies>
+				<dependency>
+					<groupId>org.hsqldb</groupId>
+					<artifactId>hsqldb</artifactId>
+					<version>2.2.4</version>
+				</dependency>
+			</dependencies>
+		</profile>
 
 	</profiles>
 </project>

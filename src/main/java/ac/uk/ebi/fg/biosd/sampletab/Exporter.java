@@ -33,7 +33,7 @@ import uk.ac.ebi.fg.core_model.organizational.ContactRole;
 import uk.ac.ebi.fg.core_model.terms.OntologyEntry;
 import uk.ac.ebi.fg.core_model.toplevel.Annotation;
 
-public class Export {
+public class Exporter {
 
     
     public SampleData fromMSI(MSI msi) throws ParseException{

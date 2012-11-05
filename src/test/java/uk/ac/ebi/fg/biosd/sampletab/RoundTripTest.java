@@ -15,8 +15,8 @@ import uk.ac.ebi.arrayexpress2.sampletab.comparator.ComparatorSampleData;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.SampleData;
 import uk.ac.ebi.arrayexpress2.sampletab.parser.SampleTabSaferParser;
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
-import ac.uk.ebi.fg.biosd.sampletab.Export;
-import ac.uk.ebi.fg.biosd.sampletab.Load;
+import ac.uk.ebi.fg.biosd.sampletab.Exporter;
+import ac.uk.ebi.fg.biosd.sampletab.Loader;
 
 public class RoundTripTest {
     
@@ -35,14 +35,14 @@ public class RoundTripTest {
             fail();
         }
 
-        Load load = new Load();
+        Loader loader = new Loader();
         MSI msi = null;
-        msi = load.fromSampleData(sd);
+        msi = loader.fromSampleData(sd);
         
-        Export export = new Export();
+        Exporter exporter = new Exporter();
         SampleData sdExported = null;
         try {
-            sdExported = export.fromMSI(msi);
+            sdExported = exporter.fromMSI(msi);
         } catch (ParseException e) {
             log.error("Problem parsing", e);
             fail();

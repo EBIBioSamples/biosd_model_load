@@ -17,7 +17,8 @@ import org.apache.commons.lang.StringEscapeUtils;
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
 import uk.ac.ebi.fg.core_model.dao.hibernate.toplevel.AccessibleDAO;
 import uk.ac.ebi.fg.core_model.resources.Resources;
-import ac.uk.ebi.fg.biosd.sampletab.Load;
+import ac.uk.ebi.fg.biosd.sampletab.Loader;
+import ac.uk.ebi.fg.biosd.sampletab.Persister;
 
 /**
  * Uses to perform loading tests, one submission at a time. See load_test.sh for details.
@@ -50,8 +51,8 @@ public class LoadTestCmd
 			
 			long time0 = System.currentTimeMillis ();
 			
-			Load load = new Load();
-			MSI msi = load.fromSampleData ( path );
+			Loader loader = new Loader();
+			MSI msi = loader.fromSampleData ( path );
 			parsingTime = System.currentTimeMillis () - time0; 
 
 			nitems = msi.getSamples ().size () + msi.getSampleGroups ().size ();
@@ -60,11 +61,7 @@ public class LoadTestCmd
 			// Now persist it
 			//
 			time0 = System.currentTimeMillis ();
-			AccessibleDAO<MSI> dao = new AccessibleDAO<MSI> ( MSI.class,  em );
-			EntityTransaction ts = em.getTransaction ();
-			ts.begin ();
-			dao.getOrCreate ( msi );
-			ts.commit ();
+			new Persister ( msi ).persist ( true );
 			persistenceTime = System.currentTimeMillis () - time0;
 		} 
 		catch ( Throwable ex ) 

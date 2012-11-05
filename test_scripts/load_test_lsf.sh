@@ -3,6 +3,9 @@
 #ÊRuns the loading test (load_test.sh) through the EBI's LSF cluster.
 #Ê
 
+MYDIR=$(dirname "$0")
+cd "$MYDIR"/..
+
 inputdir=$1
 
 if [ "$inputdir" == "" ]; then

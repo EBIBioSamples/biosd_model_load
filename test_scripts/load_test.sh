@@ -1,6 +1,8 @@
 #!/bin/sh
 #
 
+MYDIR=$(dirname "$0")
+cd "$MYDIR"/..
 
 inputdir=$1
 
