@@ -102,6 +102,7 @@
 			<!-- The package for line commands is built through this -->
 	    <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.4</version>
         <executions>
           <execution>
             <id>deps</id>
@@ -135,62 +136,6 @@
           </execution>
         </executions>
 	    </plugin>
-
-      <!-- 
-         This generates a .properties file, containing a list of all the JPA classes. This is then used by the 
-         resources plug-in, to replace a placeholder in persistence.xml 
-         
-         See http://github.com/ljnelson/jpa-maven-plugin for details
-       -->
-			<plugin>
-			  <groupId>com.edugility</groupId>
-			  <artifactId>jpa-maven-plugin</artifactId>
-			  <version>3-SNAPSHOT</version>
-			  <configuration>
-			  	<outputFile>${project.build.directory}/generated-sources/jpa-maven-plugin/entityClassnames.properties</outputFile>
-			  </configuration>
-			  <executions>
-			    <execution>
-			      <id>Generate entityClassnames.properties</id>
-              <phase>process-classes</phase>
-			      	<goals>
-			        <goal>list-entity-classnames</goal>
-			      </goals>
-			    </execution>
-			  </executions>
-			</plugin>
-		
-      <!-- 
-         See above.
-       -->
-			<plugin>
-			  <artifactId>maven-resources-plugin</artifactId>
-			  <version>2.5</version>
-			  <executions>
-			    <execution>
-			      <id>Copy persistence.xml filtered with generated entityClassnames.properties file</id>
-            <phase>process-classes</phase>
-			      <goals>
-			      	<goal>copy-resources</goal>
-			      </goals>
-			      <configuration>
-			        <filters>
-			        	<filter>${project.build.directory}/generated-sources/jpa-maven-plugin/entityClassnames.properties</filter>
-			        </filters>
-			        <outputDirectory>${project.build.testOutputDirectory}/META-INF</outputDirectory>
-			        <resources>
-			          <resource>
-			            <filtering>true</filtering>
-			            <directory>src/main/resources/META-INF</directory>
-			            <includes>
-			              <include>persistence.xml</include>
-			            </includes>
-			          </resource>
-			        </resources>
-			      </configuration>
-			    </execution>
-			  </executions>
-			</plugin>		
 			
 		</plugins>
 
