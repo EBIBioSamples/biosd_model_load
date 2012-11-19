@@ -179,61 +179,8 @@
 			<name>EBI repo</name>
 			<url>http://www.ebi.ac.uk/~maven/m2repo</url>
 		</repository>
-
-    <!-- Used by the JPA plugin -->
-    <repository>
-        <id>sonatype-public</id>
-        <url>https://oss.sonatype.org/content/groups/public/</url>
-        <releases>
-            <enabled>true</enabled>
-        </releases>
-        <snapshots>
-            <enabled>true</enabled>
-        </snapshots>
-    </repository>
-
-    <!-- Used by the JPA plugin -->
-    <repository>
-      <id>eclipselink</id>
-      <url>http://download.eclipse.org/rt/eclipselink/maven.repo</url>
-      <releases>
-          <enabled>true</enabled>
-      </releases>
-      <snapshots>
-          <enabled>true</enabled>
-      </snapshots>
-    </repository>
 		
 	</repositories>
-
-  <pluginRepositories>
-  
-  		<!-- JPA-Plug-in -->
-      <pluginRepository>
-          <id>sonatype-public</id>
-          <url>https://oss.sonatype.org/content/groups/public/</url>
-          <releases>
-              <enabled>true</enabled>
-          </releases>
-          <snapshots>
-              <enabled>true</enabled>
-          </snapshots>
-      </pluginRepository>
-      
-  		<!-- JPA-Plug-in -->
-      <pluginRepository>
-          <id>eclipselink</id>
-          <url>http://download.eclipse.org/rt/eclipselink/maven.repo</url>
-          <releases>
-              <enabled>true</enabled>
-          </releases>
-          <snapshots>
-              <enabled>true</enabled>
-          </snapshots>
-      </pluginRepository>
-      
-  </pluginRepositories>  
-
 
 
 	<profiles>
