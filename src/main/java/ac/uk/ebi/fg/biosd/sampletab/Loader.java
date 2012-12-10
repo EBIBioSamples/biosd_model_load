@@ -154,7 +154,9 @@ public class Loader {
         con.setMidInitials(per.getInitials());
         con.setLastName(per.getLastName());
         con.setEmail(per.getEmail());
-        con.addContactRole(new ContactRole(per.getRole()));
+        if ((per.getRole()) != null){
+            con.addContactRole(new ContactRole(per.getRole()));
+        }
         msi.addContact(con);
     }
     
