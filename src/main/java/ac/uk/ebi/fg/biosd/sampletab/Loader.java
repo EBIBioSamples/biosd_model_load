@@ -163,15 +163,13 @@ public class Loader {
     }
     
     public void convertPublication(uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Publication pub, MSI msi){
-        uk.ac.ebi.fg.core_model.organizational.Publication p = new uk.ac.ebi.fg.core_model.organizational.Publication();
-        //TODO pub.getDOI();
-        //TODO pub.getPubMedID();
+        uk.ac.ebi.fg.core_model.organizational.Publication p = new uk.ac.ebi.fg.core_model.organizational.Publication(pub.getDOI(), pub.getPubMedID());
         msi.addPublication(p);
     }
     
     public void convertTermSource(uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.TermSource termsource, MSI msi){
         uk.ac.ebi.fg.core_model.xref.ReferenceSource r = new uk.ac.ebi.fg.core_model.xref.ReferenceSource(termsource.getName(), termsource.getVersion());
-        r.setName(termsource.getName());
+        r.setUrl(termsource.getURI());
         msi.addReferenceSource(r);
     }
     
@@ -179,6 +177,7 @@ public class Loader {
         //id to acc not an ideal match...
         DatabaseRefSource d = new DatabaseRefSource(database.getName(), database.getID());
         d.setUrl(database.getURI());
+        msi.addDatabase(d);
     }
     
     public synchronized MSI fromSampleData(SampleData st){
@@ -186,6 +185,8 @@ public class Loader {
         msi.setUpdateDate(st.msi.submissionUpdateDate);
         msi.setReleaseDate(st.msi.submissionReleaseDate);
         //TODO st.msi.submissionReferenceLayer
+        //TODO st.msi.submissionTitle
+        //TODO st.msi.submissionDescription
         
         for (uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Organization org : st.msi.organizations){
             convertOrganization(org, msi);
