@@ -50,9 +50,14 @@ public class Exporter {
             String address = o.getAddress();
             String uri = o.getUrl();
             String email = o.getEmail();
-            for ( ContactRole c : o.getOrganizationRoles()){
-                String role = c.getName();
-                uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Organization o2 = new uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Organization(name, address, uri, email, role);
+            if (o.getOrganizationRoles().size() > 0){
+                for ( ContactRole c : o.getOrganizationRoles()){
+                    String role = c.getName();
+                    uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Organization o2 = new uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Organization(name, address, uri, email, role);
+                    sd.msi.organizations.add(o2);
+                }
+            } else {
+                uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Organization o2 = new uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Organization(name, address, uri, email, null);
                 sd.msi.organizations.add(o2);
             }
         }
@@ -62,9 +67,14 @@ public class Exporter {
             String initials = p.getMidInitials();
             String lastName = p.getLastName();
             String email = p.getEmail();
-            for ( ContactRole c : p.getContactRoles()){
-                String role = c.getName();
-                uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Person p2 = new uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Person(firstName, initials, lastName, email, role);
+            if (p.getContactRoles().size() > 0){
+                for ( ContactRole c : p.getContactRoles()){
+                    String role = c.getName();
+                    uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Person p2 = new uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Person(firstName, initials, lastName, email, role);
+                    sd.msi.persons.add(p2);
+                }
+            } else {
+                uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Person p2 = new uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Person(firstName, initials, lastName, email, null);
                 sd.msi.persons.add(p2);
             }
         }
