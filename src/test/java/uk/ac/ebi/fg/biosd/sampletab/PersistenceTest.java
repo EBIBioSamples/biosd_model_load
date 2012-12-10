@@ -53,4 +53,14 @@ public class PersistenceTest
 		loadDir ( "/ebi/microarray/home/biosamples/ftp/pride" );
 	}
 	
+	/**
+	 * Tests a case where there is an organisation without a contact role 
+	 * (https://www.pivotaltracker.com/projects/116186#!/stories/37588597)
+	 * 
+	 */
+	@Test
+	public void testNullContactRole () throws ParseException {
+		persistSampleTab ( "target/test-classes/GAE-MTAB-27_null_org.sampletab.csv" );
+	}
+	
 }
