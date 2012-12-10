@@ -143,7 +143,9 @@ public class Loader {
         uk.ac.ebi.fg.core_model.organizational.Organization o = new uk.ac.ebi.fg.core_model.organizational.Organization();
         o.setName(org.getName());
         o.setEmail(org.getEmail());
-        o.addOrganizationRole(new ContactRole(org.getRole()));
+        if (org.getRole() != null){
+            o.addOrganizationRole(new ContactRole(org.getRole()));
+        }
         o.setUrl(org.getURI());
         msi.addOrganization(o);
     }
@@ -154,7 +156,7 @@ public class Loader {
         con.setMidInitials(per.getInitials());
         con.setLastName(per.getLastName());
         con.setEmail(per.getEmail());
-        if ((per.getRole()) != null){
+        if (per.getRole() != null){
             con.addContactRole(new ContactRole(per.getRole()));
         }
         msi.addContact(con);
