@@ -1,5 +1,8 @@
 #!/bin/sh
 
+#ÊDeploys the command line binary on the EBI's NFS.
+#Ê
+
 MYDIR=$(dirname "$0")
 cd "$MYDIR"/target
 
