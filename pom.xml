@@ -164,8 +164,8 @@
 	</build>
 
 	<scm>
-		<developerConnection>scm:git:https://github.com/EBIBioSamples/biosd_model_load.git</developerConnection>
-	</scm>
+		<developerConnection>scm:git:git@github.com:EBIBioSamples/biosd_model_load.git</developerConnection>
+	</scm>	
 	
 	<repositories>
 				
