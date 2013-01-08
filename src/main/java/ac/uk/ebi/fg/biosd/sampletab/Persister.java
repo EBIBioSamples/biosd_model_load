@@ -57,7 +57,7 @@ public class Persister
     	Set<ContactRole> newRoles = new HashSet<ContactRole> ();
     	for ( ContactRole role: contact.getContactRoles () )
     	{
-    		if ( contact == null || role.getName () == null ) {
+    		if ( role == null || role.getName () == null ) {
     			log.error ( "Ignoring a contact role with null name: " + role );
     			continue;
     		}
@@ -72,7 +72,7 @@ public class Persister
     	Set<ContactRole> newRoles = new HashSet<ContactRole> ();
     	for ( ContactRole role: org.getOrganizationRoles () )
     	{
-    		if ( org == null || role.getName () == null ) {
+    		if ( role == null || role.getName () == null ) {
     			log.error ( "Ignoring an organization role with null name: " + role );
     			continue;
     		}
@@ -91,8 +91,7 @@ public class Persister
 		
 		// Just to be sure, we've noted some timeouts on Oracle side
 		//
-		if ( em != null && em.isOpen () )
-			em.close ();
+		if ( em.isOpen () ) em.close ();
 		
 		return msi;
 	}
