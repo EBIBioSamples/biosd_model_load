@@ -11,8 +11,11 @@ import org.slf4j.LoggerFactory;
 import uk.ac.ebi.arrayexpress2.magetab.exception.ParseException;
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
 import ac.uk.ebi.fg.biosd.sampletab.Loader;
-import ac.uk.ebi.fg.biosd.sampletab.Persister;
+import ac.uk.ebi.fg.biosd.sampletab.persistence.Persister;
 
+/**
+ * Performs some real-submission loading test.
+ */
 public class LoadTest 
 {    
     private Logger log = LoggerFactory.getLogger(getClass());
@@ -32,7 +35,7 @@ public class LoadTest
             fail();
         }
         
-        return new Persister ( msi ).persist ( true );
+        return new Persister ( msi ).persist ();
     }
     
     

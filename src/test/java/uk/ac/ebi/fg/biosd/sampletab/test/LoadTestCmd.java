@@ -10,15 +10,13 @@ import java.io.PrintStream;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
-import uk.ac.ebi.fg.core_model.dao.hibernate.toplevel.AccessibleDAO;
 import uk.ac.ebi.fg.core_model.resources.Resources;
 import ac.uk.ebi.fg.biosd.sampletab.Loader;
-import ac.uk.ebi.fg.biosd.sampletab.Persister;
+import ac.uk.ebi.fg.biosd.sampletab.persistence.Persister;
 
 /**
  * Uses to perform loading tests, one submission at a time. See load_test.sh for details.
@@ -61,7 +59,7 @@ public class LoadTestCmd
 			// Now persist it
 			//
 			time0 = System.currentTimeMillis ();
-			new Persister ( msi ).persist ( true );
+			new Persister ( msi ).persist ();
 			persistenceTime = System.currentTimeMillis () - time0;
 		} 
 		catch ( Throwable ex ) 

@@ -14,9 +14,11 @@ import org.junit.Test;
 import uk.ac.ebi.arrayexpress2.magetab.exception.ParseException;
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
 import ac.uk.ebi.fg.biosd.sampletab.Loader;
-import ac.uk.ebi.fg.biosd.sampletab.Persister;
+import ac.uk.ebi.fg.biosd.sampletab.persistence.Persister;
 
-
+/**
+ * Performs some real-submission DB-persistence test.
+ */
 public class PersistenceTest
 {	
 	private MSI persistSampleTab ( String path ) throws ParseException
@@ -26,7 +28,7 @@ public class PersistenceTest
 	  Loader loader = new Loader();
 	  MSI msi = loader.fromSampleData ( path );
 	  
-	  new Persister ( msi ).persist ( true );	  
+	  new Persister ( msi ).persist ();	  
 	  return msi;
 	}
    
