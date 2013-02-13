@@ -20,6 +20,8 @@ one at a time and will report the results in a summary file.
   input-dir     = path where to load files from, all *.sampletab.txt files are considered, recursively
   summary-file  = file where to store summary
   
+This is affected by the environment variable SAMPLING_RATIO, if it is less than 100, only a random subset of the 
+submissions in the target directory is loaded.
 
 EOT
   exit 1
@@ -38,13 +40,17 @@ if [ -e "$outfpath" ]; then
 EOT
 	exit 1
 fi
+
+# Pick a random sample if there is this variable defined, 100% otherwise.	 
+if [ "$SAMPLING_RATIO" == "" ]; then SAMPLING_RATIO=100; fi
 	 
 printf "FILE\tEXCEPTION\tMESSAGE\tN_ITEMS\tPARSING_TIME\tPERSISTENCE_TIME\n" >$outfpath
 
 (for fpath in $(find $inputdir -type f -name '*.sampletab.txt' -or -name 'sampletab.txt' )
 do
+  if [ $[ $RANDOM % 100 ] -gt $SAMPLING_RATIO ]; then continue; fi
 	wfpath=$(echo "$fpath"| sed s/'\/'/'_'/g)
-  echo bsub -K -oo target/load_test_${wfpath}.out -J $wfpath ./load_test_cmd.sh $fpath $outfpath
+  echo bsub -K -oo target/load_test_${wfpath}.out -J $wfpath ./test_scripts/load_test_cmd.sh $fpath $outfpath
 done) | xargs -d '\n' -P 100 -n 1 --replace=_cmd_ -- bash -c "_cmd_; exit 0" 
 
 echo

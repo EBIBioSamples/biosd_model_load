@@ -11,7 +11,7 @@ import javax.persistence.EntityManager;
 import uk.ac.ebi.fg.biosd.model.expgraph.BioSample;
 import uk.ac.ebi.fg.biosd.model.organizational.BioSampleGroup;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.toplevel.AccessibleDAO;
-import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.PersistenceListener;
+import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.CreationListener;
 import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.expgraph.ProductComparator;
 
 /**
@@ -21,7 +21,7 @@ import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.expgraph.Produc
  * @author Marco Brandizi
  *
  */
-public class BioSampleGroupPersistenceListener extends PersistenceListener<BioSampleGroup>
+public class BioSampleGroupPersistenceListener extends CreationListener<BioSampleGroup>
 {
 	public BioSampleGroupPersistenceListener ( EntityManager entityManager ) {
 		super ( entityManager );

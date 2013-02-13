@@ -9,7 +9,7 @@ import java.util.Set;
 
 import javax.persistence.EntityManager;
 
-import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.PersistenceListener;
+import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.CreationListener;
 
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.toplevel.AccessibleDAO;
 import uk.ac.ebi.fg.core_model.expgraph.Node;
@@ -22,7 +22,7 @@ import uk.ac.ebi.fg.core_model.expgraph.Node;
  *
  */
 @SuppressWarnings ({ "rawtypes", "unchecked" })
-public abstract class NodePersistenceListener<N extends Node> extends PersistenceListener<N>
+public abstract class NodePersistenceListener<N extends Node> extends CreationListener<N>
 {
 	/**
 	 * This is used to re-use nodes in the DB. If a node in the DB and a new node being submitted are equivalent according

@@ -10,7 +10,7 @@ import ac.uk.ebi.fg.biosd.sampletab.persistence.Persister;
 import uk.ac.ebi.fg.core_model.toplevel.Identifiable;
 
 /**
- * A generic persistence listener. These are called by the {@link Persister submission persister}. They are named 
+ * A generic creation listener. These are called by the {@link Persister submission persister}. They are named 
  * listeners, since they follow a similar mechanism used in JPA. We prefer to use them out of JPA, in order to avoid
  * to make all the applications depending on these annotations put at the level of the object model.
  *
@@ -18,11 +18,11 @@ import uk.ac.ebi.fg.core_model.toplevel.Identifiable;
  * @author Marco Brandizi
  *
  */
-public abstract class PersistenceListener<T extends Identifiable>
+public abstract class CreationListener<T extends Identifiable>
 {
 	protected final EntityManager entityManager;
 	
-	public PersistenceListener ( EntityManager entityManager )
+	public CreationListener ( EntityManager entityManager )
 	{
 		super ();
 		this.entityManager = entityManager;

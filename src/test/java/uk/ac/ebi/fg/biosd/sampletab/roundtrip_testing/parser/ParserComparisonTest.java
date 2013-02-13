@@ -22,7 +22,8 @@ import org.junit.Test;
 import au.com.bytecode.opencsv.CSVWriter;
 
 /**
- * TODO: Comment me!
+ * Performs sample-tab parsing tests, by comparing original sampletab files to what the exporter produced after having loaded
+ * such files.
  *
  * <dl><dt>date</dt><dd>Oct 16, 2012</dd></dl>
  * @author Marco Brandizi
@@ -56,7 +57,10 @@ public class ParserComparisonTest
 		report.close ();
 	}
 	
-	@Test @Ignore
+	/**
+	 * Performs a comparison test over the files located at {@link #TEST_FILES_PATH}.
+	 */
+	@Test @Ignore ( "Time-consuming test, normally disabled" )
 	public void testParser () throws Exception
 	{
 		File inputDir = new File ( TEST_FILES_PATH );
@@ -69,7 +73,10 @@ public class ParserComparisonTest
 			new SampleTabVerifier ( sampleTabFile ).verify ();
 	}
 	
-	@Test @Ignore
+	/**
+	 * Performs a comparison test over the files located at {@link #BIOSD_FTP_PATH}.
+	 */
+	@Test @Ignore ( "Time-consuming test, normally disabled" )
 	public void testParserAgainstProduction () throws Exception
 	{
 		File inputDir = new File ( BIOSD_FTP_PATH );
