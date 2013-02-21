@@ -14,9 +14,11 @@ import org.junit.Test;
 import uk.ac.ebi.arrayexpress2.magetab.exception.ParseException;
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
 import ac.uk.ebi.fg.biosd.sampletab.Loader;
-import ac.uk.ebi.fg.biosd.sampletab.Persister;
+import ac.uk.ebi.fg.biosd.sampletab.persistence.Persister;
 
-
+/**
+ * Performs some real-submission DB-persistence test.
+ */
 public class PersistenceTest
 {	
 	private MSI persistSampleTab ( String path ) throws ParseException
@@ -26,7 +28,7 @@ public class PersistenceTest
 	  Loader loader = new Loader();
 	  MSI msi = loader.fromSampleData ( path );
 	  
-	  new Persister ( msi ).persist ( true );	  
+	  new Persister ( msi ).persist ();	  
 	  return msi;
 	}
    
@@ -51,6 +53,16 @@ public class PersistenceTest
 	@Test
 	public void testPride () throws ParseException {
 		loadDir ( "/ebi/microarray/home/biosamples/ftp/pride" );
+	}
+	
+	/**
+	 * Tests a case where there is an organisation without a contact role 
+	 * (https://www.pivotaltracker.com/projects/116186#!/stories/37588597)
+	 * 
+	 */
+	@Test
+	public void testNullContactRole () throws ParseException {
+		persistSampleTab ( "target/test-classes/GAE-MTAB-27_null_org.sampletab.csv" );
 	}
 	
 }

@@ -21,7 +21,7 @@
   <appender name="FileApp" class="ch.qos.logback.core.FileAppender">
     <!-- Adds up to a possibly existing file -->
     <Append>false</Append>
-    <File>myequivalents.log</File>
+    <File>biosd_loader.log</File>
     <encoder>
     	<!-- TODO: %C and %L are useful, but possibly slow, is it worth to ship with these? -->
       <pattern>%d{dd MMM yyyy HH:mm:ss.SSS} [%-6t] [%-5p] \(%C{1},%L\): %m%n</pattern>
@@ -40,6 +40,6 @@
   </root>
 
 	<!-- Add Loggers this way if you want finer reports for selected components -->
-  <logger name="uk.ac.ebi.fg.myequivalents" level="INFO"/>
+  <logger name="uk.ac.ebi.fg" level="INFO"/>
   
 </configuration>

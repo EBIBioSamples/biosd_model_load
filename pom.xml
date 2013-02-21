@@ -1,10 +1,15 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>uk.ac.ebi.fg</groupId>
 	<artifactId>biosd_loader</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0-SNAPSHOT</version>
 	<name>SampleTab loader</name>
+	
+	<properties>
+		<h2.version>1.3.168</h2.version>
+		<p6spy.version>1.3</p6spy.version>
+		<hsql.version>2.2.9</hsql.version>
+	</properties>
 
 	<dependencies>
 
@@ -40,7 +45,7 @@
 		<dependency>
 			<groupId>uk.ac.ebi.fg</groupId>
 			<artifactId>biosd_model</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>1.0.1-SNAPSHOT</version>
 		</dependency>
 		
 		<dependency>
@@ -57,6 +62,13 @@
 <!-- 			<version>1.07.00</version> -->
 <!-- 		</dependency> -->
 		
+		<dependency>
+			<groupId>commons-beanutils</groupId>
+			<artifactId>commons-beanutils</artifactId>
+			<version>1.8.3</version>
+			<scope>test</scope>
+		</dependency>
+		
 	</dependencies>
 
 
@@ -66,8 +78,8 @@
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>1.6</source>
+					<target>1.6</target>
 					<encoding>utf-8</encoding>
 				</configuration>
 			</plugin>
@@ -136,7 +148,21 @@
           </execution>
         </executions>
 	    </plugin>
-			
+	    
+      <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <configuration>
+					<filesets>
+						<fileset>
+							<directory>${basedir}</directory>
+							<includes>
+								<include>spy.log</include>
+							</includes>
+						</fileset>
+					</filesets>
+        </configuration>
+      </plugin>
+	
 		</plugins>
 
 		<testResources>
@@ -163,7 +189,26 @@
 
 	</build>
 
+	<scm>
+		<developerConnection>scm:git:git@github.com:EBIBioSamples/biosd_model_load.git</developerConnection>
+	</scm>	
+	
 	<repositories>
+				
+		<repository>
+			<id>ebi-repo</id>
+			<name>EBI repo</name>
+			<url>http://www.ebi.ac.uk/~maven/m2repo</url>
+		</repository>
+		
+		<repository>
+			<id>ebi-repo-snapshots</id>
+			<name>EBI Repo Snapshots</name>
+			<url>http://www.ebi.ac.uk/~maven/m2repo_snapshots</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
 		
 		<repository>
 			<id>coconut.ebi.ac.uk-snapshots</id>
@@ -174,13 +219,24 @@
 			</snapshots>
 		</repository>	
 		
-		<repository>
-			<id>ebi-repo</id>
-			<name>EBI repo</name>
-			<url>http://www.ebi.ac.uk/~maven/m2repo</url>
-		</repository>
-		
 	</repositories>
+
+  <distributionManagement>
+
+	  <repository>
+		  <id>ebi-repo-old</id>
+		  <name>EBI Repository</name>
+		  <url>scp://parrot.ebi.ac.uk/homes/maven/public_html/m2repo</url>
+	  </repository>
+		
+	  <snapshotRepository>
+		  <uniqueVersion>false</uniqueVersion>
+		  <id>ebi-repo-old-snapshots</id>
+		  <name>EBI Snapshots Repository</name>
+		  <url>scp://parrot.ebi.ac.uk/homes/maven/public_html/m2repo_snapshots</url>
+	  </snapshotRepository>
+	
+  </distributionManagement>	
 
 
 	<profiles>
@@ -192,7 +248,7 @@
 			</activation>
 			<properties>
 				<test.jdbc.username>sa</test.jdbc.username>
-				<test.jdbc.password></test.jdbc.password>
+				<test.jdbc.password />
 				<test.jdbc.url>jdbc:hsqldb:mem:testdb</test.jdbc.url>
 				<test.jdbc.driverClassName>org.hsqldb.jdbcDriver</test.jdbc.driverClassName>
 				<test.hibernate.dialect>org.hibernate.dialect.HSQLDialect</test.hibernate.dialect>
@@ -202,7 +258,7 @@
 				<dependency>
 					<groupId>org.hsqldb</groupId>
 					<artifactId>hsqldb</artifactId>
-					<version>2.2.4</version>
+					<version>${hsql.version}</version>
 				</dependency>
 			</dependencies>
 		</profile>
@@ -211,7 +267,7 @@
 			<id>test.hsql_file</id>
 			<properties>
 				<test.jdbc.username>sa</test.jdbc.username>
-				<test.jdbc.password></test.jdbc.password>
+				<test.jdbc.password />
 				<test.jdbc.url>jdbc:hsqldb:file:target/database/testdb;shutdown=true;hsqldb.write_delay=false</test.jdbc.url>
 				<test.jdbc.driverClassName>org.hsqldb.jdbcDriver</test.jdbc.driverClassName>
 				<test.hibernate.dialect>org.hibernate.dialect.HSQLDialect</test.hibernate.dialect>
@@ -221,7 +277,7 @@
 				<dependency>
 					<groupId>org.hsqldb</groupId>
 					<artifactId>hsqldb</artifactId>
-					<version>2.2.4</version>
+					<version>${hsql.version}</version>
 				</dependency>
 			</dependencies>
 		</profile>
@@ -229,14 +285,19 @@
 		<!-- 
 		  This wraps the same settings in hsql_file with P6SPY, a filter driver that will log all the SQL statements to
 		  target/spy.log
+		  
+		  WARNING: we've a few tests not working with this configuration. It seems the old HSQL driver, mentioned in 
+		  spy.properties, is used, instead of the one specified here.
+		  
 		-->
 		<profile>
 			<id>test.p6spy.hsql_file</id>
 			<properties>
 				<test.jdbc.username>sa</test.jdbc.username>
-				<test.jdbc.password></test.jdbc.password>
+				<test.jdbc.password />
 				<test.jdbc.url>jdbc:hsqldb:file:target/database/testdb;shutdown=true;hsqldb.write_delay=false</test.jdbc.url>
 				<test.jdbc.driverClassName>com.p6spy.engine.spy.P6SpyDriver</test.jdbc.driverClassName>
+				<test.jdbc.spy.driverClassName>org.hsqldb.jdbcDriver</test.jdbc.spy.driverClassName>
 				<test.hibernate.dialect>org.hibernate.dialect.HSQLDialect</test.hibernate.dialect>
 				<test.hibernate.hbm2ddl.auto>update</test.hibernate.hbm2ddl.auto>
 			</properties>
@@ -244,12 +305,12 @@
 				<dependency>
 					<groupId>p6spy</groupId>
 					<artifactId>p6spy</artifactId>
-					<version>1.3</version>
+					<version>${p6spy.version}</version>
 				</dependency>			
 				<dependency>
 					<groupId>org.hsqldb</groupId>
 					<artifactId>hsqldb</artifactId>
-					<version>2.2.4</version>
+					<version>${hsql.version}</version>
 				</dependency>
 			</dependencies>
 		</profile>
@@ -258,7 +319,7 @@
 			<id>test.h2_file</id>
 			<properties>
 				<test.jdbc.username>sa</test.jdbc.username>
-				<test.jdbc.password></test.jdbc.password>
+				<test.jdbc.password />
 				<test.jdbc.url>jdbc:h2:target/database/testdb</test.jdbc.url>
 				<test.jdbc.driverClassName>org.h2.Driver</test.jdbc.driverClassName>
 				<test.hibernate.dialect>org.hibernate.dialect.H2Dialect</test.hibernate.dialect>
@@ -268,10 +329,43 @@
 				<dependency>
 					<groupId>com.h2database</groupId>
 					<artifactId>h2</artifactId>
-					<version>1.3.168</version>
+					<version>${h2.version}</version>
 				</dependency>
 			</dependencies>
 		</profile>
+		
+		<!-- 
+		  This wraps the same settings in h2_file with P6SPY, a filter driver that will log all the SQL statements to
+		  target/spy.log
+		  
+		  WARNING: we've a few tests not working with this configuration. It seems the old HSQL driver, mentioned in 
+		  spy.properties, is used, instead of the one specified here.
+		-->
+		<profile>
+			<id>test.p6spy.h2_file</id>
+			<properties>
+				<test.jdbc.username>sa</test.jdbc.username>
+				<test.jdbc.password />
+				<test.jdbc.url>jdbc:h2:target/database/testdb</test.jdbc.url>
+				<test.jdbc.driverClassName>com.p6spy.engine.spy.P6SpyDriver</test.jdbc.driverClassName>
+				<test.jdbc.spy.driverClassName>org.h2.Driver</test.jdbc.spy.driverClassName>
+				<test.hibernate.dialect>org.hibernate.dialect.H2Dialect</test.hibernate.dialect>
+				<test.hibernate.hbm2ddl.auto>update</test.hibernate.hbm2ddl.auto>
+			</properties>
+			<dependencies>
+				<dependency>
+					<groupId>p6spy</groupId>
+					<artifactId>p6spy</artifactId>
+					<version>${p6spy.version}</version>
+				</dependency>			
+				<dependency>
+					<groupId>com.h2database</groupId>
+					<artifactId>h2</artifactId>
+					<version>${h2.version}</version>
+				</dependency>
+			</dependencies>
+		</profile>
+		
 
 		<profile>
 			<id>test.mysql</id>
@@ -344,7 +438,7 @@
 			<id>hsql_file</id>
 			<properties>
 				<jdbc.username>sa</jdbc.username>
-				<jdbc.password></jdbc.password>
+				<jdbc.password />
 				<jdbc.url>jdbc:hsqldb:file:target/database/testdb;shutdown=true;hsqldb.write_delay=false</jdbc.url>
 				<jdbc.driverClassName>org.hsqldb.jdbcDriver</jdbc.driverClassName>
 				<hibernate.dialect>org.hibernate.dialect.HSQLDialect</hibernate.dialect>
@@ -354,7 +448,7 @@
 				<dependency>
 					<groupId>org.hsqldb</groupId>
 					<artifactId>hsqldb</artifactId>
-					<version>2.2.4</version>
+					<version>${hsql.version}</version>
 				</dependency>
 			</dependencies>
 		</profile>

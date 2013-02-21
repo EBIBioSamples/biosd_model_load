@@ -5,14 +5,13 @@ package ac.uk.ebi.fg.biosd.sampletab;
 
 import static java.lang.System.out;
 
-import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
 
 import org.apache.commons.lang.time.DurationFormatUtils;
 
+import ac.uk.ebi.fg.biosd.sampletab.persistence.Persister;
+
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
-import uk.ac.ebi.fg.core_model.dao.hibernate.toplevel.AccessibleDAO;
 import uk.ac.ebi.fg.core_model.resources.Resources;
 
 /**
