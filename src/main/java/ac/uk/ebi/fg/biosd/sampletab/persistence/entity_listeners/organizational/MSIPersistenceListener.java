@@ -18,13 +18,14 @@ import uk.ac.ebi.fg.core_model.expgraph.Product;
 import uk.ac.ebi.fg.core_model.organizational.Contact;
 import uk.ac.ebi.fg.core_model.organizational.ContactRole;
 import uk.ac.ebi.fg.core_model.organizational.Organization;
+import uk.ac.ebi.fg.core_model.organizational.Publication;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.terms.CVTermDAO;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.toplevel.AccessibleDAO;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.xref.ReferenceSourceDAO;
 import uk.ac.ebi.fg.core_model.xref.ReferenceSource;
-import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.CreationListener;
 import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.expgraph.ProductComparator;
 import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.expgraph.ProductPersistenceListener;
+import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.toplevel.AnnotatablePersistenceListener;
 
 /**
  * Works pre-post processing operations about the {@link Product} objects.
@@ -33,7 +34,7 @@ import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.expgraph.Produc
  * @author Marco Brandizi
  *
  */
-public class MSIPersistenceListener extends CreationListener<MSI>
+public class MSIPersistenceListener extends AnnotatablePersistenceListener<MSI>
 {
   private Logger log = LoggerFactory.getLogger ( getClass() );
 
@@ -47,12 +48,31 @@ public class MSIPersistenceListener extends CreationListener<MSI>
 	@Override
 	public void prePersist ( MSI msi )
 	{
+		if ( msi == null ) {
+			log.warn ( "Internal issue: MSI Peristence Listener got a null submission and that smell like a code bug" );
+			return;
+		}
+		if ( msi.getId () != null ) return;
+		
+		super.prePersist ( msi );
+
+		// TODO: we're trying to decide wether this should be done by the Limpopo parser
+		//
 		Map<String, ContactRole> allRoles = new HashMap<String, ContactRole> ();
 		for ( Contact contact: msi.getContacts () ) normalizeContactRolesPreDB ( allRoles, contact.getContactRoles () );
 		for ( Organization org: msi.getOrganizations () ) normalizeContactRolesPreDB ( allRoles, org.getOrganizationRoles () );
 
-		for ( Contact contact: msi.getContacts () ) normalizeContactRolesFromDB ( contact.getContactRoles () );
-		for ( Organization org: msi.getOrganizations () ) normalizeContactRolesFromDB ( org.getOrganizationRoles () );
+		ContactPersistenceListener conctactPersistenceListener = new ContactPersistenceListener ( entityManager );
+		for ( Contact contact: msi.getContacts () )
+			conctactPersistenceListener.prePersist ( contact );
+		
+		OrganizationPersistenceListener organizationPersistenceListener = new OrganizationPersistenceListener ( entityManager );
+		for ( Organization org: msi.getOrganizations () )
+			organizationPersistenceListener.prePersist ( org );
+		
+		PublicationPersistenceListener publicationPersistenceListener = new PublicationPersistenceListener ( entityManager );
+		for ( Publication pub: msi.getPublications () )
+			publicationPersistenceListener.prePersist ( pub );
 		
 		linkExistingRefSources ( ReferenceSource.class, msi.getReferenceSources () );
 		linkExistingRefSources ( DatabaseRefSource.class, msi.getDatabases () );
@@ -95,7 +115,7 @@ public class MSIPersistenceListener extends CreationListener<MSI>
 	/**
 	 * Removes those contact roles that have null attributes and re-use those with the same name.
 	 * 
-	 * TODO: This method would belong more in for ContactPersister and OrganizationPersister 
+	 * TODO: Remove, this has been moved to proper persistence listeners
 	 */
 	private void normalizeContactRolesFromDB ( Set<ContactRole> roles )
 	{
