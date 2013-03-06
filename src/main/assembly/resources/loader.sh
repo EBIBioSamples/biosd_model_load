@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#ÊThis is the entry point that invokes the MyEquivalents's line commands.
+#ÊThis is the entry point that invokes the SampleTAB Loader command-line.
 #Ê
 
 # These are passed to the JVM. they're appended, so that you can predefine it from the shell

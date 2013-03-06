@@ -9,7 +9,7 @@ import java.util.Set;
 
 import javax.persistence.EntityManager;
 
-import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.PersistenceListener;
+import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.toplevel.AnnotatablePersistenceListener;
 
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.toplevel.AccessibleDAO;
 import uk.ac.ebi.fg.core_model.expgraph.Node;
@@ -22,7 +22,7 @@ import uk.ac.ebi.fg.core_model.expgraph.Node;
  *
  */
 @SuppressWarnings ({ "rawtypes", "unchecked" })
-public abstract class NodePersistenceListener<N extends Node> extends PersistenceListener<N>
+public abstract class NodePersistenceListener<N extends Node> extends AnnotatablePersistenceListener<N>
 {
 	/**
 	 * This is used to re-use nodes in the DB. If a node in the DB and a new node being submitted are equivalent according
@@ -33,7 +33,6 @@ public abstract class NodePersistenceListener<N extends Node> extends Persistenc
 	 * @see ProductComparator
 	 */
 	protected Comparator nodeComparator;
-
 	private AccessibleDAO<Node> nodeDao = new AccessibleDAO<Node> ( Node.class, entityManager );  
 
 	public NodePersistenceListener ( EntityManager entityManager ) {
@@ -44,7 +43,11 @@ public abstract class NodePersistenceListener<N extends Node> extends Persistenc
 	 * Invokes {@link #linkExistingNodes(Node)}.
 	 */
 	@Override
-	public void prePersist ( Node node ) {
+	public void prePersist ( N node ) 
+	{
+		if ( node == null || node.getId () != null ) return;
+		super.prePersist ( node );
+		
 		linkExistingNodes ( node );
 	}
 

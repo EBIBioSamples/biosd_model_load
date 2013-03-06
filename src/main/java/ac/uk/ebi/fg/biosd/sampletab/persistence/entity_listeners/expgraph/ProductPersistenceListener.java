@@ -8,9 +8,13 @@ import java.util.Set;
 
 import javax.persistence.EntityManager;
 
+import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.expgraph.properties.PropertyValuePersistenceListener;
+import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.terms.FreeTextTermPersistenceListener;
+
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.toplevel.AccessibleDAO;
 import uk.ac.ebi.fg.core_model.expgraph.Node;
 import uk.ac.ebi.fg.core_model.expgraph.Product;
+import uk.ac.ebi.fg.core_model.expgraph.properties.ExperimentalPropertyValue;
 
 /**
  * Works pre-post processing operations about the {@link Product} objects.
@@ -22,11 +26,14 @@ import uk.ac.ebi.fg.core_model.expgraph.Product;
 @SuppressWarnings ({ "rawtypes", "unchecked" })
 public class ProductPersistenceListener extends NodePersistenceListener<Product<?>>
 {
-	private AccessibleDAO<Product> productDao = new AccessibleDAO<Product> ( Product.class, entityManager );  
+	private final AccessibleDAO<Product> productDao;
+	private final PropertyValuePersistenceListener pvListener;
 	
 	public ProductPersistenceListener ( EntityManager entityManager )
 	{
 		super ( entityManager );
+		productDao = new AccessibleDAO<Product> ( Product.class, entityManager );
+		pvListener = new PropertyValuePersistenceListener ( entityManager );
 		nodeComparator = new ProductComparator ();
 	}
 
@@ -36,8 +43,14 @@ public class ProductPersistenceListener extends NodePersistenceListener<Product<
 	@Override
 	public void prePersist ( Product<?> product )
 	{
-		super.prePersist ( (Node) product );
+		if ( product == null || product.getId () != null ) return; 
+		
+		super.prePersist ( product );
 		linkExistingProducts ( product );
+
+		// Properties
+		for ( ExperimentalPropertyValue<?> pv: product.getPropertyValues () )
+			pvListener.prePersist ( pv );
 	}
 
 	/**
@@ -96,4 +109,5 @@ public class ProductPersistenceListener extends NodePersistenceListener<Product<
 		for ( Product<?> del: delLinks ) node.removeDerivedInto ( del );
 		for ( Product<?> add: addLinks ) node.addDerivedInto ( add );
 	}	
+	
 }

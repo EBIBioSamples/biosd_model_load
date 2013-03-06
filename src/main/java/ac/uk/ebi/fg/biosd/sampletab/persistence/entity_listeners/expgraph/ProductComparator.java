@@ -3,7 +3,6 @@
  */
 package ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.expgraph;
 
-import uk.ac.ebi.fg.biosd.model.organizational.BioSampleGroup;
 import uk.ac.ebi.fg.core_model.expgraph.Product;
 import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.toplevel.AccessibleComparator;
 

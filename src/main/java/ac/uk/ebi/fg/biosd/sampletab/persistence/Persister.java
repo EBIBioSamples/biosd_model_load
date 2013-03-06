@@ -3,25 +3,14 @@
  */
 package ac.uk.ebi.fg.biosd.sampletab.persistence;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.organizational.MSIPersistenceListener;
-
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
-import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.terms.CVTermDAO;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.toplevel.AccessibleDAO;
-import uk.ac.ebi.fg.core_model.organizational.Contact;
-import uk.ac.ebi.fg.core_model.organizational.ContactRole;
-import uk.ac.ebi.fg.core_model.organizational.Organization;
 import uk.ac.ebi.fg.core_model.resources.Resources;
+import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.organizational.MSIPersistenceListener;
 
 /**
  * TODO: Comment me!
@@ -43,10 +32,9 @@ public class Persister
 		EntityManagerFactory emf = Resources.getInstance ().getEntityManagerFactory ();
 		EntityManager em = emf.createEntityManager ();
     
-		new MSIPersistenceListener ( em ).prePersist ( msi );
-		
 		AccessibleDAO<MSI> dao = new AccessibleDAO<MSI> ( MSI.class,  em );
 		EntityTransaction ts = em.getTransaction ();
+		new MSIPersistenceListener ( em ).prePersist ( msi );
 		ts.begin ();
 		dao.create ( msi );
 		ts.commit ();

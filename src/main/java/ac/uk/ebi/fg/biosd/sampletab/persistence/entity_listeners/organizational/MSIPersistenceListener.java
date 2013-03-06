@@ -1,6 +1,8 @@
 package ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.organizational;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
@@ -16,13 +18,14 @@ import uk.ac.ebi.fg.core_model.expgraph.Product;
 import uk.ac.ebi.fg.core_model.organizational.Contact;
 import uk.ac.ebi.fg.core_model.organizational.ContactRole;
 import uk.ac.ebi.fg.core_model.organizational.Organization;
+import uk.ac.ebi.fg.core_model.organizational.Publication;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.terms.CVTermDAO;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.toplevel.AccessibleDAO;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.xref.ReferenceSourceDAO;
 import uk.ac.ebi.fg.core_model.xref.ReferenceSource;
-import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.PersistenceListener;
 import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.expgraph.ProductComparator;
 import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.expgraph.ProductPersistenceListener;
+import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.toplevel.AnnotatablePersistenceListener;
 
 /**
  * Works pre-post processing operations about the {@link Product} objects.
@@ -31,7 +34,7 @@ import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.expgraph.Produc
  * @author Marco Brandizi
  *
  */
-public class MSIPersistenceListener extends PersistenceListener<MSI>
+public class MSIPersistenceListener extends AnnotatablePersistenceListener<MSI>
 {
   private Logger log = LoggerFactory.getLogger ( getClass() );
 
@@ -45,8 +48,31 @@ public class MSIPersistenceListener extends PersistenceListener<MSI>
 	@Override
 	public void prePersist ( MSI msi )
 	{
-		for ( Contact contact: msi.getContacts () ) filterNullContactRoles ( msi, contact.getContactRoles () );
-		for ( Organization org: msi.getOrganizations () ) filterNullContactRoles ( msi, org.getOrganizationRoles () );
+		if ( msi == null ) {
+			log.warn ( "Internal issue: MSI Peristence Listener got a null submission and that smell like a code bug" );
+			return;
+		}
+		if ( msi.getId () != null ) return;
+		
+		super.prePersist ( msi );
+
+		// TODO: we're trying to decide wether this should be done by the Limpopo parser
+		//
+		Map<String, ContactRole> allRoles = new HashMap<String, ContactRole> ();
+		for ( Contact contact: msi.getContacts () ) normalizeContactRolesPreDB ( allRoles, contact.getContactRoles () );
+		for ( Organization org: msi.getOrganizations () ) normalizeContactRolesPreDB ( allRoles, org.getOrganizationRoles () );
+
+		ContactPersistenceListener conctactPersistenceListener = new ContactPersistenceListener ( entityManager );
+		for ( Contact contact: msi.getContacts () )
+			conctactPersistenceListener.prePersist ( contact );
+		
+		OrganizationPersistenceListener organizationPersistenceListener = new OrganizationPersistenceListener ( entityManager );
+		for ( Organization org: msi.getOrganizations () )
+			organizationPersistenceListener.prePersist ( org );
+		
+		PublicationPersistenceListener publicationPersistenceListener = new PublicationPersistenceListener ( entityManager );
+		for ( Publication pub: msi.getPublications () )
+			publicationPersistenceListener.prePersist ( pub );
 		
 		linkExistingRefSources ( ReferenceSource.class, msi.getReferenceSources () );
 		linkExistingRefSources ( DatabaseRefSource.class, msi.getDatabases () );
@@ -64,12 +90,34 @@ public class MSIPersistenceListener extends PersistenceListener<MSI>
 	}
 	
 	/**
-	 * Removes those contact roles that have null attributes.
+	 * Normalise all the roles in memory, making them the same object when they share the name  
 	 * 
-	 * TODO: For the moment we put this patch to contacts and organisations here, it should probably lie in the 
-	 * parser.
+	 * TODO: This method would belong more in for ContactPersister and OrganizationPersister 
 	 */
-	private void filterNullContactRoles ( MSI msi, Set<ContactRole> roles )
+	private void normalizeContactRolesPreDB ( Map<String, ContactRole> allRoles, Set<ContactRole> roles ) 
+	{
+  	Set<ContactRole> addRoles = new HashSet<ContactRole> (), delRoles = new HashSet<ContactRole> ();
+		for ( ContactRole role: roles ) 
+		{
+			String roleName = role.getName ();
+			ContactRole oldRole = allRoles.get ( roleName );
+			if ( oldRole == null ) {
+				allRoles.put ( roleName, role );
+				continue; 
+			}
+			delRoles.add ( role ); addRoles.add ( oldRole ); 
+		}
+		
+		roles.removeAll ( delRoles ); roles.addAll ( addRoles );
+	}
+	
+	
+	/**
+	 * Removes those contact roles that have null attributes and re-use those with the same name.
+	 * 
+	 * TODO: Remove, this has been moved to proper persistence listeners
+	 */
+	private void normalizeContactRolesFromDB ( Set<ContactRole> roles )
 	{
 		CVTermDAO<ContactRole> cvdao = new CVTermDAO<ContactRole> ( ContactRole.class, entityManager );
 
@@ -83,7 +131,7 @@ public class MSIPersistenceListener extends PersistenceListener<MSI>
   			delRoles.add ( role );
   			continue;
   		}
-  		
+  		  		
   		ContactRole roleDB = cvdao.find ( role.getName () );
   		if ( roleDB == null ) continue;
  
@@ -92,6 +140,8 @@ public class MSIPersistenceListener extends PersistenceListener<MSI>
   	
   	roles.removeAll ( delRoles ); roles.addAll ( addRoles );
 	}
+	
+
 	
 	/**
 	 * Links those {@link ReferenceSource}s and {@link DatabaseRefSource}s that already exists in the DB, using 

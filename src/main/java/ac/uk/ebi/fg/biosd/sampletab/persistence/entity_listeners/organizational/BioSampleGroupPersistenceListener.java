@@ -10,9 +10,13 @@ import javax.persistence.EntityManager;
 
 import uk.ac.ebi.fg.biosd.model.expgraph.BioSample;
 import uk.ac.ebi.fg.biosd.model.organizational.BioSampleGroup;
+import uk.ac.ebi.fg.core_model.expgraph.properties.ExperimentalPropertyValue;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.toplevel.AccessibleDAO;
 import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.PersistenceListener;
 import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.expgraph.ProductComparator;
+import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.expgraph.properties.PropertyValuePersistenceListener;
+import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.terms.FreeTextTermPersistenceListener;
+import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.toplevel.AnnotatablePersistenceListener;
 
 /**
  * Works pre/post process operations for {@link BioSampleGroup}.
@@ -21,10 +25,18 @@ import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.expgraph.Produc
  * @author Marco Brandizi
  *
  */
-public class BioSampleGroupPersistenceListener extends PersistenceListener<BioSampleGroup>
+public class BioSampleGroupPersistenceListener extends AnnotatablePersistenceListener<BioSampleGroup>
 {
-	public BioSampleGroupPersistenceListener ( EntityManager entityManager ) {
+	private final AccessibleDAO<BioSample> smpDao;
+	private final PropertyValuePersistenceListener pvListener; 
+	private final ProductComparator smpCmp = new ProductComparator ();
+	
+	
+	public BioSampleGroupPersistenceListener ( EntityManager entityManager ) 
+	{
 		super ( entityManager );
+		pvListener = new PropertyValuePersistenceListener ( entityManager );
+		smpDao = new AccessibleDAO<BioSample> ( BioSample.class, entityManager );
 	}
 
 	/**
@@ -35,9 +47,9 @@ public class BioSampleGroupPersistenceListener extends PersistenceListener<BioSa
 	@Override
 	public void prePersist ( BioSampleGroup sg )
 	{
-		AccessibleDAO<BioSample> smpDao = new AccessibleDAO<BioSample> ( BioSample.class, entityManager );
-		ProductComparator smpCmp = new ProductComparator ();
-
+		if ( sg == null || sg.getId () != null ) return;
+		super.prePersist ( sg );
+		
 		Set<BioSample> addSmps = new HashSet<BioSample> (), delSmps = new HashSet<BioSample> ();
 		Set<BioSample> samples = sg.getSamples ();
 		for ( BioSample sample: samples ) 
@@ -53,5 +65,9 @@ public class BioSampleGroupPersistenceListener extends PersistenceListener<BioSa
 		}
 		samples.removeAll ( delSmps );
 		samples.addAll ( addSmps );
+
+		// Properties
+		for ( ExperimentalPropertyValue<?> pv: sg.getPropertyValues () )
+			pvListener.prePersist ( pv );
 	}
 }
