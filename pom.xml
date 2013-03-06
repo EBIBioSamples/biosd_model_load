@@ -51,7 +51,7 @@
 		<dependency>
 			<groupId>uk.ac.ebi.arrayexpress2</groupId>
 			<artifactId>limpopo-sampletab</artifactId>
-			<version>1.1.3-SNAPSHOT</version>
+			<version>1.1.3</version>
 		</dependency>
 
 
@@ -217,7 +217,13 @@
 			<snapshots>
 			  <enabled>true</enabled>
 			</snapshots>
-		</repository>	
+		</repository>
+		
+		<repository>
+			<id>limpopo-repo</id>
+			<name>Limpopo Mini-SF Repository</name>
+			<url>http://limpopo.sourceforge.net/maven/repo</url>
+		</repository>
 		
 	</repositories>
 
