@@ -7,7 +7,6 @@ import javax.persistence.EntityManager;
 
 import uk.ac.ebi.fg.core_model.expgraph.properties.Unit;
 import uk.ac.ebi.fg.core_model.expgraph.properties.UnitDimension;
-
 import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.terms.FreeTextTermPersistenceListener;
 
 /**

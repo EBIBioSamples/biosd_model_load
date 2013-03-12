@@ -37,9 +37,13 @@ public class ContactPersistenceListener extends AnnotatablePersistenceListener<C
 	{
 		if ( cnt == null || cnt.getId () != null ) return;
 		super.prePersist ( cnt );
-		
+
+		prePersistRoles ( roleDao, cnt.getContactRoles () );
+	}
+	
+	static void prePersistRoles ( CVTermDAO<ContactRole> roleDao, Set<ContactRole> roles ) 
+	{
 		Set<ContactRole> delRoles = new HashSet<ContactRole> (), addRoles = new HashSet<ContactRole> ();
-		Set<ContactRole> roles = cnt.getContactRoles ();
 		
 		for ( ContactRole role: roles )
 		{
@@ -62,5 +66,4 @@ public class ContactPersistenceListener extends AnnotatablePersistenceListener<C
 		roles.removeAll ( delRoles );
 		roles.removeAll ( addRoles );
 	}
-	
 }

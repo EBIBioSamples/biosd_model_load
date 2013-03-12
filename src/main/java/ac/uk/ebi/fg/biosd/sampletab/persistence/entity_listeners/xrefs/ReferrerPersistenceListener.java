@@ -5,8 +5,6 @@ package ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.xrefs;
 
 import javax.persistence.EntityManager;
 
-import uk.ac.ebi.fg.core_model.toplevel.Annotatable;
-import uk.ac.ebi.fg.core_model.toplevel.Annotation;
 import uk.ac.ebi.fg.core_model.toplevel.Identifiable;
 import uk.ac.ebi.fg.core_model.xref.Referrer;
 import uk.ac.ebi.fg.core_model.xref.XRef;

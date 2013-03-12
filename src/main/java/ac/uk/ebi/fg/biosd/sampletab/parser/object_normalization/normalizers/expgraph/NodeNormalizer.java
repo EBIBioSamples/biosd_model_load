@@ -1,27 +1,26 @@
 /*
  * 
  */
-package ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.expgraph;
+package ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.expgraph;
 
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
-
 import uk.ac.ebi.fg.core_model.expgraph.Node;
-import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.toplevel.AccessibleDAO;
-import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.toplevel.AnnotatablePersistenceListener;
+import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.Store;
+import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.toplevel.AnnotatableNormalizer;
+import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.expgraph.ProductComparator;
 
 /**
- * Works pre-post processing operations about the {@link Node} objects.
+ * Works out normalization about the {@link Node} objects.
  *
  * <dl><dt>date</dt><dd>Jan 14, 2013</dd></dl>
  * @author Marco Brandizi
  *
  */
 @SuppressWarnings ({ "rawtypes", "unchecked" })
-public abstract class NodePersistenceListener<N extends Node> extends AnnotatablePersistenceListener<N>
+public abstract class NodeNormalizer<N extends Node> extends AnnotatableNormalizer<N>
 {
 	/**
 	 * This is used to re-use nodes in the DB. If a node in the DB and a new node being submitted are equivalent according
@@ -32,20 +31,19 @@ public abstract class NodePersistenceListener<N extends Node> extends Annotatabl
 	 * @see ProductComparator
 	 */
 	protected Comparator nodeComparator;
-	private AccessibleDAO<Node> nodeDao = new AccessibleDAO<Node> ( Node.class, entityManager );  
 
-	public NodePersistenceListener ( EntityManager entityManager ) {
-		super ( entityManager );
+	public NodeNormalizer ( Store store ) {
+		super ( store );
 	}
 
 	/**
 	 * Invokes {@link #linkExistingNodes(Node)}.
 	 */
 	@Override
-	public void prePersist ( N node ) 
+	public void normalize ( N node ) 
 	{
 		if ( node == null || node.getId () != null ) return;
-		super.prePersist ( node );
+		super.normalize ( node );
 		
 		linkExistingNodes ( node );
 	}
@@ -64,19 +62,20 @@ public abstract class NodePersistenceListener<N extends Node> extends Annotatabl
 		{
 			// Do we need replacement?
 			if ( up == null || up.getId () != null ) continue;
-			Node upDB = nodeDao.find ( up.getAcc () );
-			if ( upDB == null || nodeComparator.compare ( upDB, up ) != 0 ) continue;
+			Node upS = store.find ( up, up.getAcc () );
+			if ( upS == null || nodeComparator.compare ( upS, up ) != 0 ) continue;
 
 			// The node needs to be replaced by an existing one, let's move the links from the node being removed to the
 			// one being added
 			//
 			linkExistingNodes ( up );
-			for ( Node upUp: (Set<Node>) up.getUpstreamNodes () ) upDB.addUpstreamNode ( upUp );
-			for ( Node upDown: (Set<Node>) up.getDownstreamNodes () ) upDB.addDownstreamNode ( upDown );
+			for ( Node upUp: (Set<Node>) up.getUpstreamNodes () ) upS.addUpstreamNode ( upUp );
+			for ( Node upDown: (Set<Node>) up.getDownstreamNodes () ) upS.addDownstreamNode ( upDown );
 			
 			// We need to replace the link later, to avoid interference with the iterator in the loop
-			addLinks.add ( upDB ); delLinks.add ( up );
+			addLinks.add ( upS ); delLinks.add ( up );
 		}
+		
 		// Do it
 		for ( Node del: delLinks ) node.removeUpstreamNode ( del );
 		for ( Node add: addLinks ) node.addUpstreamNode ( add );
@@ -88,7 +87,7 @@ public abstract class NodePersistenceListener<N extends Node> extends Annotatabl
 		{
 			// Is to be replaced by an existing one?
 			if ( down == null || down.getId () != null ) continue;
-			Node downDB = nodeDao.find ( down.getAcc () );
+			Node downDB = store.find ( down, down.getAcc () );
 			if ( downDB == null || nodeComparator.compare ( downDB, down ) != 0 ) continue;
 
 			// The node needs to be replaced by an existing one, let's move the links from the node being removed to the

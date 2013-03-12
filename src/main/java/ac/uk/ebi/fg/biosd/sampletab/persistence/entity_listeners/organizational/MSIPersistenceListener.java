@@ -19,7 +19,6 @@ import uk.ac.ebi.fg.core_model.organizational.Contact;
 import uk.ac.ebi.fg.core_model.organizational.ContactRole;
 import uk.ac.ebi.fg.core_model.organizational.Organization;
 import uk.ac.ebi.fg.core_model.organizational.Publication;
-import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.terms.CVTermDAO;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.toplevel.AccessibleDAO;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.xref.ReferenceSourceDAO;
 import uk.ac.ebi.fg.core_model.xref.ReferenceSource;
@@ -112,34 +111,34 @@ public class MSIPersistenceListener extends AnnotatablePersistenceListener<MSI>
 	}
 	
 	
-	/**
-	 * Removes those contact roles that have null attributes and re-use those with the same name.
-	 * 
-	 * TODO: Remove, this has been moved to proper persistence listeners
-	 */
-	private void normalizeContactRolesFromDB ( Set<ContactRole> roles )
-	{
-		CVTermDAO<ContactRole> cvdao = new CVTermDAO<ContactRole> ( ContactRole.class, entityManager );
-
-  	Set<ContactRole> addRoles = new HashSet<ContactRole> (), delRoles = new HashSet<ContactRole> ();
-  	for ( ContactRole role: roles )
-  	{
-  		if ( role.getId () != null ) continue;
-
-  		if ( role.getName () == null ) {
-  			log.error ( "Ignoring a contact role with null name: " + role );
-  			delRoles.add ( role );
-  			continue;
-  		}
-  		  		
-  		ContactRole roleDB = cvdao.find ( role.getName () );
-  		if ( roleDB == null ) continue;
- 
-  		delRoles.add ( role ); addRoles.add ( roleDB );
-  	}
-  	
-  	roles.removeAll ( delRoles ); roles.addAll ( addRoles );
-	}
+//	/**
+//	 * Removes those contact roles that have null attributes and re-use those with the same name.
+//	 * 
+//	 * TODO: Remove, this has been moved to proper persistence listeners
+//	 */
+//	private void normalizeContactRolesFromDB ( Set<ContactRole> roles )
+//	{
+//		CVTermDAO<ContactRole> cvdao = new CVTermDAO<ContactRole> ( ContactRole.class, entityManager );
+//
+//  	Set<ContactRole> addRoles = new HashSet<ContactRole> (), delRoles = new HashSet<ContactRole> ();
+//  	for ( ContactRole role: roles )
+//  	{
+//  		if ( role.getId () != null ) continue;
+//
+//  		if ( role.getName () == null ) {
+//  			log.error ( "Ignoring a contact role with null name: " + role );
+//  			delRoles.add ( role );
+//  			continue;
+//  		}
+//  		  		
+//  		ContactRole roleDB = cvdao.find ( role.getName () );
+//  		if ( roleDB == null ) continue;
+// 
+//  		delRoles.add ( role ); addRoles.add ( roleDB );
+//  	}
+//  	
+//  	roles.removeAll ( delRoles ); roles.addAll ( addRoles );
+//	}
 	
 
 	

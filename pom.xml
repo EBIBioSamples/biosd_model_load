@@ -68,6 +68,12 @@
 			<version>1.8.3</version>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>14.0</version>
+		</dependency>
 		
 	</dependencies>
 
@@ -241,6 +247,7 @@
 		  <name>EBI Snapshots Repository</name>
 		  <url>scp://parrot.ebi.ac.uk/homes/maven/public_html/m2repo_snapshots</url>
 	  </snapshotRepository>
+	
 	
   </distributionManagement>	
 

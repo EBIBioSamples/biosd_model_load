@@ -5,9 +5,8 @@ package ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners;
 
 import javax.persistence.EntityManager;
 
-import ac.uk.ebi.fg.biosd.sampletab.persistence.Persister;
-
 import uk.ac.ebi.fg.core_model.toplevel.Identifiable;
+import ac.uk.ebi.fg.biosd.sampletab.persistence.Persister;
 
 /**
  * A generic deletion listener. These are called by the {@link Persister submission persister}. They are named 

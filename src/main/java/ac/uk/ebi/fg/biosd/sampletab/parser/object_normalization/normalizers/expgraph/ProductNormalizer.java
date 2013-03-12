@@ -1,37 +1,37 @@
 /*
  * 
  */
-package ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.expgraph;
+package ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.expgraph;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
-
 import uk.ac.ebi.fg.core_model.expgraph.Node;
 import uk.ac.ebi.fg.core_model.expgraph.Product;
+import uk.ac.ebi.fg.core_model.expgraph.properties.ExperimentalPropertyType;
 import uk.ac.ebi.fg.core_model.expgraph.properties.ExperimentalPropertyValue;
-import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.toplevel.AccessibleDAO;
-import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.expgraph.properties.PropertyValuePersistenceListener;
+import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.Store;
+import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.expgraph.properties.PropertyValueNormalizer;
+import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.expgraph.ProductComparator;
 
 /**
- * Works pre-post processing operations about the {@link Product} objects.
+ * Works out normalization operations about the {@link Product} objects.
  *
- * <dl><dt>date</dt><dd>Jan 14, 2013</dd></dl>
+ * <dl><dt>date</dt><dd>Mar 12, 2013</dd></dl>
  * @author Marco Brandizi
  *
+ * @param <P>
  */
-@SuppressWarnings ({ "rawtypes", "unchecked" })
-public class ProductPersistenceListener extends NodePersistenceListener<Product<?>>
+public class ProductNormalizer
+  <P extends Product<?>> 
+	extends NodeNormalizer<P>
 {
-	private final AccessibleDAO<Product> productDao;
-	private final PropertyValuePersistenceListener pvListener;
+	private final PropertyValueNormalizer pvListener;
 	
-	public ProductPersistenceListener ( EntityManager entityManager )
+	public ProductNormalizer ( Store store )
 	{
-		super ( entityManager );
-		productDao = new AccessibleDAO<Product> ( Product.class, entityManager );
-		pvListener = new PropertyValuePersistenceListener ( entityManager );
+		super ( store );
+		pvListener = new PropertyValueNormalizer ( store );
 		nodeComparator = new ProductComparator ();
 	}
 
@@ -39,16 +39,16 @@ public class ProductPersistenceListener extends NodePersistenceListener<Product<
 	 * Invokes {@link Node#prePersist} and then {@link #linkExistingProducts(Product)}.
 	 */
 	@Override
-	public void prePersist ( Product<?> product )
+	public void normalize ( P product )
 	{
 		if ( product == null || product.getId () != null ) return; 
 		
-		super.prePersist ( product );
+		super.normalize ( product );
 		linkExistingProducts ( product );
 
 		// Properties
 		for ( ExperimentalPropertyValue<?> pv: product.getPropertyValues () )
-			pvListener.prePersist ( pv );
+			pvListener.normalize ( pv );
 	}
 
 	/**
@@ -59,6 +59,7 @@ public class ProductPersistenceListener extends NodePersistenceListener<Product<
 	 * TODO: we will need that incoming products are just the same
 	 * 
 	 */
+	@SuppressWarnings ( "unchecked" )
 	private void linkExistingProducts ( Product<?> node )
 	{
 		Set<Product<?>> addLinks = new HashSet<Product<?>> (), delLinks = new HashSet<Product<?>> ();
@@ -67,18 +68,18 @@ public class ProductPersistenceListener extends NodePersistenceListener<Product<
 		{
 			// Do we need replacement?
 			if ( up == null || up.getId () != null ) continue;
-			Product<?> upDB = productDao.find ( up.getAcc () );
-			if ( upDB == null || nodeComparator.compare ( upDB, up ) != 0 ) continue;
+			Product<?> upS = store.find ( up, up.getAcc () );
+			if ( upS == null || nodeComparator.compare ( upS, up ) != 0 ) continue;
 
 			// The node needs to be replaced by an existing one, let's move the links from the node being removed to the
 			// one being added
 			//
 			linkExistingProducts ( up );
-			for ( Product<?> upUp: up.getDerivedFrom () ) upDB.addDerivedFrom ( upUp );
-			for ( Product<?> upDown: up.getDerivedInto () ) upDB.addDerivedInto ( upDown );
+			for ( Product<?> upUp: up.getDerivedFrom () ) upS.addDerivedFrom ( upUp );
+			for ( Product<?> upDown: up.getDerivedInto () ) upS.addDerivedInto ( upDown );
 			
 			// We need to replace the link later, to avoid interference with the iterator in the loop
-			addLinks.add ( upDB ); delLinks.add ( up );
+			addLinks.add ( upS ); delLinks.add ( up );
 		}
 		// Do it
 		for ( Product<?> del: delLinks ) node.removeDerivedFrom ( del );
@@ -90,7 +91,7 @@ public class ProductPersistenceListener extends NodePersistenceListener<Product<
 		for ( Product<?> down: donws ) 
 		{
 			if ( down == null || down.getId () != null ) continue;
-			Product<?> downDB = productDao.find ( down.getAcc () );
+			Product<?> downDB = store.find ( down, down.getAcc () );
 			if ( downDB == null || nodeComparator.compare ( downDB, down ) != 0 ) continue;
 
 			// The node needs to be replaced by an existing one, let's move the links from the node being removed to the

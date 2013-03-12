@@ -9,10 +9,9 @@ import javax.persistence.EntityManagerFactory;
 
 import org.apache.commons.lang.time.DurationFormatUtils;
 
-import ac.uk.ebi.fg.biosd.sampletab.persistence.Persister;
-
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
 import uk.ac.ebi.fg.core_model.resources.Resources;
+import ac.uk.ebi.fg.biosd.sampletab.persistence.Persister;
 
 /**
  * 

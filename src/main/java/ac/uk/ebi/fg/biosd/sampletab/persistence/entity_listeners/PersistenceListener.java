@@ -5,9 +5,8 @@ package ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners;
 
 import javax.persistence.EntityManager;
 
-import ac.uk.ebi.fg.biosd.sampletab.persistence.Persister;
-
 import uk.ac.ebi.fg.core_model.toplevel.Identifiable;
+import ac.uk.ebi.fg.biosd.sampletab.persistence.Persister;
 
 /**
  * A generic creation listener. These are called by the {@link Persister submission persister}. They are named 
@@ -20,7 +19,7 @@ import uk.ac.ebi.fg.core_model.toplevel.Identifiable;
  * @author Marco Brandizi
  *
  */
-public abstract class PersistenceListener<T extends Identifiable>
+public abstract class PersistenceListener<I extends Identifiable>
 {
 	protected final EntityManager entityManager;
 	
@@ -35,5 +34,5 @@ public abstract class PersistenceListener<T extends Identifiable>
 	 * This method should return true if it has actually changed something about the parameter.
 	 * This method can assume that if entity.getId() != null it has nothing to do cause the entity is already in the DB. 
 	 */
-	public abstract void prePersist ( T entity );
+	public abstract void prePersist ( I entity );
 }

@@ -3,6 +3,9 @@
  */
 package ac.uk.ebi.fg.biosd.sampletab.persistence;
 
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
+
 import java.io.PrintStream;
 import java.io.StringWriter;
 import java.util.Collections;
@@ -18,20 +21,18 @@ import uk.ac.ebi.fg.biosd.model.organizational.BioSampleGroup;
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
 import uk.ac.ebi.fg.biosd.model.utils.MSIDumper;
 import uk.ac.ebi.fg.biosd.model.utils.test.TestModel;
-import uk.ac.ebi.fg.core_model.organizational.Contact;
-import uk.ac.ebi.fg.core_model.organizational.ContactRole;
-import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.toplevel.AccessibleDAO;
 import uk.ac.ebi.fg.core_model.expgraph.properties.BioCharacteristicType;
 import uk.ac.ebi.fg.core_model.expgraph.properties.BioCharacteristicValue;
 import uk.ac.ebi.fg.core_model.expgraph.properties.Unit;
 import uk.ac.ebi.fg.core_model.expgraph.properties.UnitDimension;
+import uk.ac.ebi.fg.core_model.organizational.Contact;
+import uk.ac.ebi.fg.core_model.organizational.ContactRole;
+import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.toplevel.AccessibleDAO;
 import uk.ac.ebi.fg.core_model.resources.Resources;
 import uk.ac.ebi.fg.core_model.terms.OntologyEntry;
 import uk.ac.ebi.fg.core_model.utils.test.ProcessBasedTestModel;
 import uk.ac.ebi.fg.core_model.xref.ReferenceSource;
 import uk.ac.ebi.utils.test.junit.TestEntityMgrProvider;
-
-import static junit.framework.Assert.*;
 
 /**
  * Performs some test about re-using objects that already exist in the DB.
