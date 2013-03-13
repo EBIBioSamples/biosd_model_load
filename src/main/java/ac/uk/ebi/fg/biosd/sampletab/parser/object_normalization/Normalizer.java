@@ -35,7 +35,7 @@ public abstract class Normalizer<I extends Identifiable>
 
 	public abstract void normalize ( I target );
 	
-	public Store getObjectStore ()
+	public Store getStore ()
 	{
 		return store;
 	}
