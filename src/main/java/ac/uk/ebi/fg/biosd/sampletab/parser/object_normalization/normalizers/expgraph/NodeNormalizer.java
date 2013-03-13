@@ -10,7 +10,6 @@ import java.util.Set;
 import uk.ac.ebi.fg.core_model.expgraph.Node;
 import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.Store;
 import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.toplevel.AnnotatableNormalizer;
-import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.expgraph.ProductComparator;
 
 /**
  * Works out normalization about the {@link Node} objects.

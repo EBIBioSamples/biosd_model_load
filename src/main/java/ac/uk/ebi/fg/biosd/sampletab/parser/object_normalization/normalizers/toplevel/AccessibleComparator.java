@@ -1,7 +1,7 @@
 /*
  * 
  */
-package ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.toplevel;
+package ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.toplevel;
 
 import java.util.Comparator;
 

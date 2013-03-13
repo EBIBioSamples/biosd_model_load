@@ -16,9 +16,8 @@ import uk.ac.ebi.fg.core_model.organizational.Publication;
 import uk.ac.ebi.fg.core_model.xref.ReferenceSource;
 import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.Store;
 import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.expgraph.BioSampleNormalizer;
+import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.expgraph.ProductComparator;
 import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.toplevel.AnnotatableNormalizer;
-import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.expgraph.ProductComparator;
-import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.organizational.BioSampleGroupComparator;
 
 /**
  * 

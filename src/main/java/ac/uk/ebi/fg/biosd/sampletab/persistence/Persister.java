@@ -13,7 +13,6 @@ import uk.ac.ebi.fg.core_model.resources.Resources;
 import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.DBStore;
 import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.MemoryStore;
 import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.organizational.MSINormalizer;
-import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.organizational.MSIPersistenceListener;
 
 /**
  * TODO: Comment me!

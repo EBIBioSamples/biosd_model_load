@@ -1,10 +1,10 @@
 /*
  * 
  */
-package ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.organizational;
+package ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.organizational;
 
 import uk.ac.ebi.fg.biosd.model.organizational.BioSampleGroup;
-import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.toplevel.AccessibleComparator;
+import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.toplevel.AccessibleComparator;
 
 /**
  * Tells when two sample groups are equivalent, i.e., when they have the same accession and the same set of attributes.

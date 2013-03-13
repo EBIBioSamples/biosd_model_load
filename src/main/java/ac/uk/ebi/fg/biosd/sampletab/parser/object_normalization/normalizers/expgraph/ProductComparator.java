@@ -1,10 +1,10 @@
 /*
  * 
  */
-package ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.expgraph;
+package ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.expgraph;
 
 import uk.ac.ebi.fg.core_model.expgraph.Product;
-import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.toplevel.AccessibleComparator;
+import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.toplevel.AccessibleComparator;
 
 /**
  * Two biological product are considered the same if the share: the same accession, the set of attributes, the set of 
