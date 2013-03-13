@@ -8,7 +8,7 @@ import java.lang.reflect.Method;
 
 import uk.ac.ebi.fg.core_model.xref.ReferenceSource;
 import uk.ac.ebi.fg.core_model.xref.XRef;
-import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.ObjectNormalizer;
+import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.Normalizer;
 import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.Store;
 
 /**
@@ -19,7 +19,7 @@ import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.Store;
  * @author Marco Brandizi
  *
  */
-public class XRefNormalizer extends ObjectNormalizer<XRef>
+public class XRefNormalizer extends Normalizer<XRef>
 {
 	public XRefNormalizer ( Store store ) {
 		super ( store );
@@ -34,7 +34,7 @@ public class XRefNormalizer extends ObjectNormalizer<XRef>
 		ReferenceSource src = xref.getSource ();
 		if ( src == null ) return; // This is actually an error and will pop-up later.
 		ReferenceSource srcS = store.find ( src, src.getAcc (), src.getVersion () );
-		if ( srcS == null ) return;
+		if ( srcS == null || src == srcS ) return;
 		
 		Exception theEx = null;
 		try

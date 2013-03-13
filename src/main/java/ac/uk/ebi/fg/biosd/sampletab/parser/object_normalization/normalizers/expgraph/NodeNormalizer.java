@@ -63,7 +63,7 @@ public abstract class NodeNormalizer<N extends Node> extends AnnotatableNormaliz
 			// Do we need replacement?
 			if ( up == null || up.getId () != null ) continue;
 			Node upS = store.find ( up, up.getAcc () );
-			if ( upS == null || nodeComparator.compare ( upS, up ) != 0 ) continue;
+			if ( upS == null || up == upS || nodeComparator.compare ( upS, up ) != 0 ) continue;
 
 			// The node needs to be replaced by an existing one, let's move the links from the node being removed to the
 			// one being added
@@ -87,18 +87,18 @@ public abstract class NodeNormalizer<N extends Node> extends AnnotatableNormaliz
 		{
 			// Is to be replaced by an existing one?
 			if ( down == null || down.getId () != null ) continue;
-			Node downDB = store.find ( down, down.getAcc () );
-			if ( downDB == null || nodeComparator.compare ( downDB, down ) != 0 ) continue;
+			Node downS = store.find ( down, down.getAcc () );
+			if ( downS == null || down == downS || nodeComparator.compare ( downS, down ) != 0 ) continue;
 
 			// The node needs to be replaced by an existing one, let's move the links from the node being removed to the
 			// one being added
 			//
 			linkExistingNodes ( down );
-			for ( Node upUp: (Set<Node>) down.getUpstreamNodes () ) downDB.addUpstreamNode ( upUp );
-			for ( Node upDown: (Set<Node>) down.getDownstreamNodes () ) downDB.addDownstreamNode ( upDown );
+			for ( Node upUp: (Set<Node>) down.getUpstreamNodes () ) downS.addUpstreamNode ( upUp );
+			for ( Node upDown: (Set<Node>) down.getDownstreamNodes () ) downS.addDownstreamNode ( upDown );
 			
 			// We need to replace the link later, to avoid interference with the iterator in the loop
-			addLinks.add ( downDB ); delLinks.add ( down );
+			addLinks.add ( downS ); delLinks.add ( down );
 		}
 		// Do it
 		for ( Node del: delLinks ) node.removeUpstreamNode ( del );

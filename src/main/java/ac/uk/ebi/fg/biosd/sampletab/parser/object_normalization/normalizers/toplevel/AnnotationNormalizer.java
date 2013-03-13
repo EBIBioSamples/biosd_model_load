@@ -5,7 +5,7 @@ package ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.top
 
 import uk.ac.ebi.fg.core_model.terms.AnnotationType;
 import uk.ac.ebi.fg.core_model.toplevel.Annotation;
-import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.ObjectNormalizer;
+import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.Normalizer;
 import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.Store;
 
 /**
@@ -16,7 +16,7 @@ import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.Store;
  * @author Marco Brandizi
  *
  */
-public class AnnotationNormalizer extends ObjectNormalizer<Annotation>
+public class AnnotationNormalizer extends Normalizer<Annotation>
 {
 	public AnnotationNormalizer ( Store store ) {
 		super ( store );
@@ -30,7 +30,7 @@ public class AnnotationNormalizer extends ObjectNormalizer<Annotation>
 		if ( type == null || type.getId () != null ) return; 
 		
 		AnnotationType typeS = store.find ( type, type.getName () );
-		if ( typeS == null ) return;
+		if ( typeS == null || type == typeS) return;
 		
 		ann.setType ( typeS );
 	}

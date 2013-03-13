@@ -33,7 +33,7 @@ public class MemoryStore extends ForwardingTable<Class, String, Object> implemen
 	 */
 	@SuppressWarnings ( "unchecked" )
 	public <T> T get ( Class<? extends T> targetClass, String targetId ) {
-		return (T) get ( targetClass, targetId );
+		return (T) super.get ( targetClass, targetId );
 	} 
 
 	/**

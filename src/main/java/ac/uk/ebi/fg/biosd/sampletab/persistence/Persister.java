@@ -11,6 +11,7 @@ import uk.ac.ebi.fg.biosd.model.organizational.MSI;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.toplevel.AccessibleDAO;
 import uk.ac.ebi.fg.core_model.resources.Resources;
 import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.DBStore;
+import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.MemoryStore;
 import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.organizational.MSINormalizer;
 import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.organizational.MSIPersistenceListener;
 
@@ -36,6 +37,7 @@ public class Persister
     
 		AccessibleDAO<MSI> dao = new AccessibleDAO<MSI> ( MSI.class,  em );
 		EntityTransaction ts = em.getTransaction ();
+		new MSINormalizer ( new MemoryStore () ).normalize ( msi );
 		new MSINormalizer ( new DBStore ( em ) ).normalize ( msi );
 		ts.begin ();
 		dao.create ( msi );

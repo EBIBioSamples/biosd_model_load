@@ -54,12 +54,12 @@ public class ContactNormalizer extends AnnotatableNormalizer<Contact>
 			}
 			
 			ContactRole roleS = store.find ( role, role.getName () );
-			if ( roleS == null ) continue; 
+			if ( roleS == null || role == roleS ) continue; 
 			
 			delRoles.add ( role ); addRoles.add ( roleS );
 		}
 		
 		roles.removeAll ( delRoles );
-		roles.removeAll ( addRoles );		
+		roles.addAll ( addRoles );		
 	}
 }

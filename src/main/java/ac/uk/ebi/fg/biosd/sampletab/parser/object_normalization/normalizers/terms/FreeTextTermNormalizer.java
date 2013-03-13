@@ -9,7 +9,7 @@ import java.util.Set;
 import uk.ac.ebi.fg.core_model.terms.FreeTextTerm;
 import uk.ac.ebi.fg.core_model.terms.OntologyEntry;
 import uk.ac.ebi.fg.core_model.xref.ReferenceSource;
-import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.ObjectNormalizer;
+import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.Normalizer;
 import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.Store;
 
 /**
@@ -20,7 +20,7 @@ import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.Store;
  *
  * @param <FT>
  */
-public class FreeTextTermNormalizer<FT extends FreeTextTerm> extends ObjectNormalizer<FT>
+public class FreeTextTermNormalizer<FT extends FreeTextTerm> extends Normalizer<FT>
 {
 	private final OntologyEntryNormalizer oeNormalizer;
 	
@@ -47,6 +47,8 @@ public class FreeTextTermNormalizer<FT extends FreeTextTerm> extends ObjectNorma
 				oeNormalizer.normalize ( oe );
 				continue;
 			}
+			if ( oe == oeS ) continue; 
+			
 			delOes.add ( oe ); addOes.add ( oeS );
 		}
 		oes.removeAll ( delOes ); oes.addAll ( addOes );

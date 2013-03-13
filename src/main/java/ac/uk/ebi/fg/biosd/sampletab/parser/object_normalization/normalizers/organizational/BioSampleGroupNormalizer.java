@@ -50,7 +50,7 @@ public class BioSampleGroupNormalizer extends AnnotatableNormalizer<BioSampleGro
 		{
 			if ( sample == null || sample.getId () != null ) continue;
 			BioSample smpS = store.find ( sample, sample.getAcc () );
-			if ( smpS == null || smpCmp.compare ( smpS, sample ) != 0 ) continue;
+			if ( smpS == null || sample == smpS || smpCmp.compare ( smpS, sample ) != 0 ) continue;
 			
 			// sample is going to be ditched off, give its sample groups to the equivalents coming from the DB
 			for ( BioSampleGroup smpSg: sample.getGroups () ) smpS.addGroup ( smpSg );

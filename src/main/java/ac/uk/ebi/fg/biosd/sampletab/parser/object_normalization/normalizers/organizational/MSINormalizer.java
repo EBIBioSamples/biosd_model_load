@@ -87,7 +87,7 @@ public class MSINormalizer extends AnnotatableNormalizer<MSI>
   		if ( source.getId () != null ) continue;
   		
   		R srcS = store.find ( source, source.getAcc (), source.getVersion () );
-  		if ( srcS == null ) continue;
+  		if ( srcS == null || source == srcS ) continue;
  
   		delSrcs.add ( source ); addSrcs.add ( srcS );
   	}
@@ -108,7 +108,7 @@ public class MSINormalizer extends AnnotatableNormalizer<MSI>
 		{
 			if ( sample == null || sample.getId () != null ) continue;
 			BioSample smpS = store.find ( sample, sample.getAcc () );
-			if ( smpS == null || smpCmp.compare ( smpS, sample ) != 0 ) continue;
+			if ( smpS == null || sample == smpS || smpCmp.compare ( smpS, sample ) != 0 ) continue;
 			addSmps.add ( smpS ); delSmps.add ( sample );
 		}
 		msiSamples.removeAll ( delSmps );
@@ -126,7 +126,7 @@ public class MSINormalizer extends AnnotatableNormalizer<MSI>
 		{
 			if ( sg == null || sg.getId () != null ) continue;
 			BioSampleGroup sgS = store.find ( sg, sg.getAcc () );
-			if ( sgS == null || sgCmp.compare ( sgS, sg ) != 0 ) continue;
+			if ( sgS == null || sg == sgS || sgCmp.compare ( sgS, sg ) != 0 ) continue;
 			
 			// The current sample group is going to be replaced, let's move its samples from it to the new SG.
 			for ( BioSample sgSmp: sg.getSamples () ) sgS.addSample ( sgSmp );

@@ -6,7 +6,7 @@ package ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.top
 import uk.ac.ebi.fg.core_model.toplevel.Annotatable;
 import uk.ac.ebi.fg.core_model.toplevel.Annotation;
 import uk.ac.ebi.fg.core_model.toplevel.Identifiable;
-import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.ObjectNormalizer;
+import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.Normalizer;
 import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.Store;
 
 /**
@@ -17,7 +17,7 @@ import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.Store;
  * @author Marco Brandizi
  *
  */
-public class AnnotatableNormalizer<A extends Identifiable> extends ObjectNormalizer<A>
+public class AnnotatableNormalizer<A extends Identifiable> extends Normalizer<A>
 {
 	private final AnnotationNormalizer annNormalizer;
 	

@@ -6,7 +6,7 @@ package ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.xre
 import uk.ac.ebi.fg.core_model.toplevel.Identifiable;
 import uk.ac.ebi.fg.core_model.xref.Referrer;
 import uk.ac.ebi.fg.core_model.xref.XRef;
-import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.ObjectNormalizer;
+import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.Normalizer;
 import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.Store;
 
 /**
@@ -17,7 +17,7 @@ import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.Store;
  * @author Marco Brandizi
  *
  */
-public class ReferrerPersistenceListener<R extends Identifiable> extends ObjectNormalizer<R>
+public class ReferrerPersistenceListener<R extends Identifiable> extends Normalizer<R>
 {
 	private final XRefNormalizer xrefNormalizer;
 	

@@ -69,7 +69,7 @@ public class ProductNormalizer
 			// Do we need replacement?
 			if ( up == null || up.getId () != null ) continue;
 			Product<?> upS = store.find ( up, up.getAcc () );
-			if ( upS == null || nodeComparator.compare ( upS, up ) != 0 ) continue;
+			if ( upS == null || up == upS || nodeComparator.compare ( upS, up ) != 0 ) continue;
 
 			// The node needs to be replaced by an existing one, let's move the links from the node being removed to the
 			// one being added
@@ -91,18 +91,18 @@ public class ProductNormalizer
 		for ( Product<?> down: donws ) 
 		{
 			if ( down == null || down.getId () != null ) continue;
-			Product<?> downDB = store.find ( down, down.getAcc () );
-			if ( downDB == null || nodeComparator.compare ( downDB, down ) != 0 ) continue;
+			Product<?> downS = store.find ( down, down.getAcc () );
+			if ( downS == null || downS == down || nodeComparator.compare ( downS, down ) != 0 ) continue;
 
 			// The node needs to be replaced by an existing one, let's move the links from the node being removed to the
 			// one being added
 			//
 			linkExistingProducts ( down );
-			for ( Product<?> upUp: down.getDerivedFrom () ) downDB.addDerivedFrom ( upUp );
-			for ( Product<?> upDown: down.getDerivedInto () ) downDB.addDerivedInto ( upDown );
+			for ( Product<?> upUp: down.getDerivedFrom () ) downS.addDerivedFrom ( upUp );
+			for ( Product<?> upDown: down.getDerivedInto () ) downS.addDerivedInto ( upDown );
 			
 			// We need to replace the link later, to avoid interference with the iterator in the loop
-			addLinks.add ( downDB ); delLinks.add ( down );
+			addLinks.add ( downS ); delLinks.add ( down );
 		}
 		// Do it
 		for ( Product<?> del: delLinks ) node.removeDerivedInto ( del );

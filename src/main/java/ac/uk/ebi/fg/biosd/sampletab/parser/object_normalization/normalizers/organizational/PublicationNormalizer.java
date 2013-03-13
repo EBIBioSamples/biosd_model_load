@@ -43,7 +43,7 @@ public class PublicationNormalizer extends FilterNormalizer<Publication>
 		if ( statusName == null ) return;
 			
 		PublicationStatus statusS = store.find ( status, statusName );
-		if ( statusS == null ) return;
+		if ( statusS == null || status == statusS ) return;
 		
 		pub.setStatus ( statusS );
 	}

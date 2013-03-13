@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import uk.ac.ebi.fg.core_model.toplevel.Identifiable;
-import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.ObjectNormalizer;
+import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.Normalizer;
 import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.Store;
 
 /**
@@ -17,9 +17,9 @@ import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.Store;
  * @author Marco Brandizi
  *
  */
-public class FilterNormalizer<I extends Identifiable> extends ObjectNormalizer<I>
+public class FilterNormalizer<I extends Identifiable> extends Normalizer<I>
 {
-	protected List<ObjectNormalizer<?>> normalizers = new LinkedList<ObjectNormalizer<?>> ();
+	protected List<Normalizer<?>> normalizers = new LinkedList<Normalizer<?>> ();
 
 	public FilterNormalizer ( Store store )
 	{
@@ -32,7 +32,7 @@ public class FilterNormalizer<I extends Identifiable> extends ObjectNormalizer<I
 	{
 		if ( target == null || target.getId () != null ) return; 
 		
-		for ( ObjectNormalizer n: normalizers )
+		for ( Normalizer n: normalizers )
 			n.normalize ( target );
 	}
 	
