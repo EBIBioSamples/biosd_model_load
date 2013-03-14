@@ -12,7 +12,7 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 
 /**
- * TODO: Comment me!
+ * Value comparer specific to the SampleTab's SCD section.
  *
  * <dl><dt>date</dt><dd>Oct 24, 2012</dd></dl>
  * @author Marco Brandizi
@@ -37,6 +37,8 @@ public class SCDValuesVerifier extends AbstractValuesVerifier
 
 		Map<String, Set<String>> result = new HashMap<String, Set<String>> ();
 
+		// Check for null-header columns, prepare the header->values map.
+		//
 		String[] headers = table.get ( 0 );
 		for ( int i = 0; i < headers.length; i++ ) 
 		{
@@ -56,6 +58,8 @@ public class SCDValuesVerifier extends AbstractValuesVerifier
 			if ( vals == null ) result.put ( header, vals = new HashSet<String> () );
 		}
 		
+		// Collect the values for every header and put them in the header->values map.
+		//
 		boolean lenghtErrorMatched = false;
 		for ( int irow = 1; irow < table.size (); irow++ )
 		{
@@ -74,7 +78,6 @@ public class SCDValuesVerifier extends AbstractValuesVerifier
 					lenghtErrorMatched = true;
 					break;
 				}
-				
 				if ( headers [ icol ] == null ) continue;
 				
 				result.get ( headers [ icol ] ).add ( line [ icol ] );

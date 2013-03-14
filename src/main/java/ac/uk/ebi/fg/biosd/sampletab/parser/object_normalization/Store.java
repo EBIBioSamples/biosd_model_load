@@ -8,7 +8,8 @@ import uk.ac.ebi.fg.core_model.xref.ReferenceSource;
 
 
 /**
- * TODO: Comment me!
+ * This interface is used by BioSD {@link Normalizer normalisers}, to search for existing objects that should replace a
+ * duplicate in the model instance that is being normalised.
  *
  * <dl><dt>date</dt><dd>Mar 11, 2013</dd></dl>
  * @author Marco Brandizi

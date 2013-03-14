@@ -12,7 +12,7 @@ import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.Normalizer;
 import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.Store;
 
 /**
- * TODO: Comment me!
+ * Normalises the {@link ReferenceSource} of an {@link OntologyEntry}.
  *
  * <dl><dt>date</dt><dd>Mar 12, 2013</dd></dl>
  * @author Marco Brandizi
@@ -36,6 +36,7 @@ public class OntologyEntryNormalizer extends Normalizer<OntologyEntry>
 		ReferenceSource srcS = store.find ( src, src.getAcc (), src.getVersion () );
 		if ( srcS == null || src == srcS ) return;
 		
+		// The setter is protected, so we need to tweak it via reflection.
 		Exception theEx = null;
 		try
 		{

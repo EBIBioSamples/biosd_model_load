@@ -9,8 +9,7 @@ import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.Normalizer;
 import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.Store;
 
 /**
- * 
- * TODO: Comment me!
+ * Re-uses {@link AnnotationType}. This is used by {@link AnnotatableNormalizer}.
  *
  * <dl><dt>date</dt><dd>Mar 11, 2013</dd></dl>
  * @author Marco Brandizi

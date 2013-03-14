@@ -5,11 +5,13 @@ package ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.exp
 
 import uk.ac.ebi.fg.core_model.expgraph.properties.ExperimentalPropertyType;
 import uk.ac.ebi.fg.core_model.expgraph.properties.ExperimentalPropertyValue;
+import uk.ac.ebi.fg.core_model.expgraph.properties.Unit;
 import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.Store;
 import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.terms.FreeTextTermNormalizer;
 
 /**
- * TODO: Comment me!
+ * Does the job of {@link FreeTextTermNormalizer} for an {@link ExperimentalPropertyValue} and the same 
+ * for {@link ExperimentalPropertyType} and {@link Unit}.
  *
  * <dl><dt>date</dt><dd>Mar 12, 2013</dd></dl>
  * @author Marco Brandizi

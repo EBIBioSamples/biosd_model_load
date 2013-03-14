@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * TODO: Comment me!
+ * Value comparer specific to the SampleTab's MSI section.
  *
  * <dl><dt>date</dt><dd>Oct 24, 2012</dd></dl>
  * @author Marco Brandizi

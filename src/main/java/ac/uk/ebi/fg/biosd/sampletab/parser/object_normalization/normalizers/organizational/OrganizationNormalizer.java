@@ -9,7 +9,7 @@ import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.topl
 
 /**
  * 
- * TODO: Comment me!
+ * Re-use {@link Organization#getOrganizationRoles()}.
  *
  * <dl><dt>date</dt><dd>Mar 11, 2013</dd></dl>
  * @author Marco Brandizi

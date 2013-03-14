@@ -9,7 +9,7 @@ import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.Store;
 import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.terms.FreeTextTermNormalizer;
 
 /**
- * TODO: Comment me!
+ * Does the {@link FreeTextTermNormalizer} for a {@link Unit} and additionally for its {@link UnitDimension}.
  *
  * <dl><dt>date</dt><dd>Mar 12, 2013</dd></dl>
  * @author Marco Brandizi
@@ -17,12 +17,12 @@ import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.term
  */
 public class UnitNormalizer extends FreeTextTermNormalizer<Unit>
 {
-	private final FreeTextTermNormalizer<UnitDimension> dimPersistenceListener;  
+	private final FreeTextTermNormalizer<UnitDimension> dimNormalizer;  
 	
 	public UnitNormalizer ( Store store ) 
 	{
 		super ( store );
-		dimPersistenceListener = new FreeTextTermNormalizer<UnitDimension> ( store );
+		dimNormalizer = new FreeTextTermNormalizer<UnitDimension> ( store );
 	}
 
 	@Override
@@ -30,7 +30,7 @@ public class UnitNormalizer extends FreeTextTermNormalizer<Unit>
 	{
 		if ( u == null || u.getId () != null ) return;
 		super.normalize ( u );
-		dimPersistenceListener.normalize ( u.getDimension () );
+		dimNormalizer.normalize ( u.getDimension () );
 	}
 	
 }

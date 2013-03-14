@@ -13,7 +13,7 @@ import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.Store;
 
 /**
  * 
- * TODO: Comment me!
+ * Allow to re-use the {@link ReferenceSource} linked to a {@link XRef}. This is used by {@link ReferrerNormalizer}.
  *
  * <dl><dt>date</dt><dd>Mar 11, 2013</dd></dl>
  * @author Marco Brandizi

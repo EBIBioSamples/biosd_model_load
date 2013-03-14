@@ -22,7 +22,7 @@ import org.junit.Test;
 import au.com.bytecode.opencsv.CSVWriter;
 
 /**
- * Performs sample-tab parsing tests, by comparing original sampletab files to what the exporter produced after having loaded
+ * Performs sample-tab parsing tests, by comparing original SampleTab files to what the exporter produced after having loaded
  * such files.
  *
  * <dl><dt>date</dt><dd>Oct 16, 2012</dd></dl>

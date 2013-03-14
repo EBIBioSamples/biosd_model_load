@@ -15,7 +15,7 @@ import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.topl
 
 /**
  * 
- * TODO: Comment me!
+ * Re-uses {@link ContactRole}.
  *
  * <dl><dt>date</dt><dd>Mar 11, 2013</dd></dl>
  * @author Marco Brandizi
@@ -36,7 +36,9 @@ public class ContactNormalizer extends AnnotatableNormalizer<Contact>
 		normalizeRoles ( store, cnt.getContactRoles () );
 	}
 	
-	
+	/**
+	 * This is made generic, so that it can be used by {@link OrganizationNormalizer} too.
+	 */
 	static void normalizeRoles ( Store store, Set<ContactRole> roles ) 
 	{
 		Set<ContactRole> delRoles = new HashSet<ContactRole> (), addRoles = new HashSet<ContactRole> ();

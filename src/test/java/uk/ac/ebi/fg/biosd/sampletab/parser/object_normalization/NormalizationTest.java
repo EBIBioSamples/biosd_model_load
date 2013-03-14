@@ -21,7 +21,7 @@ import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.Store;
 import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.organizational.MSINormalizer;
 
 /**
- * Tests normalization of duped objects after parsing.
+ * Tests normalisation of duped objects after parsing.
  *
  * <dl><dt>date</dt><dd>Mar 13, 2013</dd></dl>
  * @author Marco Brandizi
@@ -82,17 +82,16 @@ public class NormalizationTest
 		Store store = new MemoryStore ();
 		new MSINormalizer ( store ).normalize ( m.msi );
 
-		assertNotNull ( "cntRole1 not found in the store!", 
-			store.find ( m.cntRole1b, m.cntRole1b.getName () ) );
+		assertNotNull ( "cntRole1 not found in the store!", store.find ( m.cntRole1b, m.cntRole1b.getName () ) );
 		
 		assertNotNull ( "oe1 not found in the store!", 
 			store.find ( m.oe1b, m.oe1b.getAcc (), m.oe1b.getSource ().getAcc (), m.oe1b.getSource ().getVersion () ) );
 
-		assertTrue ( "Contact Role Normalization failed!", 
+		assertTrue ( "Contact Role Normalisation failed!", 
 			m.cnt.getContactRoles ().iterator ().next () == m.cnt1.getContactRoles ().iterator ().next () );
 		
 		Iterator<OntologyEntry> cv1Itr = m.cv1.getOntologyTerms ().iterator ();
 		OntologyEntry cv2OE = m.cv2.getOntologyTerms ().iterator ().next ();
-		assertTrue ( "Normalization for OE1 failed!", cv2OE == cv1Itr.next () || cv2OE == cv1Itr.next () );
+		assertTrue ( "OE1 Normalisation failed!", cv2OE == cv1Itr.next () || cv2OE == cv1Itr.next () );
 	}
 }

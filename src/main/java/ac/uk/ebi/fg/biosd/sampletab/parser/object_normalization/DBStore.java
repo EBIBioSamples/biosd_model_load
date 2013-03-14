@@ -9,13 +9,14 @@ import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.terms.CVTermDAO;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.terms.OntologyEntryDAO;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.toplevel.AccessibleDAO;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.xref.ReferenceSourceDAO;
+import uk.ac.ebi.fg.core_model.resources.Resources;
 import uk.ac.ebi.fg.core_model.terms.CVTerm;
 import uk.ac.ebi.fg.core_model.terms.OntologyEntry;
 import uk.ac.ebi.fg.core_model.toplevel.Accessible;
 import uk.ac.ebi.fg.core_model.xref.ReferenceSource;
 
 /**
- * TODO: Comment me!
+ * A Store implementation that check for object existence against the BioSD relational database (via Hibernate). 
  *
  * <dl><dt>date</dt><dd>Mar 12, 2013</dd></dl>
  * @author Marco Brandizi
@@ -29,7 +30,11 @@ public class DBStore implements Store
 	private final ReferenceSourceDAO<ReferenceSource> refSrcDao;
 	private final OntologyEntryDAO<OntologyEntry> oeDao;
 	
-	
+	/**
+	 * @param entityManager, of course you need this to get into the database and it should be initialised the usual way, e.g., 
+	 * via {@link Resources#getEntityManagerFactory()}.
+	 * 
+	 */
 	public DBStore ( EntityManager entityManager )
 	{
 		accessibleDao = new AccessibleDAO<Accessible> ( Accessible.class, entityManager );
@@ -38,7 +43,9 @@ public class DBStore implements Store
 		oeDao = new OntologyEntryDAO<OntologyEntry> ( OntologyEntry.class, entityManager );
 	}
 	
-	
+	/**
+	 * Implements {@link Store#find(Object, String...)} by means of specific delegates, which in turn use DAOs and Hibernate.
+	 */
 	@Override
 	@SuppressWarnings ( "unchecked" )
 	public <T> T find ( T newObject, String... targetIds )

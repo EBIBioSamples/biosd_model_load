@@ -7,7 +7,7 @@ import java.util.List;
 
 
 /**
- * TODO: Comment me!
+ * Check the exported SampleTab file for required fields in the SCD section.
  *
  * <dl><dt>date</dt><dd>Oct 16, 2012</dd></dl>
  * @author Marco Brandizi
@@ -24,6 +24,7 @@ public class SCDLineCountVerifier extends AbstractSampleTabVerifier
 	public void verify ()
 	{
 		int inputScdSz = inputContent.size (), exportScdSz = exportContent.size ();
+		
 		// The zero-size case can be ignored here, cause there is another check into SCDValuesVerifier that takes this case
 		// into account.
 		//

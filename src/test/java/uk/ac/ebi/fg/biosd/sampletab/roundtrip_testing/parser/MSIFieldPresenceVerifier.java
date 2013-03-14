@@ -11,8 +11,8 @@ import org.apache.commons.lang.StringUtils;
 
 
 /**
- * TODO: Comment me!
- *
+ * Check the exported SampleTab file for required fields in the MSI section.
+ *  
  * <dl><dt>date</dt><dd>Oct 18, 2012</dd></dl>
  * @author Marco Brandizi
  *
@@ -30,8 +30,8 @@ public class MSIFieldPresenceVerifier extends AbstractSampleTabVerifier
 		@SuppressWarnings ( "serial" )
 		Set<String> requiredHeaders = new HashSet<String>() 
 		{{
-				// add ( "Submission Title".toLowerCase () );
-				// TODO: for the moment there is no really required field. 
+			// add ( "Submission Title".toLowerCase () );
+			// TODO: for the moment there is no really required field. 
 		}};
 		
 		for ( String[] line: exportContent )

@@ -11,14 +11,18 @@ import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.Normalizer;
 import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.Store;
 
 /**
- * TODO: Comment me!
- *
+ * Forwards the normalize() method to a list of backing normalizers. This is used to emulate multiple inheritance of 
+ * normalizers.
+ * 
  * <dl><dt>date</dt><dd>Feb 26, 2013</dd></dl>
  * @author Marco Brandizi
  *
  */
 public class FilterNormalizer<I extends Identifiable> extends Normalizer<I>
 {
+	/**
+	 * Populate this in your implementation.
+	 */
 	protected List<Normalizer<?>> normalizers = new LinkedList<Normalizer<?>> ();
 
 	public FilterNormalizer ( Store store )
@@ -26,6 +30,9 @@ public class FilterNormalizer<I extends Identifiable> extends Normalizer<I>
 		super ( store );
 	}
 
+	/**
+	 * Forward the target to {@link #normalizers}.
+	 */
 	@Override
 	@SuppressWarnings ( { "rawtypes", "unchecked" } )
 	public void normalize ( I target )

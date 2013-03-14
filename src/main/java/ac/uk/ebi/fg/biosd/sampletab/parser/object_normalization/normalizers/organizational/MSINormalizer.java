@@ -14,14 +14,16 @@ import uk.ac.ebi.fg.core_model.organizational.Contact;
 import uk.ac.ebi.fg.core_model.organizational.Organization;
 import uk.ac.ebi.fg.core_model.organizational.Publication;
 import uk.ac.ebi.fg.core_model.xref.ReferenceSource;
+import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.DBStore;
+import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.MemoryStore;
 import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.Store;
 import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.expgraph.BioSampleNormalizer;
 import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.expgraph.ProductComparator;
 import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.toplevel.AnnotatableNormalizer;
 
 /**
- * 
- * TODO: Comment me!
+ * This is the root normaliser. A submission is parsed, the resulting {@link MSI} is passed to this class with an 
+ * instance of {@link MemoryStore} and re-passed to this class again, this time with an instance of {@link DBStore}.  
  *
  * <dl><dt>date</dt><dd>Mar 12, 2013</dd></dl>
  * @author Marco Brandizi

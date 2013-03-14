@@ -13,12 +13,11 @@ import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.Store;
 import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.expgraph.properties.PropertyValueNormalizer;
 
 /**
- * Works out normalization operations about the {@link Product} objects.
+ * Works out normalisation operations about the {@link Product} objects.
  *
  * <dl><dt>date</dt><dd>Mar 12, 2013</dd></dl>
  * @author Marco Brandizi
  *
- * @param <P>
  */
 public class ProductNormalizer
   <P extends Product<?>> 
@@ -54,7 +53,7 @@ public class ProductNormalizer
 	 * products that already exists in the DB. This makes products re-usable. Uses {@link #nodeComparator} to decide if two 
 	 * products are equivalent.
 	 * 
-	 * TODO: we will need that incoming products are just the same
+	 * TODO: we need to check that incoming products are just the same
 	 * 
 	 */
 	@SuppressWarnings ( "unchecked" )

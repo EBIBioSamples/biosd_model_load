@@ -27,7 +27,10 @@ import ac.uk.ebi.fg.biosd.sampletab.Loader;
 import au.com.bytecode.opencsv.CSVReader;
 
 /**
- * TODO: Comment me!
+ * Compares an original SampleTab file to the one exported after SampleTab parsing.
+ * This is a root component that invokes other {@link AbstractSampleTabVerifier}. 
+ * 
+ * Results are reported in a {@link ParserComparisonTest#report CSV file}.
  *
  * <dl><dt>date</dt><dd>Oct 16, 2012</dd></dl>
  * @author Marco Brandizi
@@ -47,6 +50,8 @@ public class SampleTabVerifier
 	{
 		try
 		{
+			// Get the files to compare
+			//
 			String inputPath = inputFile.getAbsolutePath ();
 			
 			System.out.println ( ">>>>>>> Working on '" + inputPath + "'" );
@@ -59,12 +64,15 @@ public class SampleTabVerifier
 			int iExScd = getSCDStartIndex ( export, exportPath );
 			List<String[]> exportMSI = export.subList ( 0, iExScd ), exportSCD = export.subList ( iExScd + 1, export.size () );
 			
+			// Specific verifications
+			//
 			new SCDLineCountVerifier ( inputPath, exportPath, inputSCD, exportSCD ).verify ();
 			new MSIValuesVerifier ( inputPath, exportPath, inputMSI, exportMSI ).verify ();
 			new SCDValuesVerifier ( inputPath, exportPath, inputSCD, exportSCD ).verify ();
 		}
 		catch ( Exception ex )
 		{ 
+			// Reports 
 			StringWriter sw = new StringWriter ();
 			ex.printStackTrace ( new PrintWriter ( sw ) );
 			
@@ -79,13 +87,18 @@ public class SampleTabVerifier
 		}
 	}
 	
-	
+	/**
+	 * Gets the original file from {@link #inputFile}.
+	 */
 	private List<String[]> getInputFile () throws Exception
 	{
 		return readAndCleanUpSampleTab ( new InputStreamReader ( new BufferedInputStream ( new FileInputStream ( 
 			inputFile ) ), "UTF-8" ) );
 	}
-	
+
+	/**
+	 * Parse the input and export it to a list of strings. 
+	 */
 	private List<String[]> getExportedFile () throws Exception
 	{
 		Loader loader = new Loader();
@@ -100,7 +113,7 @@ public class SampleTabVerifier
     Writer stwr = new FileWriter ( outFilePath );
     new SampleTabWriter ( stwr ).write ( xdata );
     
-    // Now, reimport it, for in-memory verification
+    // Now, re-import it, for in-memory verification
     Reader rdr = new FileReader ( outFilePath );
     return readAndCleanUpSampleTab ( rdr );
 	}
@@ -112,12 +125,21 @@ public class SampleTabVerifier
 	}
 	
 	
+	/**
+	 * Some clean-up of a SampleTab structure: 
+	 * <ul>
+	 * 	<li>Removes lines that have only blank cell values.</li>
+	 * 	<li>Removes comment lines (i.e., starting with a '#').</li>  
+	 * </ul>  
+	 */
 	private List<String[]> readAndCleanUpSampleTab ( Reader input ) throws Exception
 	{
 		CSVReader csvReader = new CSVReader ( input, '\t', '"' );
 		List<String[]> result = new ArrayList<String[]> ();
+		
 		for ( String[] line; ( line = csvReader.readNext () ) != null; )
 		{
+			// All-blank lines
 			if ( line.length == 0 ) continue;
 			boolean allNull = true; 
 			for ( String cell: line )
@@ -125,13 +147,17 @@ public class SampleTabVerifier
 					allNull = false; break;
 			}
 			if ( allNull ) continue;
+			
+			// Comment lines
 			if ( line [ 0 ].startsWith ( "#" ) ) continue;
 			result.add ( line );
 		}
 		return result;
 	}
 	
-	
+	/**
+	 * Tells where the line with '[SCD]' in the first cell is located. 
+	 */
 	private int getSCDStartIndex ( List<String[]> sampleTabLines, String filePath )
 	{
 		int i = 0;

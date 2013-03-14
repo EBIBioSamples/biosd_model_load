@@ -25,14 +25,26 @@ import uk.ac.ebi.fg.core_model.toplevel.Identifiable;
  */
 public abstract class Normalizer<I extends Identifiable>
 {
+	/** 
+	 * This is used to check for the existence of an object and the normalisers are independent on specific stores against
+	 * which object duplication is checked.
+	 */
 	protected Store store;
 	
+	/** 
+	 * We have a hierarchy of components (reflecting the object model) that is initialised in tree-visit fashion from here. 
+	 * All the components receive the same store from the top-level one.
+	 */
 	public Normalizer ( Store store )
 	{
 		super ();
 		this.store = store;
 	}
-
+	
+	/**
+	 * This does the job. It checks those objects linked to the target that should be re-used. If a linked object already exists
+	 * in the store, a new link is created to the already-existing object, replacing the orginal one.  
+	 */
 	public abstract void normalize ( I target );
 	
 	public Store getStore ()

@@ -12,7 +12,7 @@ import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.Store;
 import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.toplevel.AnnotatableNormalizer;
 
 /**
- * Works out normalization about the {@link Node} objects.
+ * Works out normalisation about the {@link Node} objects.
  *
  * <dl><dt>date</dt><dd>Jan 14, 2013</dd></dl>
  * @author Marco Brandizi
@@ -51,7 +51,7 @@ public abstract class NodeNormalizer<N extends Node> extends AnnotatableNormaliz
 	 * Checks the node's upstream/downstream nodes and replaces those nodes that already exists in the DB. This makes 
 	 * nodes re-usable. Uses {@link #nodeComparator} to decide if two nodes are equivalent.
 	 * 
-	 * TODO: we will need that incoming nodes are just the same
+	 * TODO: we need to check that incoming products are just the same
 	 */
 	private void linkExistingNodes ( Node node )
 	{

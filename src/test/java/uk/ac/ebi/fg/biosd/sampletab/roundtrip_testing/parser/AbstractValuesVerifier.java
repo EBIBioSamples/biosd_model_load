@@ -12,7 +12,8 @@ import org.apache.commons.lang.StringUtils;
 
 
 /**
- * TODO: Comment me!
+ * This is a base class to compare logically values in input/exported files. Subclasses of this are defined for specific
+ * sections of the SampleTab file. What such subclasses do is essentially implementing {@link #getValues(List)}. 
  *
  * <dl><dt>date</dt><dd>Oct 22, 2012</dd></dl>
  * @author Marco Brandizi
@@ -50,7 +51,7 @@ public abstract class AbstractValuesVerifier extends AbstractSampleTabVerifier
 		
 		if ( exportValues == null )
 		{
-			// and input is not, it's an error
+			// export is null and input is not, it's an error
 			ParserComparisonTest.report.writeNext ( new String[] {
 				inputPath, "ERROR", "No " + sectionName + " export", "[" + sectionName +"]", 
 				sectionName + " section is empty in the export file, while is not null in the input file"
@@ -184,6 +185,7 @@ public abstract class AbstractValuesVerifier extends AbstractSampleTabVerifier
 			});
 			
 		} // for each header
+		
 		
 		// Now check that those exported headers that don't appear in the input
 		//

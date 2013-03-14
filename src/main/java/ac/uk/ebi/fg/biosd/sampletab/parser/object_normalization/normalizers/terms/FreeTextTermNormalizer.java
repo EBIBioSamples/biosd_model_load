@@ -13,7 +13,8 @@ import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.Normalizer;
 import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.Store;
 
 /**
- * TODO: Comment me!
+ * Normalises {@link OntologyEntry}(es) linked to a {@link FreeTextTerm}. This in turn will 
+ * normalise {@link ReferenceSource}s.
  *
  * <dl><dt>date</dt><dd>Mar 12, 2013</dd></dl>
  * @author Marco Brandizi

@@ -8,7 +8,8 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 
 /**
- * TODO: Comment me!
+ * An in-memory store implementation that is used to normalise the result spawn by the SampleTab parser. This is based
+ * on a {@link Table two-level key table}, where valued are keyed by type (i.e., Java class) and primary key (e.g., accession).  
  *
  * <dl><dt>date</dt><dd>Mar 11, 2013</dd></dl>
  * @author Marco Brandizi
@@ -17,12 +18,18 @@ import com.google.common.collect.Table;
 @SuppressWarnings ( "rawtypes" )
 public class MemoryStore extends ForwardingTable<Class, String, Object> implements Store
 {
+	/**
+	 * The backing two-level key map.
+	 */
 	private Table<Class, String, Object> base = HashBasedTable.create ();
 	
 	public MemoryStore () {
 		super ();
 	}
 
+	/**
+	 * @return {@link #base}.
+	 */
 	@Override
 	protected Table<Class, String, Object> delegate () {
 		return base;
@@ -66,7 +73,7 @@ public class MemoryStore extends ForwardingTable<Class, String, Object> implemen
 	}
 
 	/**
-	 * Implements the interface using {@link #getOrPut(String, Object)}.
+	 * Implements {@link Store#find(Object, String...)} using {@link #getOrPut(String, Object)}.
 	 */
 	@Override
 	public <T> T find ( T newObject, String... targetIds  ) 
