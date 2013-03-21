@@ -6,18 +6,15 @@
 MYDIR=$(dirname "$0")
 cd "$MYDIR"/..
 
-inputdir=$1
-
-if [ "$inputdir" == "" ]; then
+if [ "$1" == "--help" ]; then
   cat <<EOT
 
-  usage: $0 input-dir [summary-file]
+  usage: $0 [summary-file]
   
-Tests the loading of all files in a given directory. You need to first issue 'mvn -P<proper-profile> test-compile'  
+Tests the loading of all files listed in the standard input. You need to first issue 'mvn -P<proper-profile> test-compile'  
 with a profile corresponding to your database target. The script will try to load sampletab files (.sampletab.txt extension)
 one at a time and will report the results in a summary file.
 
-  input-dir     = path where to load files from, all *.sampletab.txt files are considered, recursively
   summary-file  = file where to store summary
   
 This is affected by the environment variable SAMPLING_RATIO, if it is less than 100, only a random subset of the 
@@ -46,8 +43,7 @@ if [ "$SAMPLING_RATIO" == "" ]; then SAMPLING_RATIO=100; fi
 	 
 printf "FILE\tEXCEPTION\tMESSAGE\tN_ITEMS\tPARSING_TIME\tPERSISTENCE_TIME\n" >$outfpath
 
-(for fpath in \
-  $(find $inputdir -type f -not -name '.*' \( -name '*.sampletab.toload.txt' -or -name 'sampletab.toload.txt' \) )
+(while read fpath
 do
   if [ $[ $RANDOM % 100 ] -gt $SAMPLING_RATIO ]; then continue; fi
 	wfpath=$(echo "$fpath"| sed s/'\/'/'_'/g)
