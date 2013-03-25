@@ -33,7 +33,7 @@ EOT
 
 for fname in $(find "$source_dir" -type f -and \( -name '*sampletab.txt' -or -name 'sampletab.txt' \) )
 do
-  if [ $[ $RANDOM % 100 ] -gt $ratio ]; then continue; fi
+  if [ $[ $RANDOM % 100 ] -ge $ratio ]; then continue; fi
 
   "$SAMPLETAB_LOADER_CMD" "$fname"  
 done  
