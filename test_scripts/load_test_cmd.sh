@@ -12,6 +12,7 @@ outfpath="$2"
 pid=$$
 
 mvn exec:java \
+  -offline \
   -Ptest.oracle_test \
 	-DargLine="-Xms1G -Xmx4G -XX:PermSize=256m -XX:MaxPermSize=2G" \
 	-Dexec.classpathScope=test \

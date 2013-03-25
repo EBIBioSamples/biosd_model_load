@@ -24,7 +24,7 @@ EOT
   exit 1
 fi
 
-outfpath=$2
+outfpath=$1
 if [ "$outfpath" == "" ]; then 
   outfpath="load_test_results.csv"
 fi
@@ -45,7 +45,7 @@ printf "FILE\tEXCEPTION\tMESSAGE\tN_ITEMS\tPARSING_TIME\tPERSISTENCE_TIME\n" >$o
 
 (while read fpath
 do
-  if [ $[ $RANDOM % 100 ] -gt $SAMPLING_RATIO ]; then continue; fi
+  if [ $[ $RANDOM % 100 ] -ge $SAMPLING_RATIO ]; then continue; fi
 	wfpath=$(echo "$fpath"| sed s/'\/'/'_'/g)
   echo bsub -K -oo target/load_test_${wfpath}.out -J $wfpath ./test_scripts/load_test_cmd.sh $fpath $outfpath
 done) | xargs -d '\n' -P 100 -n 1 --replace=_cmd_ -- bash -c "_cmd_; exit 0" 
