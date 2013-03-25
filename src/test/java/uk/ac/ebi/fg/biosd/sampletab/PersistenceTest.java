@@ -52,7 +52,7 @@ public class PersistenceTest
 	@Ignore ( "Not currently working" )
 	@Test
 	public void testPride () throws ParseException {
-		loadDir ( "/ebi/microarray/home/biosamples/ftp/pride" );
+		loadDir ( "/ebi/ftp/pub/databases/biosamples/pride" );
 	}
 	
 	/**
