@@ -19,7 +19,7 @@
 			<version>1.6.6</version>
 		</dependency>
 
-		<!-- Use Logback as concrete test logger -->
+		<!-- Use Logback as concrete logger -->
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
@@ -412,7 +412,7 @@
 				<test.jdbc.url>jdbc:oracle:thin:@bart.ebi.ac.uk:1521:biosdtst</test.jdbc.url>
 				<test.jdbc.driverClassName>oracle.jdbc.driver.OracleDriver</test.jdbc.driverClassName>
 				<test.hibernate.dialect>org.hibernate.dialect.Oracle10gDialect</test.hibernate.dialect>
-				<test.hibernate.hbm2ddl.auto>update</test.hibernate.hbm2ddl.auto>
+				<test.hibernate.hbm2ddl.auto></test.hibernate.hbm2ddl.auto>
 			</properties>
 			<dependencies>
 				<dependency>
@@ -435,7 +435,7 @@
 				<test.jdbc.url>jdbc:oracle:thin:@bart.ebi.ac.uk:1521:biosdtst</test.jdbc.url>
 				<test.jdbc.driverClassName>oracle.jdbc.driver.OracleDriver</test.jdbc.driverClassName>
 				<test.hibernate.dialect>org.hibernate.dialect.Oracle10gDialect</test.hibernate.dialect>
-				<test.hibernate.hbm2ddl.auto>update</test.hibernate.hbm2ddl.auto>
+				<test.hibernate.hbm2ddl.auto></test.hibernate.hbm2ddl.auto>
 			</properties>
 			<dependencies>
 				<dependency>
@@ -478,7 +478,7 @@
 				<jdbc.url>jdbc:oracle:thin:@bart.ebi.ac.uk:1521:biosdtst</jdbc.url>
 				<jdbc.driverClassName>oracle.jdbc.driver.OracleDriver</jdbc.driverClassName>
 				<hibernate.dialect>org.hibernate.dialect.Oracle10gDialect</hibernate.dialect>
-				<hibernate.hbm2ddl.auto>update</hibernate.hbm2ddl.auto>
+				<hibernate.hbm2ddl.auto></hibernate.hbm2ddl.auto>
 			</properties>
 			<dependencies>
 				<dependency>
@@ -503,7 +503,7 @@
 				<jdbc.url>jdbc:oracle:thin:@bart.ebi.ac.uk:1521:biosdtst</jdbc.url>
 				<jdbc.driverClassName>oracle.jdbc.driver.OracleDriver</jdbc.driverClassName>
 				<hibernate.dialect>org.hibernate.dialect.Oracle10gDialect</hibernate.dialect>
-				<hibernate.hbm2ddl.auto>update</hibernate.hbm2ddl.auto>
+				<hibernate.hbm2ddl.auto></hibernate.hbm2ddl.auto>
 			</properties>
 			<dependencies>
 				<dependency>
