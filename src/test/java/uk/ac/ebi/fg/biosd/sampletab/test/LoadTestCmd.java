@@ -59,7 +59,7 @@ public class LoadTestCmd
 			// Now persist it
 			//
 			time0 = System.currentTimeMillis ();
-			new Persister ( msi ).persist ();
+			new Persister ().persist ( msi );
 			persistenceTime = System.currentTimeMillis () - time0;
 		} 
 		catch ( Throwable ex ) 

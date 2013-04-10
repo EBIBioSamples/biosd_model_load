@@ -15,7 +15,8 @@ import ac.uk.ebi.fg.biosd.sampletab.persistence.Persister;
 
 /**
  * 
- * TODO: Comment me!
+ * The SampleTab loader command line manager. This will load a SampleTab submission into a relational database that
+ * maps the BioSD object model.
  *
  * <dl><dt>date</dt><dd>Nov 5, 2012</dd></dl>
  * @author Marco Brandizi
@@ -54,7 +55,7 @@ public class LoaderCmd
 			// Now persist it
 			//
 			time0 = System.currentTimeMillis ();
-			new Persister ( msi ).persist ();
+			new Persister ().persist ( msi );
 			
 			persistenceTime = System.currentTimeMillis () - time0;
 			out.println ( 
@@ -90,6 +91,9 @@ public class LoaderCmd
 	}
 
 	
+	/**
+	 * Format an amount of time into a string that reports both time in appropriate units (e.g. 1min 32sec) and in seconds.
+	 */
 	private static String formatTimeDuration ( long ms )
 	{
 	  long secs = Math.round ( ms * 1.0 / 1000 );

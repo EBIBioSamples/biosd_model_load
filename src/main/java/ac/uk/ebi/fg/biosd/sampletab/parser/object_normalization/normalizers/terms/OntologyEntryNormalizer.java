@@ -40,7 +40,7 @@ public class OntologyEntryNormalizer extends Normalizer<OntologyEntry>
 		Exception theEx = null;
 		try
 		{
-			Method setPropM = oe.getClass ().getMethod ( "setSource", ReferenceSource.class );
+			Method setPropM = OntologyEntry.class.getDeclaredMethod ( "setSource", ReferenceSource.class );
 			setPropM.setAccessible ( true );
 			setPropM.invoke ( oe, srcS );
 		} 

@@ -4,6 +4,8 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import ac.uk.ebi.fg.biosd.sampletab.persistence.Persister;
+
 import uk.ac.ebi.arrayexpress2.magetab.datamodel.graph.Node;
 import uk.ac.ebi.arrayexpress2.magetab.exception.ParseException;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.SampleData;
@@ -28,6 +30,15 @@ import uk.ac.ebi.fg.core_model.organizational.ContactRole;
 import uk.ac.ebi.fg.core_model.terms.OntologyEntry;
 import uk.ac.ebi.fg.core_model.xref.ReferenceSource;
 
+/**
+ * Loads a SampleTab file (or equivalent) into memory, mapping it as a set of BioSD model objects.
+ *
+ * TODO: probably we want to move 'new MSINormalizer ( new MemoryStore () ).normalize ( msi );' here, see {@link Persister}. 
+ * 
+ * <dl><dt>date</dt><dd>Apr 8, 2013</dd></dl>
+ * @author Adam Falcounbridge
+ *
+ */
 public class Loader {
     
     public MSI fromSampleData(String filename) throws ParseException{

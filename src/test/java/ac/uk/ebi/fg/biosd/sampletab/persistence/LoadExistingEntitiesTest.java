@@ -3,8 +3,7 @@
  */
 package ac.uk.ebi.fg.biosd.sampletab.persistence;
 
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.*;
 
 import java.io.PrintStream;
 import java.io.StringWriter;
@@ -27,6 +26,7 @@ import uk.ac.ebi.fg.core_model.expgraph.properties.Unit;
 import uk.ac.ebi.fg.core_model.expgraph.properties.UnitDimension;
 import uk.ac.ebi.fg.core_model.organizational.Contact;
 import uk.ac.ebi.fg.core_model.organizational.ContactRole;
+import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.terms.OntologyEntryDAO;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.toplevel.AccessibleDAO;
 import uk.ac.ebi.fg.core_model.resources.Resources;
 import uk.ac.ebi.fg.core_model.terms.OntologyEntry;
@@ -56,12 +56,18 @@ public class LoadExistingEntitiesTest
 	 */
 	public static class MyTestModel extends TestModel
 	{	
+		public BioCharacteristicValue cv6;
+		public BioCharacteristicValue cv6b;
+		public OntologyEntry oe3;
+		public BioSample smp7;
+
+
 		/**
 		 * 	<pre>
-		 *  smp1(db) -----> smp3 ----> smp4(db) ---> smp6
+		 *  smp1(db) -----> smp3 ----> smp4(db) ---> smp6-->smp7
 		 *  smp2(db) ----/       \---> smp5 -----/
 		 *  
-		 *  sg1 contains (1,2,3)
+		 *  sg1 contains (1,2,3,7)
 		 *  sg2(db) contains (3,4,5,6) 
 		 *  </pre>        
 		 */
@@ -74,6 +80,7 @@ public class LoadExistingEntitiesTest
 			smp4 = new BioSample ( existingPrefix + "smp4" );
 			smp5 = new BioSample ( prefix + "smp5" );
 			smp6 = new BioSample ( prefix + "smp6" );
+			smp7 = new BioSample ( prefix + "smp7" );
 			
 			// These relations are symmetric
 			smp3.addDerivedFrom ( smp1 );
@@ -84,6 +91,7 @@ public class LoadExistingEntitiesTest
 
 			smp6.addDerivedFrom ( smp4 );
 			smp5.addDerivedInto ( smp6 );
+			smp7.addDerivedFrom ( smp6 );
 			
 			ch1 = new BioCharacteristicType ( "Organism" );
 			cv1 = new BioCharacteristicValue ( "mus-mus", ch1 );
@@ -102,6 +110,7 @@ public class LoadExistingEntitiesTest
 			smp1.addPropertyValue ( cv2 );
 
 			// Cannot be re-used, you need to create a new one, even if it is the same
+			// TODO: check
 			cv3 = new BioCharacteristicValue ( "mus-mus", ch1 );
 			smp2.addPropertyValue ( cv3 );
 			
@@ -120,15 +129,31 @@ public class LoadExistingEntitiesTest
 			
 			smp4.addPropertyValue ( cv5 );
 			
+			cv6 = new BioCharacteristicValue ( "homo-sapiens", ch1 );
+	       cv6.addOntologyTerm ( new OntologyEntry ( existingPrefix + "123", new ReferenceSource ( "EFO", null ) ) );
+	       cv6.addOntologyTerm ( new OntologyEntry ( prefix + "456", new ReferenceSource ( "MA", null ) ) );
+	    smp3.addPropertyValue ( cv6 );
+
 			
 			sg1 = new BioSampleGroup ( prefix + "sg1" );
 			sg2 = new BioSampleGroup ( existingPrefix + "sg2" );
-			// Likely you won't share property values over multiple owners, but it is possible
-			sg2.addPropertyValue ( cv5 );
+			
+			// Again don't share property values among different owners, you risk integrity-constraint errors and the like.
+			// sg2.addPropertyValue ( cv5 );
+			cv5b = new BioCharacteristicValue ( "2%", ch3 );
+			cv5.setUnit ( percent );
+			sg2.addPropertyValue ( cv5b );
+			
+			cv6b = new BioCharacteristicValue ( "homo-sapiens", ch1 );
+      	cv6b.addOntologyTerm ( new OntologyEntry ( existingPrefix + "123", new ReferenceSource ( "EFO", null ) ) );
+      	cv6b.addOntologyTerm ( oe3 = new OntologyEntry ( prefix + "789", new ReferenceSource ( "MA", null ) ) );
+			smp7.addPropertyValue ( cv6b );
+			
 			
 			sg1.addSample ( smp1 );
 			smp2.addGroup ( sg1 );
 			sg1.addSample ( smp3 );
+			sg1.addSample ( smp7 );
 			
 			sg2.addSample ( smp4 );
 			sg2.addSample ( smp5 );
@@ -148,6 +173,7 @@ public class LoadExistingEntitiesTest
 			msi.addSample ( smp4 );
 			msi.addSample ( smp5 );
 			msi.addSample ( smp6 );
+			msi.addSample ( smp7 );
 
 			msi.addSampleGroup ( sg1 );
 			msi.addSampleGroup ( sg2 );
@@ -160,9 +186,12 @@ public class LoadExistingEntitiesTest
 	@Test
 	public void testMockupModels () throws Exception
 	{
-		TestModel m1 = new TestModel ( "test1." ), m2 = new MyTestModel ( "test2.", "test1." );
-		new Persister ( m1.msi ).persist ();
-		new Persister ( m2.msi ).persist ();
+		TestModel m1 = new TestModel ( "test1." );
+		MyTestModel m2 = new MyTestModel ( "test2.", "test1." );
+
+		Persister persister = new Persister ();
+		persister.persist ( m1.msi );
+		persister.persist ( m2.msi );
 
 		EntityManager em = emProvider.getEntityManager ();
 		ProcessBasedTestModel.verifyTestModel ( em, m1, true );
@@ -170,51 +199,73 @@ public class LoadExistingEntitiesTest
 		// TODO: check non-graph objects too. 
 		
 		AccessibleDAO<MSI> dao = new AccessibleDAO<MSI> ( MSI.class, em );
-		MSI msi = dao.find ( m2.msi.getAcc () );
+		MSI msi2DB = dao.find ( m2.msi.getAcc () );
 		
 		// Avoid to mix the output with logs 
 		// 
 		StringWriter sw = new StringWriter ();
 		PrintStream out = new PrintStream ( new WriterOutputStream ( sw ) );
-		MSIDumper.dump ( out, msi );
+		MSIDumper.dump ( out, msi2DB );
 		out.flush ();
 		System.out.println ( "\n\n\n_________ Second Submission Reloaded:\n" + sw + "\n" );
 		
-		 /* smp1(db) -----> smp3 ----> smp4(db) ---> smp6
+		 /* smp1(db) -----> smp3 ----> smp4(db) ---> smp6 --->smp7
 		 *  smp2(db) ----/       \---> smp5 -----/
 		 *  
-		 *  sg1 contains (1,2,3)
+		 *  sg1 contains (1,2,3,7)
 		 *  sg2(db) contains (3,4,5,6) 
 		 */
-		assertTrue ( "Reloaded m2 doesn't contain smp1->msi!", msi.getSamples ().contains ( m1.smp1 ) );
-		assertTrue ( "Reloaded m1 doesn't contain smp1->msi!", msi.getSamples ().contains ( m1.smp2 ) );
-		assertTrue ( "Reloaded m1 doesn't contain smp1->msi!", msi.getSamples ().contains ( m1.smp4 ) );
+		assertTrue ( "Reloaded m2 doesn't contain smp1->msi!", msi2DB.getSamples ().contains ( m1.smp1 ) );
+		assertTrue ( "Reloaded m1 doesn't contain smp1->msi!", msi2DB.getSamples ().contains ( m1.smp2 ) );
+		assertTrue ( "Reloaded m1 doesn't contain smp1->msi!", msi2DB.getSamples ().contains ( m1.smp4 ) );
 
 		assertTrue ( "Reloaded m2 doesn't contain sg1->msi!", m2.msi.getSampleGroups ().contains ( m2.sg1 ) );
 		assertTrue ( "Reloaded m2 doesn't contain sg2->msi!", m2.msi.getSampleGroups ().contains ( m2.sg2 ) );
 
-		BioSample smp3 = null, smp4 = null; 
-		for ( BioSample smp: msi.getSamples () )
-			if ( "test2.smp3".equals ( smp.getAcc () ) ) 
-				smp3 = smp;
-			else if ( "test1.smp4".equals ( smp.getAcc () ) )
-				smp4 = smp;
+
+		BioSample smp3 = null, smp4 = null, smp7 = null; 
+		for ( BioSample smp: msi2DB.getSamples () )
+			if ( "test2.smp3".equals ( smp.getAcc () ) ) smp3 = smp;
+			else if ( "test1.smp4".equals ( smp.getAcc () ) ) smp4 = smp;
+			else if ( "test2.smp7".equals ( smp.getAcc () ) ) smp7 = smp;
 		
 		assertNotNull ( "test2.smp3 not found in reloaded model!", smp3 );
 		assertNotNull ( "test1.smp4 not found in reloaded model!", smp4 );
 		
 		assertTrue ( "Wrong derived-to relation in reloaded m2!", smp3.getDerivedFrom ().contains ( m1.smp1 ) );
 		assertTrue ( "Wrong derived-to relation in reloaded m2!", smp4.getDerivedInto ().contains ( m2.smp6 ) );
-		
-		assertTrue ( "Reloaded m2 doesn't contain smp1->sg1!", m2.sg1.getSamples ().contains ( m1.smp1 ) );
 
+		assertTrue ( "Wrong derived-to relation in reloaded m2!", m2.smp6.getDerivedInto ().contains ( smp7 ) );
+		assertTrue ( "Wrong derived-to relation in reloaded m2!", smp7.getDerivedFrom ().contains ( m2.smp6 ) );
+
+		assertTrue ( "Reloaded m2 doesn't contain smp1->sg1!", m2.sg1.getSamples ().contains ( m1.smp1 ) );
+		assertTrue ( "Reloaded m2 doesn't contain smp7->sg1!", m2.sg1.getSamples ().contains ( smp7 ) );
+
+		
 		BioSampleGroup sg2 = null;
-		for ( BioSampleGroup sg: msi.getSampleGroups () )
+		for ( BioSampleGroup sg: msi2DB.getSampleGroups () )
 			if ( "test1.sg2".equals ( sg.getAcc () ) ) { 
 				sg2 = sg; break;
 		}
 		
 		assertNotNull ( "test1.sg2 not found in reloaded model!", sg2 );
 		assertTrue ( "Reloaded m2 doesn't contain smp6->sg2!", sg2.getSamples ().contains ( m2.smp6 ) );
+		
+		
+		
+		// ------------------------------ Test unloading ------------------------------------------
+		// 
+		
+		Unloader unloader = new Unloader ();
+		unloader.unload ( msi2DB );
+		
+		AccessibleDAO<BioSample> sampleDao = new AccessibleDAO<BioSample> ( BioSample.class, em );
+		assertTrue ( "Unloading removed smp3!", sampleDao.contains ( smp3.getAcc () ) );
+		assertTrue ( "Unloading removed smp1!", sampleDao.contains ( m1.smp1.getAcc () ) );
+		assertFalse ( "Unloading didn't remove smp7!", sampleDao.contains ( smp7.getAcc () ) );
+		
+		OntologyEntryDAO<OntologyEntry> oeDao = new OntologyEntryDAO<OntologyEntry> ( OntologyEntry.class, em );
+		assertFalse ( "Unloading of oe3 failed!", oeDao.contains ( m2.oe3.getAcc (), m2.oe3.getSource ().getAcc (), m2.oe3.getSource ().getVersion () ) );
+		assertTrue ( "Unloading removed oe1!", oeDao.contains ( m1.oe1.getAcc (), m1.oe1.getSource ().getAcc (), m1.oe1.getSource ().getVersion () ) );
 	}
 }

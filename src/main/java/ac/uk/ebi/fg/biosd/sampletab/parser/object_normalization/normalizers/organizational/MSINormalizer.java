@@ -50,7 +50,7 @@ public class MSINormalizer extends AnnotatableNormalizer<MSI>
 	}
 
 	/**
-	 * Invokes the methods below.
+	 * Starts normalisation propagating to the objects linked to the submission.
 	 */
 	@Override
 	public void normalize ( MSI msi )

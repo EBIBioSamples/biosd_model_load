@@ -28,7 +28,7 @@ public class PersistenceTest
 	  Loader loader = new Loader();
 	  MSI msi = loader.fromSampleData ( path );
 	  
-	  new Persister ( msi ).persist ();	  
+	  new Persister ().persist ( msi );	  
 	  return msi;
 	}
    

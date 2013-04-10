@@ -35,7 +35,7 @@ public class LoadTest
             fail();
         }
         
-        return new Persister ( msi ).persist ();
+        return new Persister ().persist ( msi );
     }
     
     
