@@ -17,6 +17,9 @@ import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.Store;
  * <dl><dt>date</dt><dd>Mar 11, 2013</dd></dl>
  * @author Marco Brandizi
  *
+ * @param <R> note that this should actually be {@link Referrer}, but it cannot be due to the upper restriction. The
+ * correct type is checked at run-time.
+ * 
  */
 public class ReferrerNormalizer<R extends Identifiable> extends Normalizer<R>
 {
@@ -28,6 +31,9 @@ public class ReferrerNormalizer<R extends Identifiable> extends Normalizer<R>
 		xrefNormalizer = new XRefNormalizer ( store );
 	}
 
+	/**
+	 * I checks that referrer is an instance of {@link Referrer} (see above).
+	 */
 	@Override
 	public void normalize ( R referrer )
 	{

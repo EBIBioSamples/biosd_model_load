@@ -1,6 +1,3 @@
-/*
- * 
- */
 package ac.uk.ebi.fg.biosd.sampletab.persistence;
 
 import static junit.framework.Assert.*;
@@ -26,12 +23,18 @@ import uk.ac.ebi.fg.core_model.expgraph.properties.Unit;
 import uk.ac.ebi.fg.core_model.expgraph.properties.UnitDimension;
 import uk.ac.ebi.fg.core_model.organizational.Contact;
 import uk.ac.ebi.fg.core_model.organizational.ContactRole;
+import uk.ac.ebi.fg.core_model.organizational.Publication;
+import uk.ac.ebi.fg.core_model.organizational.PublicationStatus;
+import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.terms.CVTermDAO;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.terms.OntologyEntryDAO;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.toplevel.AccessibleDAO;
+import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.toplevel.IdentifiableDAO;
 import uk.ac.ebi.fg.core_model.resources.Resources;
 import uk.ac.ebi.fg.core_model.terms.OntologyEntry;
+import uk.ac.ebi.fg.core_model.toplevel.Identifiable;
 import uk.ac.ebi.fg.core_model.utils.test.ProcessBasedTestModel;
 import uk.ac.ebi.fg.core_model.xref.ReferenceSource;
+import uk.ac.ebi.fg.core_model.xref.XRef;
 import uk.ac.ebi.utils.test.junit.TestEntityMgrProvider;
 
 /**
@@ -189,6 +192,18 @@ public class LoadExistingEntitiesTest
 		TestModel m1 = new TestModel ( "test1." );
 		MyTestModel m2 = new MyTestModel ( "test2.", "test1." );
 
+		Publication pub = new Publication ( "test2.123", null );
+		pub.setTitle ( "A test publication" );
+		
+		PublicationStatus pubStat = new PublicationStatus ( "test.status" );
+		pub.setStatus ( pubStat );
+		
+		ReferenceSource xsrc = new ReferenceSource ( "test2.456", "1.0" );
+		XRef xr = new XRef ( "test2.789", xsrc );
+		pub.addReference ( xr );
+		
+		m2.msi.addPublication ( pub );
+		
 		Persister persister = new Persister ();
 		persister.persist ( m1.msi );
 		persister.persist ( m2.msi );
@@ -251,6 +266,14 @@ public class LoadExistingEntitiesTest
 		assertNotNull ( "test1.sg2 not found in reloaded model!", sg2 );
 		assertTrue ( "Reloaded m2 doesn't contain smp6->sg2!", sg2.getSamples ().contains ( m2.smp6 ) );
 		
+		Publication pubDB = msi2DB.getPublications ().iterator ().next ();
+		PublicationStatus pubStatDB = pubDB.getStatus ();
+		XRef xrDB = pubDB.getReferences ().iterator ().next ();
+		ReferenceSource srcDB = xrDB.getSource ();
+
+		long pubId = pubDB.getId (), xrId = xrDB.getId (), srcId = srcDB.getId ();
+		
+		assertNotNull ( "Test Pub Status not saved!", pubStatDB );
 		
 		
 		// ------------------------------ Test unloading ------------------------------------------
@@ -267,5 +290,12 @@ public class LoadExistingEntitiesTest
 		OntologyEntryDAO<OntologyEntry> oeDao = new OntologyEntryDAO<OntologyEntry> ( OntologyEntry.class, em );
 		assertFalse ( "Unloading of oe3 failed!", oeDao.contains ( m2.oe3.getAcc (), m2.oe3.getSource ().getAcc (), m2.oe3.getSource ().getVersion () ) );
 		assertTrue ( "Unloading removed oe1!", oeDao.contains ( m1.oe1.getAcc (), m1.oe1.getSource ().getAcc (), m1.oe1.getSource ().getVersion () ) );
+		
+		IdentifiableDAO<Identifiable> idDao = new IdentifiableDAO<Identifiable> ( Identifiable.class, em );
+		assertFalse ( "Test Xref not deleted!", idDao.contains ( xrId, XRef.class ) );
+		assertFalse ( "Test Pub not deleted!", idDao.contains ( pubId, Publication.class ) );
+		assertFalse ( "Test Ref Source not deleted!", idDao.contains ( srcId, ReferenceSource.class ) );
+		assertFalse ( "Test Pub Status not deleted!", 
+			new CVTermDAO<PublicationStatus> ( PublicationStatus.class, em ).contains ( pubStat.getName () ) );
 	}
 }

@@ -16,7 +16,7 @@ import uk.ac.ebi.fg.core_model.resources.Resources;
 import ac.uk.ebi.fg.biosd.sampletab.persistence.organizational.MSIUnloadingListener;
 
 /**
- * TODO: Comment me!
+ * The submission unloader. Manages the removal of a sampletab-based submission.
  *
  * <dl><dt>date</dt><dd>Apr 8, 2013</dd></dl>
  * @author Marco Brandizi

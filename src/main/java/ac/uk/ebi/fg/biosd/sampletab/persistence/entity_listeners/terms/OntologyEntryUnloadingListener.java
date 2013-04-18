@@ -27,7 +27,7 @@ public class OntologyEntryUnloadingListener extends UnloadingListener<OntologyEn
 	@Override
 	public long postRemove ( OntologyEntry foo )
 	{
-		// do not add oe.id or remove oeX.id. This would be a more proper syntax, however this not-so-correct syntax is the
+		// do not add oe.id or remove oeX.id. While this would be a more proper syntax, this not-so-correct syntax is the
 		// only way I can make Hibernate to translate correctly the query into SQL
 		// TODO: use classes for entity names
 		//
@@ -40,7 +40,7 @@ public class OntologyEntryUnloadingListener extends UnloadingListener<OntologyEn
 		long result = entityManager.createQuery ( hql ).executeUpdate ();
 
 		// TODO: AOP
-		log.trace ( String.format ( "%s.preRemove( null ): returning %d", OntologyEntry.class.getSimpleName (), result ));
+		log.trace ( String.format ( "%s.postRemove( null ): returning %d", OntologyEntry.class.getSimpleName (), result ));
 		return result;
 	}
 

@@ -1,0 +1,48 @@
+/*
+ * 
+ */
+package ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.xref;
+
+import javax.persistence.EntityManager;
+
+import uk.ac.ebi.fg.core_model.xref.ReferenceSource;
+import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.UnloadingListener;
+
+/**
+ * TODO: Comment me!
+ *
+ * <dl><dt>date</dt><dd>Apr 18, 2013</dd></dl>
+ * @author Marco Brandizi
+ *
+ */
+public class ReferenceSourceUnloadingListener extends UnloadingListener<ReferenceSource>
+{
+	public ReferenceSourceUnloadingListener ( EntityManager entityManager ) {
+		super ( entityManager );
+	}
+
+	@Override
+	public long preRemove ( ReferenceSource entity )
+	{
+		return 0;
+	}
+
+	@Override
+	public long postRemove ( ReferenceSource entity )
+	{
+		// do not add oe.id or remove oeX.id. While this would be a more proper syntax, this not-so-correct syntax is the
+		// only way I can make Hibernate to translate correctly the query into SQL
+		// TODO: use classes for entity names
+		//
+		String hql = "DELETE FROM ReferenceSource src WHERE" +
+			"  src NOT IN ( SELECT srcA.id FROM OntologyEntry oe JOIN oe.source srcA )" + 
+		  "  AND src NOT IN ( SELECT srcB.id FROM XRef xr JOIN xr.source srcB )";
+		
+		long result = entityManager.createQuery ( hql ).executeUpdate ();
+
+		// TODO: AOP
+		log.trace ( String.format ( "%s.postRemove( null ): returning %d", ReferenceSource.class.getSimpleName (), result ));
+		return result;
+	}
+
+}
