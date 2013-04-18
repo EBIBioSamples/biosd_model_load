@@ -1,6 +1,8 @@
 package ac.uk.ebi.fg.biosd.sampletab.persistence;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 
 import java.io.PrintStream;
 import java.io.StringWriter;

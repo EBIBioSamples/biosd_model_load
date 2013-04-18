@@ -3,10 +3,10 @@
  */
 package ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization;
 
-import com.google.common.collect.Table;
-
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.MSI;
 import uk.ac.ebi.fg.core_model.toplevel.Identifiable;
+
+import com.google.common.collect.Table;
 
 
 /**

@@ -4,8 +4,6 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import ac.uk.ebi.fg.biosd.sampletab.persistence.Persister;
-
 import uk.ac.ebi.arrayexpress2.magetab.datamodel.graph.Node;
 import uk.ac.ebi.arrayexpress2.magetab.exception.ParseException;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.SampleData;
@@ -29,6 +27,7 @@ import uk.ac.ebi.fg.core_model.expgraph.properties.UnitDimension;
 import uk.ac.ebi.fg.core_model.organizational.ContactRole;
 import uk.ac.ebi.fg.core_model.terms.OntologyEntry;
 import uk.ac.ebi.fg.core_model.xref.ReferenceSource;
+import ac.uk.ebi.fg.biosd.sampletab.persistence.Persister;
 
 /**
  * Loads a SampleTab file (or equivalent) into memory, mapping it as a set of BioSD model objects.

@@ -5,7 +5,6 @@ package ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.xref;
 
 import javax.persistence.EntityManager;
 
-import uk.ac.ebi.fg.core_model.terms.OntologyEntry;
 import uk.ac.ebi.fg.core_model.xref.XRef;
 import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.UnloadingListener;
 
