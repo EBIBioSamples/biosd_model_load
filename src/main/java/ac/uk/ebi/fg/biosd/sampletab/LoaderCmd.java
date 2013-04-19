@@ -87,6 +87,8 @@ public class LoaderCmd
 		
 		out.println ( "Syntax:" );
 		out.println ( "\n\tloader <path-to-biosampletab-file>\n\n" );
+		out.println ( "See also hibernate.properites for the configuration of the target database.\n\n" );
+		
 		System.exit ( 1 ); // TODO: proper exit codes.
 	}
 
@@ -94,7 +96,7 @@ public class LoaderCmd
 	/**
 	 * Format an amount of time into a string that reports both time in appropriate units (e.g. 1min 32sec) and in seconds.
 	 */
-	private static String formatTimeDuration ( long ms )
+	public static String formatTimeDuration ( long ms )
 	{
 	  long secs = Math.round ( ms * 1.0 / 1000 );
 

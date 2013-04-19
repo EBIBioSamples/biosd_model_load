@@ -39,7 +39,7 @@ public class MemoryStore extends ForwardingTable<Class, String, Object> implemen
 	 * A wrapper that search for this class and this identifier, casting the result to an instance of the targetClass. 
 	 */
 	@SuppressWarnings ( "unchecked" )
-	public <T> T get ( Class<? extends T> targetClass, String targetId ) {
+	private <T> T get ( Class<? extends T> targetClass, String targetId ) {
 		return (T) super.get ( targetClass, targetId );
 	} 
 
@@ -47,14 +47,14 @@ public class MemoryStore extends ForwardingTable<Class, String, Object> implemen
 	 * Wraps {@link #get(Class, String)} with target.getClass().
 	 */
 	@SuppressWarnings ( "unchecked" )
-	public <T> T get ( String targetId, T target ) {
+	private <T> T get ( String targetId, T target ) {
 		return (T) get ( target.getClass (), targetId );
 	} 
 
 	/**
 	 * Invokes {@link #get(Class, String)} and, if the target object is not in the table, saves newObject (returning null). 
 	 */
-	public <T> T getOrPut ( Class<? extends T> targetClass, String targetId, T newObject ) 
+	private <T> T getOrPut ( Class<? extends T> targetClass, String targetId, T newObject ) 
 	{
 		T result = get ( targetClass, targetId );
 		if ( result == null )
@@ -65,7 +65,7 @@ public class MemoryStore extends ForwardingTable<Class, String, Object> implemen
 	/**
 	 * A wrapper of {@link #getOrPut(Class, String, Object)} that uses newObject.getClass(). 
 	 */
-	public <T> T getOrPut ( String targetId, T newObject ) 
+	private <T> T getOrPut ( String targetId, T newObject ) 
 	{
 		T result = get ( targetId, newObject );
 		if ( result == null ) this.put ( targetId, newObject );
@@ -91,7 +91,7 @@ public class MemoryStore extends ForwardingTable<Class, String, Object> implemen
 	 * Wraps {@link Table#put(Object, Object, Object)} with target.getClass(). 
 	 */
 	@SuppressWarnings ( "unchecked" )
-	public <T> T put ( String targetId, T target ) {
+	private <T> T put ( String targetId, T target ) {
 		return (T) super.put ( target.getClass (), targetId, target );
 	}
 }
