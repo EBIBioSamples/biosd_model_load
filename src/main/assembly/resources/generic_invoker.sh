@@ -45,4 +45,5 @@ java $OPTS -cp $CP $javaClass ${1+"$@"}
 EXCODE=$?
 
 echo Java Finished. Quitting the Shell Too. >&2
+echo 
 exit $EXCODE
