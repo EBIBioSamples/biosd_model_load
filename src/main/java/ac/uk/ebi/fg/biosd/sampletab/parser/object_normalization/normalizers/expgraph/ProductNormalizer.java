@@ -6,6 +6,7 @@ package ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.exp
 import java.util.HashSet;
 import java.util.Set;
 
+import uk.ac.ebi.fg.biosd.model.expgraph.BioSample;
 import uk.ac.ebi.fg.core_model.expgraph.Node;
 import uk.ac.ebi.fg.core_model.expgraph.Product;
 import uk.ac.ebi.fg.core_model.expgraph.properties.ExperimentalPropertyValue;
@@ -77,6 +78,9 @@ public class ProductNormalizer
 			
 			// We need to replace the link later, to avoid interference with the iterator in the loop
 			addLinks.add ( upS ); delLinks.add ( up );
+			
+			// mark the time the object update occurs 
+			setUpdateDate ( upS );
 		}
 		// Do it
 		for ( Product<?> del: delLinks ) node.removeDerivedFrom ( del );
@@ -100,10 +104,20 @@ public class ProductNormalizer
 			
 			// We need to replace the link later, to avoid interference with the iterator in the loop
 			addLinks.add ( downS ); delLinks.add ( down );
+			
+			// mark the time the object update occurs 
+			setUpdateDate ( downS );
 		}
 		// Do it
 		for ( Product<?> del: delLinks ) node.removeDerivedInto ( del );
 		for ( Product<?> add: addLinks ) node.addDerivedInto ( add );
 	}	
-	
+
+	/**
+	 * Does nothing by default. {@link BioSampleNormalizer} overrides this by setting the update date for that kind of
+	 * object. 
+	 */
+	protected void setUpdateDate ( Product <?> node )
+	{
+	}
 }

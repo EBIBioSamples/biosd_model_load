@@ -39,7 +39,7 @@ public class Persister
 		// Normalise (i.e., removes duplicates) in-memory objects that appear to be duplicates of already-existing objects
 		// on the database side.
 		new MSINormalizer ( new DBStore ( em ) ).normalize ( msi );
-		
+			
 		// Ready to go now.
 		
 		ts.begin ();

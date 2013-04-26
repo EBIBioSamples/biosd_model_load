@@ -3,12 +3,14 @@
  */
 package ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.organizational;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
 import uk.ac.ebi.fg.biosd.model.expgraph.BioSample;
 import uk.ac.ebi.fg.biosd.model.organizational.BioSampleGroup;
 import uk.ac.ebi.fg.core_model.expgraph.properties.ExperimentalPropertyValue;
+import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.DBStore;
 import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.Store;
 import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.expgraph.ProductComparator;
 import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.expgraph.properties.PropertyValueNormalizer;
@@ -56,6 +58,9 @@ public class BioSampleGroupNormalizer extends AnnotatableNormalizer<BioSampleGro
 			for ( BioSampleGroup smpSg: sample.getGroups () ) smpS.addGroup ( smpSg );
 			
 			addSmps.add ( smpS ); delSmps.add ( sample );
+			
+			// mark the time the object update occurs 
+			if ( store instanceof DBStore ) smpS.setUpdateDate ( new Date () );
 		}
 		samples.removeAll ( delSmps );
 		samples.addAll ( addSmps );
@@ -63,5 +68,8 @@ public class BioSampleGroupNormalizer extends AnnotatableNormalizer<BioSampleGro
 		// Properties
 		for ( ExperimentalPropertyValue<?> pv: sg.getPropertyValues () )
 			pvNormalizer.normalize ( pv );
+		
+		// mark the time the object creation occurs 
+		if ( store instanceof DBStore ) sg.setUpdateDate ( new Date () );
 	}
 }

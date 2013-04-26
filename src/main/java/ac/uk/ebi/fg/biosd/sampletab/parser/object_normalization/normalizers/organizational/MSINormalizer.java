@@ -1,5 +1,6 @@
 package ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.organizational;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -56,7 +57,7 @@ public class MSINormalizer extends AnnotatableNormalizer<MSI>
 	public void normalize ( MSI msi )
 	{
 		if ( msi == null ) {
-			log.warn ( "Internal issue: MSI Peristence Listener got a null submission and that smell like a code bug" );
+			log.warn ( "Internal issue: MSI Peristence Listener got a null submission and that smells like a code bug" );
 			return;
 		}
 		if ( msi.getId () != null ) return;
@@ -77,7 +78,10 @@ public class MSINormalizer extends AnnotatableNormalizer<MSI>
 		for ( BioSampleGroup sg: msi.getSampleGroups () ) sgNormalizer.normalize ( sg );
 
 		linkExistingSamples ( msi );
-		linkExistingSampleGroups ( msi );		
+		linkExistingSampleGroups ( msi );	
+
+		// mark the time the object creation occurs 
+		if ( store instanceof DBStore ) msi.setUpdateDate ( new Date () );
 	}
 	
 	private <R extends ReferenceSource> void normalizeReferenceSources ( Class<R> targetEntityClass, Set<R> sources )
