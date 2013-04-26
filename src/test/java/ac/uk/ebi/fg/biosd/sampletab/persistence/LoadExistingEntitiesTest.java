@@ -7,6 +7,7 @@ import static junit.framework.Assert.assertTrue;
 import java.io.PrintStream;
 import java.io.StringWriter;
 import java.util.Collections;
+import java.util.Date;
 
 import javax.persistence.EntityManager;
 
@@ -17,6 +18,7 @@ import org.junit.Test;
 import uk.ac.ebi.fg.biosd.model.expgraph.BioSample;
 import uk.ac.ebi.fg.biosd.model.organizational.BioSampleGroup;
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
+import uk.ac.ebi.fg.biosd.model.persistence.hibernate.application_mgmt.UnloadLogDAO;
 import uk.ac.ebi.fg.biosd.model.utils.MSIDumper;
 import uk.ac.ebi.fg.biosd.model.utils.test.TestModel;
 import uk.ac.ebi.fg.core_model.expgraph.properties.BioCharacteristicType;
@@ -208,6 +210,11 @@ public class LoadExistingEntitiesTest
 		
 		Persister persister = new Persister ();
 		persister.persist ( m1.msi );
+		
+		// Verify update dates
+		Date sg2Date = m1.sg2.getUpdateDate ();
+		assertNotNull ( "sg2.updateDate not set!", sg2Date );
+		
 		persister.persist ( m2.msi );
 
 		EntityManager em = emProvider.getEntityManager ();
@@ -267,6 +274,10 @@ public class LoadExistingEntitiesTest
 		
 		assertNotNull ( "test1.sg2 not found in reloaded model!", sg2 );
 		assertTrue ( "Reloaded m2 doesn't contain smp6->sg2!", sg2.getSamples ().contains ( m2.smp6 ) );
+
+		// Test update dates
+		assertNotNull ( "sg2.updateDate not set!", m2.sg2.getUpdateDate () );
+		assertTrue ( "sg2.updateDate not changed!", sg2Date.compareTo ( m2.sg2.getUpdateDate () ) < 0 );
 		
 		Publication pubDB = msi2DB.getPublications ().iterator ().next ();
 		PublicationStatus pubStatDB = pubDB.getStatus ();
@@ -277,12 +288,18 @@ public class LoadExistingEntitiesTest
 		
 		assertNotNull ( "Test Pub Status not saved!", pubStatDB );
 		
+		// Test update dates
+		assertNotNull ( "MSI's update date not set!", msi2DB.getUpdateDate () );
+		assertNotNull ( "sg1 update date not set!", m2.sg1.getUpdateDate () );
 		
-		// ------------------------------ Test unloading ------------------------------------------
+		
+		// ------------------------------ Unloading Test --------------------------------------
 		// 
 		
 		Unloader unloader = new Unloader ();
 		unloader.unload ( msi2DB );
+		
+		em = emProvider.newEntityManager ();
 		
 		AccessibleDAO<BioSample> sampleDao = new AccessibleDAO<BioSample> ( BioSample.class, em );
 		assertTrue ( "Unloading removed smp3!", sampleDao.contains ( smp3.getAcc () ) );
@@ -299,5 +316,14 @@ public class LoadExistingEntitiesTest
 		assertFalse ( "Test Ref Source not deleted!", idDao.contains ( srcId, ReferenceSource.class ) );
 		assertFalse ( "Test Pub Status not deleted!", 
 			new CVTermDAO<PublicationStatus> ( PublicationStatus.class, em ).contains ( pubStat.getName () ) );
+		
+		// Verifies unloading log
+		// 
+		em = emProvider.newEntityManager ();
+		UnloadLogDAO uldao = new UnloadLogDAO ( em );
+
+		assertTrue ( "Unload log didn't work for smp3!", uldao.wasDeleted ( msi2DB, 1 ) );
+		assertTrue ( "Unload log didn't work for smp7!", uldao.wasDeleted ( smp7, 1 ) );
+		assertTrue ( "Unload log didn't work for sg1!", uldao.wasDeleted ( m2.sg1, 1 ) );
 	}
 }
