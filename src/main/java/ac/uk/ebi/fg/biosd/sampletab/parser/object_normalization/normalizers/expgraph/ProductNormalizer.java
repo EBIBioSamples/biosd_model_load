@@ -117,7 +117,7 @@ public class ProductNormalizer
 	 * Does nothing by default. {@link BioSampleNormalizer} overrides this by setting the update date for that kind of
 	 * object. 
 	 */
-	protected void setUpdateDate ( Product <?> node )
+	protected void setUpdateDate ( Product <?> existingNode )
 	{
 	}
 }

@@ -7,9 +7,12 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.ebi.fg.biosd.model.application_mgmt.JobRegisterEntry;
+import uk.ac.ebi.fg.biosd.model.application_mgmt.JobRegisterEntry.Operation;
 import uk.ac.ebi.fg.biosd.model.expgraph.BioSample;
 import uk.ac.ebi.fg.biosd.model.organizational.BioSampleGroup;
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
+import uk.ac.ebi.fg.biosd.model.persistence.hibernate.application_mgmt.JobRegisterDAO;
 import uk.ac.ebi.fg.biosd.model.xref.DatabaseRefSource;
 import uk.ac.ebi.fg.core_model.organizational.Contact;
 import uk.ac.ebi.fg.core_model.organizational.Organization;
@@ -81,7 +84,10 @@ public class MSINormalizer extends AnnotatableNormalizer<MSI>
 		linkExistingSampleGroups ( msi );	
 
 		// mark the time the object creation occurs 
-		if ( store instanceof DBStore ) msi.setUpdateDate ( new Date () );
+		if ( store instanceof DBStore ) { 
+			msi.setUpdateDate ( new Date () );
+			new JobRegisterDAO ( ((DBStore) store).getEntityManager () ).create ( msi, Operation.ADD, msi.getUpdateDate () );
+		}
 	}
 	
 	private <R extends ReferenceSource> void normalizeReferenceSources ( Class<R> targetEntityClass, Set<R> sources )

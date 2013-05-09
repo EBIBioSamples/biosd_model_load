@@ -5,10 +5,11 @@ package ac.uk.ebi.fg.biosd.sampletab.persistence.organizational;
 
 import javax.persistence.EntityManager;
 
-import uk.ac.ebi.fg.biosd.model.application_mgmt.UnloadLogEntry;
+import uk.ac.ebi.fg.biosd.model.application_mgmt.JobRegisterEntry;
+import uk.ac.ebi.fg.biosd.model.application_mgmt.JobRegisterEntry.Operation;
 import uk.ac.ebi.fg.biosd.model.organizational.BioSampleGroup;
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
-import uk.ac.ebi.fg.biosd.model.persistence.hibernate.application_mgmt.UnloadLogDAO;
+import uk.ac.ebi.fg.biosd.model.persistence.hibernate.application_mgmt.JobRegisterDAO;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.toplevel.AccessibleDAO;
 import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.UnloadingListener;
 import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.expgraph.BioSampleUnloadingListener;
@@ -32,26 +33,26 @@ public class MSIUnloadingListener extends UnloadingListener<MSI>
 	}
 
 	/**
-	 * Uses {@link UnloadLogDAO#delete(int)} to flush older entries (TODO: the constant parameter of 90 days to be moved
+	 * Uses {@link JobRegisterDAO#delete(int)} to flush older entries (TODO: the constant parameter of 90 days to be moved
 	 * to a configuration property).
 	 * Removes the sample groups that are linked only to this submission.
-	 * Tracks the operation by adding {@link UnloadLogEntry}s. 
+	 * Tracks the operation by adding {@link JobRegisterEntry}s. 
 	 */
 	@Override
 	public long preRemove ( MSI msi ) 
 	{
 		long result = 0;
 		AccessibleDAO<BioSampleGroup> sgDao = new AccessibleDAO<BioSampleGroup> ( BioSampleGroup.class, entityManager );
-		UnloadLogDAO unloadLogDao = new UnloadLogDAO ( entityManager );
+		JobRegisterDAO jrDao = new JobRegisterDAO ( entityManager );
 
 		// Flush old entries in the unload log.
-		result += unloadLogDao.delete ( 90 ); 
+		result += jrDao.clean ( 90 ); 
 
 		for ( BioSampleGroup sg: msi.getSampleGroups () ) {
 			// There are other MSIs linked to this
 			if ( sg.getMSIs ().size () > 1 ) continue;
 			if ( !sgDao.delete ( sg ) ) continue;
-			unloadLogDao.create ( new UnloadLogEntry ( sg ) );
+			jrDao.create ( sg, Operation.DELETE );
 			result++;
 		}
 		
@@ -60,7 +61,7 @@ public class MSIUnloadingListener extends UnloadingListener<MSI>
 
 	/**
 	 * Removes linked objects.
-	 * Tracks the operation using {@link UnloadLogEntry}. 
+	 * Tracks the operation using {@link JobRegisterEntry}. 
 	 */
 	@Override
 	public long postRemove ( MSI msi )
@@ -71,8 +72,8 @@ public class MSIUnloadingListener extends UnloadingListener<MSI>
 		result += new ReferenceSourceUnloadingListener ( entityManager ).postRemove ( null );
 		result += new CVTermUnloadingListener ( entityManager ).postRemove ( null );
 		
-		UnloadLogDAO unloadLogDao = new UnloadLogDAO ( entityManager );
-		unloadLogDao.create ( new UnloadLogEntry ( msi ) );
+		JobRegisterDAO jrDao = new JobRegisterDAO ( entityManager );
+		jrDao.create ( msi, Operation.DELETE );
 		
 		return result;
 	}

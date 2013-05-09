@@ -1,6 +1,3 @@
-/*
- * 
- */
 package ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners;
 
 import javax.persistence.EntityManager;

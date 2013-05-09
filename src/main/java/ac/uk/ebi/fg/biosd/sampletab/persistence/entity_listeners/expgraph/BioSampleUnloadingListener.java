@@ -7,10 +7,11 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
-import uk.ac.ebi.fg.biosd.model.application_mgmt.UnloadLogEntry;
+import uk.ac.ebi.fg.biosd.model.application_mgmt.JobRegisterEntry;
+import uk.ac.ebi.fg.biosd.model.application_mgmt.JobRegisterEntry.Operation;
 import uk.ac.ebi.fg.biosd.model.expgraph.BioSample;
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
-import uk.ac.ebi.fg.biosd.model.persistence.hibernate.application_mgmt.UnloadLogDAO;
+import uk.ac.ebi.fg.biosd.model.persistence.hibernate.application_mgmt.JobRegisterDAO;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.toplevel.AccessibleDAO;
 import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.UnloadingListener;
 
@@ -35,7 +36,7 @@ public class BioSampleUnloadingListener extends UnloadingListener<BioSample>
 	
 	/**
 	 * Deletes samples not linked to any sample group or {@link MSI submission}.
-	 * Tracks the operation using {@link UnloadLogEntry}. 
+	 * Tracks the operation using {@link JobRegisterEntry}. 
 	 */
 	@Override
 	@SuppressWarnings ( "unchecked" )
@@ -44,12 +45,12 @@ public class BioSampleUnloadingListener extends UnloadingListener<BioSample>
 		long result = 0;
 		
 		AccessibleDAO<BioSample> smpDao = new AccessibleDAO<BioSample> ( BioSample.class, entityManager );
-		UnloadLogDAO unloadLogDao = new UnloadLogDAO ( entityManager );
+		JobRegisterDAO jrDao = new JobRegisterDAO ( entityManager );
 
 		String hql = String.format ( "FROM %s smp WHERE smp.MSIs IS EMPTY AND smp.groups IS EMPTY", BioSample.class.getCanonicalName () );
 		for ( BioSample smp: ( List<BioSample> ) entityManager.createQuery ( hql ).getResultList () )
 			if ( smpDao.delete ( smp ) ) {
-				unloadLogDao.create ( new UnloadLogEntry ( smp ) );
+				jrDao.create ( smp, Operation.DELETE );
 				result++;
 			}
 		return result;

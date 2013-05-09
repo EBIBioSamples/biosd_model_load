@@ -29,6 +29,7 @@ public class DBStore implements Store
 	private final CVTermDAO<CVTerm> cvTermDao;
 	private final ReferenceSourceDAO<ReferenceSource> refSrcDao;
 	private final OntologyEntryDAO<OntologyEntry> oeDao;
+	private final EntityManager entityManager;
 	
 	/**
 	 * @param entityManager, of course you need this to get into the database and it should be initialised the usual way, e.g., 
@@ -37,6 +38,7 @@ public class DBStore implements Store
 	 */
 	public DBStore ( EntityManager entityManager )
 	{
+		this.entityManager = entityManager;
 		accessibleDao = new AccessibleDAO<Accessible> ( Accessible.class, entityManager );
 		cvTermDao = new CVTermDAO<CVTerm> ( CVTerm.class, entityManager );
 		refSrcDao = new ReferenceSourceDAO<ReferenceSource> ( ReferenceSource.class, entityManager );
@@ -87,4 +89,8 @@ public class DBStore implements Store
 		return oeDao.find ( acc, srcAcc, srcVer );
 	}
 
+	public EntityManager getEntityManager () {
+		return entityManager;
+	}
+	
 }

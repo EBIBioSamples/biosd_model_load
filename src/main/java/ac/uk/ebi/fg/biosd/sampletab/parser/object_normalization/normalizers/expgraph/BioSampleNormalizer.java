@@ -5,7 +5,9 @@ package ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.exp
 
 import java.util.Date;
 
+import uk.ac.ebi.fg.biosd.model.application_mgmt.JobRegisterEntry.Operation;
 import uk.ac.ebi.fg.biosd.model.expgraph.BioSample;
+import uk.ac.ebi.fg.biosd.model.persistence.hibernate.application_mgmt.JobRegisterDAO;
 import uk.ac.ebi.fg.core_model.expgraph.Product;
 import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.DBStore;
 import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.Store;
@@ -20,8 +22,12 @@ import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.Store;
  */
 public class BioSampleNormalizer extends ProductNormalizer<BioSample>
 {
-	public BioSampleNormalizer ( Store store ) {
+	private final JobRegisterDAO jobRegDao;
+
+	public BioSampleNormalizer ( Store store ) 
+	{
 		super ( store );
+		this.jobRegDao = store instanceof DBStore ? new JobRegisterDAO ( ((DBStore) store ).getEntityManager () ) : null;
 	}
 
 	@Override
@@ -31,7 +37,12 @@ public class BioSampleNormalizer extends ProductNormalizer<BioSample>
 		super.normalize ( smp );
 		
 		// mark the time the object creation occurs 
-		if ( getStore () instanceof DBStore ) smp.setUpdateDate ( new Date () );
+		if ( store instanceof DBStore ) 
+		{
+			smp.setUpdateDate ( new Date () );
+			jobRegDao.create ( smp, Operation.ADD, smp.getUpdateDate () );
+		}
+		
 	}
 
 	/**
@@ -39,12 +50,13 @@ public class BioSampleNormalizer extends ProductNormalizer<BioSample>
 	 * {@link ProductNormalizer#timestamp}.
 	 */
 	@Override
-	protected void setUpdateDate ( Product<?> product )
+	protected void setUpdateDate ( Product<?> existingProd )
 	{
 		if ( !( store instanceof DBStore ) ) return;
-		if ( ! ( product instanceof BioSample ) ) return;
+		if ( ! ( existingProd instanceof BioSample ) ) return;
 		
-		((BioSample) product).setUpdateDate ( new Date () );
+		((BioSample) existingProd).setUpdateDate ( new Date () );
+		jobRegDao.create ( existingProd, Operation.UPDATE, ((BioSample) existingProd).getUpdateDate () );
 	}
 	
 }

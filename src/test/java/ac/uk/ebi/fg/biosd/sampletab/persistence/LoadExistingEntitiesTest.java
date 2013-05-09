@@ -15,10 +15,11 @@ import org.apache.commons.io.output.WriterOutputStream;
 import org.junit.Rule;
 import org.junit.Test;
 
+import uk.ac.ebi.fg.biosd.model.application_mgmt.JobRegisterEntry.Operation;
 import uk.ac.ebi.fg.biosd.model.expgraph.BioSample;
 import uk.ac.ebi.fg.biosd.model.organizational.BioSampleGroup;
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
-import uk.ac.ebi.fg.biosd.model.persistence.hibernate.application_mgmt.UnloadLogDAO;
+import uk.ac.ebi.fg.biosd.model.persistence.hibernate.application_mgmt.JobRegisterDAO;
 import uk.ac.ebi.fg.biosd.model.utils.MSIDumper;
 import uk.ac.ebi.fg.biosd.model.utils.test.TestModel;
 import uk.ac.ebi.fg.core_model.expgraph.properties.BioCharacteristicType;
@@ -292,6 +293,14 @@ public class LoadExistingEntitiesTest
 		assertNotNull ( "MSI's update date not set!", msi2DB.getUpdateDate () );
 		assertNotNull ( "sg1 update date not set!", m2.sg1.getUpdateDate () );
 		
+		// Verify the job register
+		JobRegisterDAO jr = new JobRegisterDAO ( em );
+		assertTrue ( "Unload log didn't work for smp3!", jr.hasEntry ( msi2DB, 1, Operation.ADD ) );
+		assertTrue ( "Unload log didn't work for smp7!", jr.hasEntry ( smp7, 1, Operation.ADD ) );
+		assertTrue ( "Unload log didn't work for sg1!", jr.hasEntry ( m2.sg1, 1, Operation.UPDATE ) );
+		assertTrue ( "Unload log didn't work for sg1!", jr.hasEntry ( m2.sg1, 1, Operation.ADD ) );
+
+		
 		
 		// ------------------------------ Unloading Test --------------------------------------
 		// 
@@ -320,10 +329,15 @@ public class LoadExistingEntitiesTest
 		// Verifies unloading log
 		// 
 		em = emProvider.newEntityManager ();
-		UnloadLogDAO uldao = new UnloadLogDAO ( em );
+		jr = new JobRegisterDAO ( em );
 
-		assertTrue ( "Unload log didn't work for smp3!", uldao.wasDeleted ( msi2DB, 1 ) );
-		assertTrue ( "Unload log didn't work for smp7!", uldao.wasDeleted ( smp7, 1 ) );
-		assertTrue ( "Unload log didn't work for sg1!", uldao.wasDeleted ( m2.sg1, 1 ) );
+		assertTrue ( "Unload log didn't work for smp3!", jr.hasEntry ( msi2DB, 1 ) );
+		assertTrue ( "Unload log didn't work for smp7!", jr.hasEntry ( smp7, 1 ) );
+		assertTrue ( "Unload log didn't work for sg1!", jr.hasEntry ( m2.sg1, 1 ) );
+		
+		int szAll = jr.find ( 1 ).size ();
+		assertTrue ( "JobRegisterDAO.find() doesn't work!", szAll >= 3 );
+		assertTrue ( "JobRegisterDAO.find() doesn't work!", jr.find ( 1, Operation.DELETE ).size () < szAll );
+
 	}
 }

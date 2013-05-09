@@ -7,8 +7,10 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import uk.ac.ebi.fg.biosd.model.application_mgmt.JobRegisterEntry.Operation;
 import uk.ac.ebi.fg.biosd.model.expgraph.BioSample;
 import uk.ac.ebi.fg.biosd.model.organizational.BioSampleGroup;
+import uk.ac.ebi.fg.biosd.model.persistence.hibernate.application_mgmt.JobRegisterDAO;
 import uk.ac.ebi.fg.core_model.expgraph.properties.ExperimentalPropertyValue;
 import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.DBStore;
 import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.Store;
@@ -27,12 +29,13 @@ public class BioSampleGroupNormalizer extends AnnotatableNormalizer<BioSampleGro
 {
 	private final PropertyValueNormalizer pvNormalizer; 
 	private final ProductComparator smpCmp = new ProductComparator ();
-	
+	private final JobRegisterDAO jobRegDao;
 	
 	public BioSampleGroupNormalizer ( Store store ) 
 	{
 		super ( store );
 		pvNormalizer = new PropertyValueNormalizer ( store );
+		this.jobRegDao = store instanceof DBStore ? new JobRegisterDAO ( ((DBStore) store ).getEntityManager () ) : null;
 	}
 
 	/**
@@ -60,7 +63,11 @@ public class BioSampleGroupNormalizer extends AnnotatableNormalizer<BioSampleGro
 			addSmps.add ( smpS ); delSmps.add ( sample );
 			
 			// mark the time the object update occurs 
-			if ( store instanceof DBStore ) smpS.setUpdateDate ( new Date () );
+			if ( store instanceof DBStore ) 
+			{
+				smpS.setUpdateDate ( new Date () );
+				jobRegDao.create ( sg, Operation.UPDATE, smpS.getUpdateDate () );
+			}
 		}
 		samples.removeAll ( delSmps );
 		samples.addAll ( addSmps );
@@ -70,6 +77,10 @@ public class BioSampleGroupNormalizer extends AnnotatableNormalizer<BioSampleGro
 			pvNormalizer.normalize ( pv );
 		
 		// mark the time the object creation occurs 
-		if ( store instanceof DBStore ) sg.setUpdateDate ( new Date () );
+		if ( store instanceof DBStore ) 
+		{
+			sg.setUpdateDate ( new Date () );
+			jobRegDao.create ( sg, Operation.ADD, sg.getUpdateDate () );
+		}
 	}
 }
