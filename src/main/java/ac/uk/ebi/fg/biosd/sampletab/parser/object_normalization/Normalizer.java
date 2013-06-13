@@ -3,8 +3,6 @@
  */
 package ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization;
 
-import java.util.Date;
-
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.MSI;
 import uk.ac.ebi.fg.core_model.toplevel.Identifiable;
 

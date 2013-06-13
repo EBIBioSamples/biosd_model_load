@@ -6,7 +6,6 @@ package ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.exp
 import java.util.HashSet;
 import java.util.Set;
 
-import uk.ac.ebi.fg.biosd.model.expgraph.BioSample;
 import uk.ac.ebi.fg.core_model.expgraph.Node;
 import uk.ac.ebi.fg.core_model.expgraph.Product;
 import uk.ac.ebi.fg.core_model.expgraph.properties.ExperimentalPropertyValue;
