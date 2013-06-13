@@ -34,9 +34,10 @@ public class ReferenceSourceUnloadingListener extends UnloadingListener<Referenc
 		// only way I can make Hibernate to translate correctly the query into SQL
 		// TODO: use classes for entity names
 		//
-		String hql = "DELETE FROM ReferenceSource src WHERE" +
-			"  src NOT IN ( SELECT srcA.id FROM OntologyEntry oe JOIN oe.source srcA )" + 
-		  "  AND src NOT IN ( SELECT srcB.id FROM XRef xr JOIN xr.source srcB )";
+		String hql = "DELETE FROM ReferenceSource src WHERE\n" +
+			"  src NOT IN ( SELECT srcA.id FROM OntologyEntry oe JOIN oe.source srcA )\n" + 
+		  "  AND src NOT IN ( SELECT srcB.id FROM XRef xr JOIN xr.source srcB )\n" +
+			"  AND src NOT IN ( SELECT db.id FROM MSI msi JOIN msi.databases db )";
 		
 		long result = entityManager.createQuery ( hql ).executeUpdate ();
 
