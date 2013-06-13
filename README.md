@@ -12,5 +12,5 @@ hibernate.properties file pointing at the database defined by the profile.
 
 Currently available profiles for the EBI are oracle_test and oracle_dev.
 
-See the [wiki](wiki/Home) for details.
+See the [wiki](wiki) for details.
  
