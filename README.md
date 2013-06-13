@@ -11,4 +11,6 @@ test.* profiles are only used for JUnit tests. Profiles without such prefix are 
 hibernate.properties file pointing at the database defined by the profile.
 
 Currently available profiles for the EBI are oracle_test and oracle_dev.
+
+See the [wiki](http://github.com/EBIBioSamples/biosd_model_load/wiki) for details.
  
