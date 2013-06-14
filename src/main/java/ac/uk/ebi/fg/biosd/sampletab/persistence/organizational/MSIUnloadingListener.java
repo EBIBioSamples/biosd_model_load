@@ -57,22 +57,23 @@ public class MSIUnloadingListener extends UnloadingListener<MSI>
 
 		for ( BioSampleGroup sg: new LinkedList<BioSampleGroup> ( msi.getSampleGroups () ) ) 
 		{
-			msi.deleteSampleGroup ( sg );
+//msi.deleteSampleGroup ( sg );
 			
-			// There are other MSIs linked to this
-			if ( !sg.getMSIs ().isEmpty () ) continue;
+// There are other MSIs linked to this
+//if ( !sg.getMSIs ().isEmpty () ) continue;
+			if ( sg.getMSIs ().size () > 1 ) continue;
 			
 			if ( !sgDao.delete ( sg ) ) continue;
 			jrDao.create ( sg, Operation.DELETE );
 			result++;
 		}
 		
-		for ( BioSample smp: new LinkedList<BioSample> ( msi.getSamples () ) )
-			msi.deleteSample ( smp );
+//		for ( BioSample smp: new LinkedList<BioSample> ( msi.getSamples () ) )
+//			msi.deleteSample ( smp );
 
-		Collection<DatabaseRefSource> dbs = msi.getDatabases ();
-		for ( DatabaseRefSource db: new LinkedList<DatabaseRefSource> ( dbs ) )
-			dbs.remove ( db );
+//		Collection<DatabaseRefSource> dbs = msi.getDatabases ();
+//		for ( DatabaseRefSource db: new LinkedList<DatabaseRefSource> ( dbs ) )
+//			dbs.remove ( db );
 
 		return result;
 	}
