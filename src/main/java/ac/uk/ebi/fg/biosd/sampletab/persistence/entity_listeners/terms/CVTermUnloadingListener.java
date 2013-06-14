@@ -36,8 +36,9 @@ public class CVTermUnloadingListener extends UnloadingListener<CVTerm>
 		//
 		String hqls[] = new String[] {
 			"DELETE FROM AnnotationType cv WHERE cv NOT IN ( SELECT cvA.id FROM Annotation ann JOIN ann.type cvA )",
-			"DELETE FROM ContactRole cv WHERE cv NOT IN ( SELECT cvA.id FROM Contact cnt JOIN cnt.contactRoles cvA )",
-			"DELETE FROM ContactRole cv WHERE cv NOT IN ( SELECT cvA.id FROM Organization org JOIN org.organizationRoles cvA )",
+			"DELETE FROM ContactRole cv WHERE\n" +
+			  "  cv NOT IN ( SELECT cvA.id FROM Contact cnt JOIN cnt.contactRoles cvA )" +
+			  "  AND cv NOT IN ( SELECT cvA.id FROM Organization org JOIN org.organizationRoles cvA )",
 			"DELETE FROM PublicationStatus cv WHERE cv NOT IN ( SELECT cvA.id FROM Publication pub JOIN pub.status cvA )"
 		};
 		
