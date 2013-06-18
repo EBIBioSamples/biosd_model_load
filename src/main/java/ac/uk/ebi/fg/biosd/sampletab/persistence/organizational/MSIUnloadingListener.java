@@ -1,6 +1,3 @@
-/*
- * 
- */
 package ac.uk.ebi.fg.biosd.sampletab.persistence.organizational;
 
 import java.util.LinkedList;
