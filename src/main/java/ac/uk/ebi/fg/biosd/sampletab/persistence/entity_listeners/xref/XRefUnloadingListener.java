@@ -9,7 +9,7 @@ import uk.ac.ebi.fg.core_model.xref.XRef;
 import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.UnloadingListener;
 
 /**
- * TODO: Comment me!
+ * Unloading pre/post processor for {@link XRef} entities.
  *
  * <dl><dt>date</dt><dd>Apr 18, 2013</dd></dl>
  * @author Marco Brandizi
@@ -26,6 +26,10 @@ public class XRefUnloadingListener extends UnloadingListener<XRef>
 		return 0;
 	}
 
+
+	/**
+	 * Removes all dangling {@link XRef} records.
+	 */
 	@Override
 	public long postRemove ( XRef entity )
 	{

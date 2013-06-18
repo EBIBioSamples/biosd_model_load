@@ -9,7 +9,7 @@ import uk.ac.ebi.fg.core_model.terms.OntologyEntry;
 import ac.uk.ebi.fg.biosd.sampletab.persistence.entity_listeners.UnloadingListener;
 
 /**
- * TODO: Comment me!
+ * Unloading pre/post processor for {@link OntologyEntry} entities.
  *
  * <dl><dt>date</dt><dd>Apr 8, 2013</dd></dl>
  * @author Marco Brandizi
@@ -24,6 +24,9 @@ public class OntologyEntryUnloadingListener extends UnloadingListener<OntologyEn
 	@Override
 	public long preRemove ( OntologyEntry oe ) { return 0; }
 
+	/**
+	 * Removes all dangling {@link OntologyEntry} records.
+	 */
 	@Override
 	public long postRemove ( OntologyEntry foo )
 	{

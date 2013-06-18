@@ -14,7 +14,7 @@ import ac.uk.ebi.fg.biosd.sampletab.parser.object_normalization.Store;
 
 
 /**
- * TODO: Comment me!
+ * The dupe normalizer for {@link BioSample}.
  *
  * <dl><dt>date</dt><dd>Mar 12, 2013</dd></dl>
  * @author Marco Brandizi
@@ -30,6 +30,9 @@ public class BioSampleNormalizer extends ProductNormalizer<BioSample>
 		this.jobRegDao = store instanceof DBStore ? new JobRegisterDAO ( ((DBStore) store ).getEntityManager () ) : null;
 	}
 
+	/**
+	 * Just update the last-update date.
+	 */
 	@Override
 	public void normalize ( BioSample smp )
 	{

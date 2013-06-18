@@ -32,7 +32,8 @@ import ac.uk.ebi.fg.biosd.sampletab.persistence.Persister;
 /**
  * Loads a SampleTab file (or equivalent) into memory, mapping it as a set of BioSD model objects.
  *
- * TODO: probably we want to move 'new MSINormalizer ( new MemoryStore () ).normalize ( msi );' here, see {@link Persister}. 
+ * TODO: probably we want to move 'new MSINormalizer ( new MemoryStore () ).normalize ( msi );' here, i.e., 
+ * unify duped objects just after loading. @see {@link Persister}. 
  * 
  * <dl><dt>date</dt><dd>Apr 8, 2013</dd></dl>
  * @author Adam Falcounbridge
