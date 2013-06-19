@@ -13,8 +13,8 @@ import org.junit.Test;
 
 import uk.ac.ebi.arrayexpress2.magetab.exception.ParseException;
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
-import ac.uk.ebi.fg.biosd.sampletab.Loader;
-import ac.uk.ebi.fg.biosd.sampletab.persistence.Persister;
+import uk.ac.ebi.fg.biosd.sampletab.Loader;
+import uk.ac.ebi.fg.biosd.sampletab.persistence.Persister;
 
 /**
  * Performs some real-submission DB-persistence test.

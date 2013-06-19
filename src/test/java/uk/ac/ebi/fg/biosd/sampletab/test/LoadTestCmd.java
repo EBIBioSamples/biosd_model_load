@@ -14,9 +14,9 @@ import javax.persistence.EntityManagerFactory;
 import org.apache.commons.lang.StringEscapeUtils;
 
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
+import uk.ac.ebi.fg.biosd.sampletab.Loader;
+import uk.ac.ebi.fg.biosd.sampletab.persistence.Persister;
 import uk.ac.ebi.fg.core_model.resources.Resources;
-import ac.uk.ebi.fg.biosd.sampletab.Loader;
-import ac.uk.ebi.fg.biosd.sampletab.persistence.Persister;
 
 /**
  * Uses to perform loading tests, one submission at a time. See load_test.sh for details.
