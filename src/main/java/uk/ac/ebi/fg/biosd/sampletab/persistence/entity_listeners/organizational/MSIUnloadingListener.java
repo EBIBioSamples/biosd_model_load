@@ -1,4 +1,4 @@
-package uk.ac.ebi.fg.biosd.sampletab.persistence.organizational;
+package uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.organizational;
 
 import java.util.LinkedList;
 
