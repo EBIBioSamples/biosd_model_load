@@ -34,10 +34,9 @@ public class BioSampleNormalizer extends ProductNormalizer<BioSample>
 	 * Just update the last-update date.
 	 */
 	@Override
-	public void normalize ( BioSample smp )
+	public boolean normalize ( BioSample smp )
 	{
-		if ( smp == null || smp.getId () != null ) return; 
-		super.normalize ( smp );
+		if ( !super.normalize ( smp ) ) return false;
 		
 		// mark the time the object creation occurs 
 		if ( store instanceof DBStore ) 
@@ -46,6 +45,7 @@ public class BioSampleNormalizer extends ProductNormalizer<BioSample>
 			jobRegDao.create ( smp, Operation.ADD, smp.getUpdateDate () );
 		}
 		
+		return true;
 	}
 
 	/**

@@ -42,21 +42,21 @@ public class PublicationNormalizer extends FilterNormalizer<Publication>
 	 * 
 	 */
 	@Override
-	public void normalize ( Publication pub ) 
+	public boolean normalize ( Publication pub ) 
 	{
-		if ( pub == null || pub.getId () != null ) return;
-		super.normalize ( pub );
+		if ( !super.normalize ( pub ) ) return false;
 		
 		PublicationStatus status = pub.getStatus ();
-		if ( status == null ) return;
+		if ( status == null ) return true;
 		
 		String statusName = StringUtils.trimToNull ( status.getName () );
-		if ( statusName == null ) return;
+		if ( statusName == null ) return true;
 			
 		PublicationStatus statusS = store.find ( status, statusName );
-		if ( statusS == null || status == statusS ) return;
+		if ( statusS == null || status == statusS ) return true;
 		
 		pub.setStatus ( statusS );
+		return true;
 	}
 	
 }

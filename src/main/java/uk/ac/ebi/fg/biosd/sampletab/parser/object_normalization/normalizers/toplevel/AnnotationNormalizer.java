@@ -22,16 +22,18 @@ public class AnnotationNormalizer extends Normalizer<Annotation>
 	}
 
 	@Override
-	public void normalize ( Annotation ann )
+	public boolean normalize ( Annotation ann )
 	{
-		if ( ann == null || ann.getId () != null ) return;
+		if ( ann == null || ann.getId () != null ) return false;
+		
 		AnnotationType type = ann.getType ();
-		if ( type == null || type.getId () != null ) return; 
+		if ( type == null || type.getId () != null ) return true; 
 		
 		AnnotationType typeS = store.find ( type, type.getName () );
-		if ( typeS == null || type == typeS) return;
+		if ( typeS == null || type == typeS) return true;
 		
 		ann.setType ( typeS );
+		return true;
 	}
 	
 }

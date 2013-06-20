@@ -22,11 +22,11 @@ public class OrganizationNormalizer extends AnnotatableNormalizer<Organization>
 	}
 
 	@Override
-	public void normalize ( Organization org ) 
+	public boolean normalize ( Organization org ) 
 	{
-		if ( org == null || org.getId () != null ) return;
-		super.normalize ( org );
-		
+		if ( !super.normalize ( org ) ) return false;
+
 		ContactNormalizer.normalizeRoles ( store, org.getOrganizationRoles () );
+		return true;
 	}
 }

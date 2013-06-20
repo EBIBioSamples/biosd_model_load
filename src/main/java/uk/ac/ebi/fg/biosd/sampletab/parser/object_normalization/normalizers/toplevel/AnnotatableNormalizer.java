@@ -27,14 +27,16 @@ public class AnnotatableNormalizer<A extends Identifiable> extends Normalizer<A>
 	}
 
 	@Override
-	public void normalize ( A annotatable )
+	public boolean normalize ( A annotatable )
 	{
-		if ( annotatable == null || annotatable.getId () != null ) return;
+		if ( annotatable == null || annotatable.getId () != null ) return false;
 		if ( ! ( annotatable instanceof Annotatable ) ) throw new RuntimeException (
 			"Internal Error: " + annotatable.getClass ().getName () + " can only be used with an instance of Annotatable"
 		);
 		
 		for ( Annotation ann: ( (Annotatable) annotatable ).getAnnotations () )
 			annNormalizer.normalize ( ann );
+		
+		return true;
 	}
 }

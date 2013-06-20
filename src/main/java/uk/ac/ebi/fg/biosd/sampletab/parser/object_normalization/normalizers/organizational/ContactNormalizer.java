@@ -28,12 +28,12 @@ public class ContactNormalizer extends AnnotatableNormalizer<Contact>
 	}
 
 	@Override
-	public void normalize ( Contact cnt ) 
+	public boolean normalize ( Contact cnt ) 
 	{
-		if ( cnt == null || cnt.getId () != null ) return;
-		super.normalize ( cnt );
+		if ( !super.normalize ( cnt ) ) return false;
 		
 		normalizeRoles ( store, cnt.getContactRoles () );
+		return true;
 	}
 	
 	/**

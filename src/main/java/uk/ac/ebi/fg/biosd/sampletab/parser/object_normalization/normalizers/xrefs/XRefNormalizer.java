@@ -27,14 +27,15 @@ public class XRefNormalizer extends Normalizer<XRef>
 
 	/** Check re-usability of Ref Sources */
 	@Override
-	public void normalize ( XRef xref )
+	public boolean normalize ( XRef xref )
 	{
-		if ( xref == null || xref.getId () != null ) return;
+		if ( xref == null || xref.getId () != null ) return false;
 		
 		ReferenceSource src = xref.getSource ();
-		if ( src == null ) return; // This is actually an error and will pop-up later.
+		if ( src == null ) return true; // This is actually an error and will pop-up later.
+		
 		ReferenceSource srcS = store.find ( src, src.getAcc (), src.getVersion () );
-		if ( srcS == null || src == srcS ) return;
+		if ( srcS == null || src == srcS ) return true;
 		
 		Exception theEx = null;
 		try
@@ -52,6 +53,8 @@ public class XRefNormalizer extends Normalizer<XRef>
 			if ( theEx != null )
 				throw new RuntimeException ( "Internal error while persisting " + xref + ": " + theEx.getMessage (), theEx );
 		}
+		
+		return true;
 	}
 
 }

@@ -40,6 +40,10 @@ public class MSINormalizer extends AnnotatableNormalizer<MSI>
 	private final OrganizationNormalizer organizationNormalizer;
 	private final PublicationNormalizer publicationNormalizer;
 	
+	private final BioSampleNormalizer sampleNormalizer;
+	private final BioSampleGroupNormalizer sgNormalizer;
+
+	
 	private ProductComparator smpCmp = new ProductComparator ();
 	private BioSampleGroupComparator sgCmp = new BioSampleGroupComparator ();
 
@@ -50,22 +54,22 @@ public class MSINormalizer extends AnnotatableNormalizer<MSI>
 	  contactNormalizer = new ContactNormalizer ( store );
 		organizationNormalizer = new OrganizationNormalizer ( store );
 		publicationNormalizer = new PublicationNormalizer ( store );
+		sampleNormalizer = new BioSampleNormalizer ( store );
+		sgNormalizer = new BioSampleGroupNormalizer ( store );
 	}
 
 	/**
 	 * Starts normalisation propagating to the objects linked to the submission.
 	 */
 	@Override
-	public void normalize ( MSI msi )
+	public boolean normalize ( MSI msi )
 	{
 		if ( msi == null ) {
 			log.warn ( "Internal issue: MSI Peristence Listener got a null submission and that smells like a code bug" );
-			return;
+			return false;
 		}
-		if ( msi.getId () != null ) return;
+		if ( !super.normalize ( msi ) ) return false;
 		
-		super.normalize ( msi );
-
 		for ( Contact contact: msi.getContacts () ) contactNormalizer.normalize ( contact );
 		for ( Organization org: msi.getOrganizations () ) organizationNormalizer.normalize ( org );
 		for ( Publication pub: msi.getPublications () ) publicationNormalizer.normalize ( pub );
@@ -73,10 +77,7 @@ public class MSINormalizer extends AnnotatableNormalizer<MSI>
 		normalizeReferenceSources ( ReferenceSource.class, msi.getReferenceSources () );
 		normalizeReferenceSources ( DatabaseRefSource.class, msi.getDatabases () );
 
-		BioSampleNormalizer sampleNormalizer = new BioSampleNormalizer ( store );		
 		for ( BioSample sample: msi.getSamples () ) sampleNormalizer.normalize ( sample );
-		
-		BioSampleGroupNormalizer sgNormalizer = new BioSampleGroupNormalizer ( store );
 		for ( BioSampleGroup sg: msi.getSampleGroups () ) sgNormalizer.normalize ( sg );
 
 		linkExistingSamples ( msi );
@@ -87,6 +88,8 @@ public class MSINormalizer extends AnnotatableNormalizer<MSI>
 			msi.setUpdateDate ( new Date () );
 			new JobRegisterDAO ( ((DBStore) store).getEntityManager () ).create ( msi, Operation.ADD, msi.getUpdateDate () );
 		}
+		
+		return true;
 	}
 	
 	private <R extends ReferenceSource> void normalizeReferenceSources ( Class<R> targetEntityClass, Set<R> sources )

@@ -44,10 +44,9 @@ public class BioSampleGroupNormalizer extends AnnotatableNormalizer<BioSampleGro
 	 * 
 	 */
 	@Override
-	public void normalize ( BioSampleGroup sg )
+	public boolean normalize ( BioSampleGroup sg )
 	{
-		if ( sg == null || sg.getId () != null ) return;
-		super.normalize ( sg );
+		if ( !super.normalize ( sg ) ) return false;
 		
 		Set<BioSample> addSmps = new HashSet<BioSample> (), delSmps = new HashSet<BioSample> ();
 		Set<BioSample> samples = sg.getSamples ();
@@ -82,5 +81,7 @@ public class BioSampleGroupNormalizer extends AnnotatableNormalizer<BioSampleGro
 			sg.setUpdateDate ( new Date () );
 			jobRegDao.create ( sg, Operation.ADD, sg.getUpdateDate () );
 		}
+		
+		return true;
 	}
 }

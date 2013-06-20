@@ -26,11 +26,11 @@ public class UnitNormalizer extends FreeTextTermNormalizer<Unit>
 	}
 
 	@Override
-	public void normalize ( Unit u )
+	public boolean normalize ( Unit u )
 	{
-		if ( u == null || u.getId () != null ) return;
-		super.normalize ( u );
+		if ( !super.normalize ( u ) ) return false;
 		dimNormalizer.normalize ( u.getDimension () );
+		return true;
 	}
 	
 }

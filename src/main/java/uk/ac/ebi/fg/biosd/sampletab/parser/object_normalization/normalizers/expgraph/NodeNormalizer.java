@@ -39,19 +39,19 @@ public abstract class NodeNormalizer<N extends Node> extends AnnotatableNormaliz
 	 * Invokes {@link #linkExistingNodes(Node)}.
 	 */
 	@Override
-	public void normalize ( N node ) 
+	public boolean normalize ( N node ) 
 	{
-		if ( node == null || node.getId () != null ) return;
-		super.normalize ( node );
+		if ( !super.normalize ( node ) ) return false;
 		
 		linkExistingNodes ( node );
+		return true;
 	}
 
 	/**
 	 * Checks the node's upstream/downstream nodes and replaces those nodes that already exists in the DB. This makes 
 	 * nodes re-usable. Uses {@link #nodeComparator} to decide if two nodes are equivalent.
 	 * 
-	 * TODO: we need to check that incoming products are just the same
+	 * TODO: we need to check that incoming products are just the same.
 	 */
 	private void linkExistingNodes ( Node node )
 	{

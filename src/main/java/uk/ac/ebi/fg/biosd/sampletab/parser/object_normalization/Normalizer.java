@@ -43,9 +43,15 @@ public abstract class Normalizer<I extends Identifiable>
 	
 	/**
 	 * This does the job. It checks those objects linked to the target that should be re-used. If a linked object already exists
-	 * in the store, a new link is created to the already-existing object, replacing the orginal one.  
+	 * in the store, a new link is created to the already-existing object, replacing the orginal one.
+	 * 
+	 * @return usually true, if the target was new and not already in {@link #getStore()}, or if the target is null, or 
+	 * if it has a non-null ID (i.e., we assume it's already in the DB and normalised). A sub-class implementation
+	 * can decide whether to continue or not, based on its super call to this method. When it's not possible to search 
+	 * for an object in the store (e.g., it hasn't an accession), this method should always return true.
+	 * 
 	 */
-	public abstract void normalize ( I target );
+	public abstract boolean normalize ( I target );
 	
 	public Store getStore ()
 	{

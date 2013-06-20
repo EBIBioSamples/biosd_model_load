@@ -35,12 +35,15 @@ public class FilterNormalizer<I extends Identifiable> extends Normalizer<I>
 	 */
 	@Override
 	@SuppressWarnings ( { "rawtypes", "unchecked" } )
-	public void normalize ( I target )
+	public boolean normalize ( I target )
 	{
-		if ( target == null || target.getId () != null ) return; 
+		if ( target == null || target.getId () != null ) return false; 
 		
+		boolean result = false;
 		for ( Normalizer n: normalizers )
-			n.normalize ( target );
+			if ( n.normalize ( target ) ) result = true;
+		
+		return result;
 	}
 	
 }

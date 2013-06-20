@@ -19,9 +19,7 @@ import uk.ac.ebi.fg.core_model.expgraph.properties.ExperimentalPropertyValue;
  * @author Marco Brandizi
  *
  */
-public class ProductNormalizer
-  <P extends Product<?>> 
-	extends NodeNormalizer<P>
+public class ProductNormalizer<P extends Product<?>> extends NodeNormalizer<P>
 {
 	private final PropertyValueNormalizer pvListener;
 	
@@ -36,16 +34,17 @@ public class ProductNormalizer
 	 * Invokes {@link Node#prePersist} and then {@link #linkExistingProducts(Product)}.
 	 */
 	@Override
-	public void normalize ( P product )
+	public boolean normalize ( P product )
 	{
-		if ( product == null || product.getId () != null ) return; 
-		
-		super.normalize ( product );
+		if ( !super.normalize ( product ) ) return false;
+
 		linkExistingProducts ( product );
 
 		// Properties
 		for ( ExperimentalPropertyValue<?> pv: product.getPropertyValues () )
 			pvListener.normalize ( pv );
+		
+		return true;
 	}
 
 	/**

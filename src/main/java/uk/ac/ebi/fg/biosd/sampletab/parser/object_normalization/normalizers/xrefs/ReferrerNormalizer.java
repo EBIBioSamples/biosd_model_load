@@ -35,15 +35,18 @@ public class ReferrerNormalizer<R extends Identifiable> extends Normalizer<R>
 	 * I checks that referrer is an instance of {@link Referrer} (see above).
 	 */
 	@Override
-	public void normalize ( R referrer )
+	public boolean normalize ( R referrer )
 	{
-		if ( referrer == null || referrer.getId () != null ) return;
+		if ( referrer == null || referrer.getId () != null ) return false;
+		
 		if ( ! ( referrer instanceof Referrer ) ) throw new RuntimeException (
 			"Internal Error: " + referrer.getClass ().getName () + " can only be used with an instance of Annotatable"
 		);
 		
 		for ( XRef xref: ((Referrer) referrer).getReferences () )
 			xrefNormalizer.normalize ( xref );
+		
+		return true;
 	}
 
 }

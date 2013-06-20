@@ -32,9 +32,9 @@ public class FreeTextTermNormalizer<FT extends FreeTextTerm> extends Normalizer<
 
 	/** Check re-usability of OEs and, in turn, of Ref Sources */
 	@Override
-	public void normalize ( FT term )
+	public boolean normalize ( FT term )
 	{
-		if ( term == null || term.getId () != null ) return;
+		if ( term == null || term.getId () != null ) return false;
 		
 		Set<OntologyEntry> delOes = new HashSet<OntologyEntry> (), addOes = new HashSet<OntologyEntry> ();
 		Set<OntologyEntry> oes = term.getOntologyTerms ();
@@ -53,6 +53,7 @@ public class FreeTextTermNormalizer<FT extends FreeTextTerm> extends Normalizer<
 			delOes.add ( oe ); addOes.add ( oeS );
 		}
 		oes.removeAll ( delOes ); oes.addAll ( addOes );
+		return true;
 	}
 
 }

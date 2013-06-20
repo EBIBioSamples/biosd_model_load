@@ -30,12 +30,12 @@ public class PropertyValueNormalizer extends FreeTextTermNormalizer<Experimental
 	}
 
 	@Override
-	public void normalize ( ExperimentalPropertyValue<?> pv )
+	public boolean normalize ( ExperimentalPropertyValue<?> pv )
 	{
-		if ( pv == null || pv.getId () != null ) return; 
-		super.normalize ( pv );
+		if ( !super.normalize ( pv ) ) return false;
 		typeNormalizer.normalize ( pv.getType () );
 		unitNormalizer.normalize ( pv.getUnit () );
+		return true;
 	}
 	
 }
