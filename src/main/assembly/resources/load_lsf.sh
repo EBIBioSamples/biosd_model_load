@@ -1,6 +1,7 @@
 #!/bin/sh
 # 
 # Runs multiple loader (load.sh) instances in parallel through the EBI's LSF cluster.
+# TODO: THIS IS TO BE TESTED (requires the summary-exporting code)
 # 
 
 MYDIR=$(dirname "$0")
@@ -8,6 +9,8 @@ cd "$MYDIR"
 
 if [ "$1" == "--help" ]; then
   cat <<EOT
+
+  ********* WARNING THIS HASN'T BEEN TESTED YET *********
 
   usage: $0 [summary-file]
   
@@ -17,7 +20,7 @@ This command is affected by the environment variables:
 
   BIOSD_LOAD_SAMPLING_RATIO, if it is less than 100, only a random subset of the 
   submissions in the target directory is loaded.
-
+  
   
 EOT
   exit 1
