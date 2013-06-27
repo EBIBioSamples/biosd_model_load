@@ -295,6 +295,28 @@
 			</dependencies>
 		</profile>
 
+		<profile>
+			<id>test.hsql_tcp</id>
+			<properties>
+				<test.jdbc.username>sa</test.jdbc.username>
+				<test.jdbc.password />
+				<!-- To launch the server in this mode: 
+					java -cp ~/.m2/repository/org/hsqldb/hsqldb/2.2.9/hsqldb-2.2.9.jar org.hsqldb.Server -database.0 file:target/testdb/testdb -dbname.0 testdb 
+				-->
+				<test.jdbc.url>jdbc:hsqldb:hsql://localhost/testdb;shutdown=true;hsqldb.write_delay=false</test.jdbc.url>
+				<test.jdbc.driverClassName>org.hsqldb.jdbcDriver</test.jdbc.driverClassName>
+				<test.hibernate.dialect>org.hibernate.dialect.HSQLDialect</test.hibernate.dialect>
+				<test.hibernate.hbm2ddl.auto>update</test.hibernate.hbm2ddl.auto>
+			</properties>
+			<dependencies>
+				<dependency>
+					<groupId>org.hsqldb</groupId>
+					<artifactId>hsqldb</artifactId>
+					<version>${hsql.version}</version>
+				</dependency>
+			</dependencies>
+		</profile>
+
 		<!-- 
 		  This wraps the same settings in hsql_file with P6SPY, a filter driver that will log all the SQL statements to
 		  target/spy.log

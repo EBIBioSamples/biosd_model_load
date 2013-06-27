@@ -1,6 +1,3 @@
-/*
- * 
- */
 package uk.ac.ebi.fg.biosd.sampletab.test;
 
 import static java.lang.System.out;
@@ -16,6 +13,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
 import uk.ac.ebi.fg.biosd.sampletab.Loader;
 import uk.ac.ebi.fg.biosd.sampletab.persistence.Persister;
+import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.toplevel.AccessibleDAO;
 import uk.ac.ebi.fg.core_model.resources.Resources;
 
 /**
@@ -42,7 +40,7 @@ public class LoadTestCmd
 		try
 		{
 			em = Resources.getInstance ().getEntityManagerFactory ().createEntityManager ();
-
+			
 			// Parse the submission sampletab file.
 			//
 			out.println ( "\n\n >>> Loading '" + path + "'" );
@@ -54,7 +52,14 @@ public class LoadTestCmd
 			parsingTime = System.currentTimeMillis () - time0; 
 
 			nitems = msi.getSamples ().size () + msi.getSampleGroups ().size ();
-			
+
+			AccessibleDAO<MSI> msiDao = new AccessibleDAO<MSI> ( MSI.class, em );
+			if ( msiDao.contains ( msi.getAcc () ) )
+			{
+				persistenceTime = 0;
+				throw new IllegalArgumentException ( "The submission '" + msi.getAcc () + "' is alredy in the DB" );
+			}
+
 			
 			// Now persist it
 			//
@@ -74,7 +79,7 @@ public class LoadTestCmd
 		{
 			out.println ( ">>>> Writing Results to Communication File" );
 			
-			// This is for load_test.sh, it will get the error message and add to a summery file, which lists results of each
+			// This is for load_test.sh, it will get the error message and add to a summary file, which lists results of each
 			// input file.
 			//
 			exMsg = StringEscapeUtils.escapeJava ( exMsg );

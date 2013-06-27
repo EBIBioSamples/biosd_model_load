@@ -1,6 +1,3 @@
-/*
- * 
- */
 package uk.ac.ebi.fg.biosd.sampletab.persistence;
 
 import javax.persistence.EntityManager;
@@ -26,22 +23,22 @@ import uk.ac.ebi.fg.core_model.resources.Resources;
 public class Persister
 {
 	public MSI persist ( MSI msi )
-	{
-		EntityManagerFactory emf = Resources.getInstance ().getEntityManagerFactory ();
-		EntityManager em = emf.createEntityManager ();
-    
-		AccessibleDAO<MSI> dao = new AccessibleDAO<MSI> ( MSI.class,  em );
-		EntityTransaction ts = em.getTransaction ();
-		
+	{    		
 		// Normalise (i.e., removes duplicates) in-memory duplicates
 		new MSINormalizer ( new MemoryStore () ).normalize ( msi );
 		
+		EntityManagerFactory emf = Resources.getInstance ().getEntityManagerFactory ();
+		EntityManager em = emf.createEntityManager ();
+
+		EntityTransaction ts = em.getTransaction ();
+
 		// Normalise (i.e., removes duplicates) in-memory objects that appear to be duplicates of already-existing objects
 		// on the database side.
 		new MSINormalizer ( new DBStore ( em ) ).normalize ( msi );
 			
 		// Ready to go now.
-		
+
+		AccessibleDAO<MSI> dao = new AccessibleDAO<MSI> ( MSI.class,  em );
 		ts.begin ();
 		dao.create ( msi );
 		ts.commit ();

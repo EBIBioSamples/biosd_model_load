@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # This is the entry point that invokes the SampleTAB Loader command-line.
-#Ê
+#
 cd "$(dirname $0)"
 MYDIR="$(pwd)"
 

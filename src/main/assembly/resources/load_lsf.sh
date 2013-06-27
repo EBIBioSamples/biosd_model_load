@@ -1,10 +1,10 @@
 #!/bin/sh
-#Ê
-#ÊRuns multiple loader (load.sh) instances in parallel through the EBI's LSF cluster.
-#Ê
+# 
+# Runs multiple loader (load.sh) instances in parallel through the EBI's LSF cluster.
+# 
 
 MYDIR=$(dirname "$0")
-cd "$MYDIR"/..
+cd "$MYDIR"
 
 if [ "$1" == "--help" ]; then
   cat <<EOT
