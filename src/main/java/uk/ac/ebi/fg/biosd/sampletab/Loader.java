@@ -192,11 +192,11 @@ public class Loader {
     
     public synchronized MSI fromSampleData(SampleData st){
         MSI msi = new MSI(st.msi.submissionIdentifier);
+        msi.setTitle(st.msi.submissionTitle);
+        msi.setDescription(st.msi.submissionDescription);
         msi.setUpdateDate(st.msi.submissionUpdateDate);
         msi.setReleaseDate(st.msi.submissionReleaseDate);
         //TODO st.msi.submissionReferenceLayer
-        //TODO st.msi.submissionTitle
-        //TODO st.msi.submissionDescription
         
         for (uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Organization org : st.msi.organizations){
             convertOrganization(org, msi);
