@@ -11,13 +11,10 @@
     </filter>
   </appender>
   
-  <appender name="FileApp" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-	  	<!-- Rolls up every day -->
-      <fileNamePattern>logs/biosd_loader_%d{yyyyMMdd}.log</fileNamePattern>
-  		<!-- Keeps last 3 months -->
-      <maxHistory>90</maxHistory>
-    </rollingPolicy>
+  <appender name="FileApp" class="ch.qos.logback.core.FileAppender">
+		<!-- Adds up to a possibly existing file  -->
+    <Append>false</Append>
+    <File>${project.build.directory}/app.log</File>
     <encoder>
       <pattern>%d{dd MMM yyyy HH:mm:ss.SSS} [%-6t] [%-5p] \(%C{1},%L\): %m%n</pattern>
     </encoder>
