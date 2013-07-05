@@ -1,7 +1,7 @@
 #!/bin/sh
-#Ê
-#ÊRuns the loading test (load_test.sh) through the EBI's LSF cluster.
-#Ê
+#
+# Runs the loading test (load_test.sh) through the EBI's LSF cluster.
+#
 
 MYDIR=$(dirname "$0")
 cd "$MYDIR"/..
