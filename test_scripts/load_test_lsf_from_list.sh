@@ -1,7 +1,7 @@
 #!/bin/sh
-#Ê
-#ÊRuns the loading test (load_test.sh) through the EBI's LSF cluster.
-#Ê
+#
+# Runs the loading test (load_test.sh) through the EBI's LSF cluster.
+#
 
 MYDIR=$(dirname "$0")
 cd "$MYDIR"/..
@@ -37,6 +37,9 @@ fi
 
 # Pick a random sample if there is this variable defined, 100% otherwise.	 
 if [ "$SAMPLING_RATIO" == "" ]; then SAMPLING_RATIO=100; fi
+
+bsub_out_path=target/load_test_${wfpath}.out
+bsub_out_path=/dev/null
 	 
 printf "FILE\tEXCEPTION\tMESSAGE\tN_ITEMS\tPARSING_TIME\tPERSISTENCE_TIME\n" >$outfpath
 
@@ -44,7 +47,7 @@ printf "FILE\tEXCEPTION\tMESSAGE\tN_ITEMS\tPARSING_TIME\tPERSISTENCE_TIME\n" >$o
 do
   if [ $[ $RANDOM % 100 ] -ge $SAMPLING_RATIO ]; then continue; fi
 	wfpath=$(echo "$fpath"| sed s/'\/'/'_'/g)
-  echo bsub -K -oo target/load_test_${wfpath}.out -J $wfpath ./test_scripts/load_test_cmd.sh $fpath $outfpath
+  echo bsub -K -oo "$bsub_out_path" -J $wfpath ./test_scripts/load_test_cmd.sh $fpath $outfpath
 done) | xargs -d '\n' -P 100 -n 1 --replace=_cmd_ -- bash -c "_cmd_; exit 0" 
 
 echo
