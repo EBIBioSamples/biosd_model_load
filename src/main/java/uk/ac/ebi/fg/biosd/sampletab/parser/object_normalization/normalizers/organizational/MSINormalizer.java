@@ -74,8 +74,8 @@ public class MSINormalizer extends AnnotatableNormalizer<MSI>
 		for ( Organization org: msi.getOrganizations () ) organizationNormalizer.normalize ( org );
 		for ( Publication pub: msi.getPublications () ) publicationNormalizer.normalize ( pub );
 
-		normalizeReferenceSources ( ReferenceSource.class, msi.getReferenceSources () );
-		normalizeReferenceSources ( DatabaseRefSource.class, msi.getDatabases () );
+		normalizeReferenceSources ( this.store, ReferenceSource.class, msi.getReferenceSources () );
+		normalizeReferenceSources ( this.store, DatabaseRefSource.class, msi.getDatabases () );
 
 		for ( BioSample sample: msi.getSamples () ) sampleNormalizer.normalize ( sample );
 		for ( BioSampleGroup sg: msi.getSampleGroups () ) sgNormalizer.normalize ( sg );
@@ -92,7 +92,13 @@ public class MSINormalizer extends AnnotatableNormalizer<MSI>
 		return true;
 	}
 	
-	private <R extends ReferenceSource> void normalizeReferenceSources ( Class<R> targetEntityClass, Set<R> sources )
+	/**
+	 * Removes those ref sources of type targetEntity that already exists in store and replaces them with the existing
+	 * ones.
+	 */
+	public static <R extends ReferenceSource> void normalizeReferenceSources ( 
+		Store store, Class<R> targetEntityClass, Set<R> sources 
+	)
 	{
   	Set<R> addSrcs = new HashSet<R> (), delSrcs = new HashSet<R> ();
   	for ( R source: sources )

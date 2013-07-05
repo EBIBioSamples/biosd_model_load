@@ -11,6 +11,7 @@ import uk.ac.ebi.fg.biosd.model.application_mgmt.JobRegisterEntry.Operation;
 import uk.ac.ebi.fg.biosd.model.expgraph.BioSample;
 import uk.ac.ebi.fg.biosd.model.organizational.BioSampleGroup;
 import uk.ac.ebi.fg.biosd.model.persistence.hibernate.application_mgmt.JobRegisterDAO;
+import uk.ac.ebi.fg.biosd.model.xref.DatabaseRefSource;
 import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.DBStore;
 import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.Store;
 import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.expgraph.ProductComparator;
@@ -74,6 +75,9 @@ public class BioSampleGroupNormalizer extends AnnotatableNormalizer<BioSampleGro
 		// Properties
 		for ( ExperimentalPropertyValue<?> pv: sg.getPropertyValues () )
 			pvNormalizer.normalize ( pv );
+		
+		MSINormalizer.normalizeReferenceSources ( this.store, DatabaseRefSource.class, sg.getDatabases () );
+
 		
 		// mark the time the object creation occurs 
 		if ( store instanceof DBStore ) 
