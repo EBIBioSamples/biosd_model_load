@@ -40,7 +40,9 @@ public class ReferenceSourceUnloadingListener extends UnloadingListener<Referenc
 		String hql = "DELETE FROM ReferenceSource src WHERE\n" +
 			"  src NOT IN ( SELECT srcA.id FROM OntologyEntry oe JOIN oe.source srcA )\n" + 
 		  "  AND src NOT IN ( SELECT srcB.id FROM XRef xr JOIN xr.source srcB )\n" +
-			"  AND src NOT IN ( SELECT db.id FROM MSI msi JOIN msi.databases db )";
+			"  AND src NOT IN ( SELECT db.id FROM MSI msi JOIN msi.databases db )\n" + 
+			"  AND src NOT IN ( SELECT db.id FROM BioSample smp JOIN smp.databases db )\n" + 
+			"  AND src NOT IN ( SELECT db.id FROM BioSampleGroup sg JOIN sg.databases db )\n"; 
 		
 		long result = entityManager.createQuery ( hql ).executeUpdate ();
 

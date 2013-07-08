@@ -147,8 +147,10 @@ public class Loader {
             }
             if (isDatabaseAttribute) {
                 DatabaseAttribute da = (DatabaseAttribute) a;
-                bs.addDatabase( 
-                        new DatabaseRefSource(da.databaseID, da.databaseURI) );                
+                DatabaseRefSource dbref = new DatabaseRefSource ( da.databaseID, null );
+                dbref.setUrl ( da.databaseURI );
+                dbref.setName ( da.getAttributeValue () );
+                bs.addDatabase( dbref );
             } else {
                 bs.addPropertyValue(convertAtttribute(a, st));
             }

@@ -75,6 +75,12 @@
 			<version>14.0</version>
 		</dependency>
 		
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.1</version>		
+		</dependency>
+		
 	</dependencies>
 
 
@@ -492,6 +498,25 @@
 				</dependency>
 			</dependencies>
 		</profile>		
+
+		<profile>
+			<id>h2_file</id>
+			<properties>
+				<jdbc.username>sa</jdbc.username>
+				<jdbc.password />
+				<jdbc.url>jdbc:h2:target/database/testdb</jdbc.url>
+				<jdbc.driverClassName>org.h2.Driver</jdbc.driverClassName>
+				<hibernate.dialect>org.hibernate.dialect.H2Dialect</hibernate.dialect>
+				<hibernate.hbm2ddl.auto>update</hibernate.hbm2ddl.auto>
+			</properties>
+			<dependencies>
+				<dependency>
+					<groupId>com.h2database</groupId>
+					<artifactId>h2</artifactId>
+					<version>${h2.version}</version>
+				</dependency>
+			</dependencies>
+		</profile>
 
 
 		<profile>
