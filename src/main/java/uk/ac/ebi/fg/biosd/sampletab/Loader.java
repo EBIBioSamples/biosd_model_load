@@ -11,8 +11,10 @@ import uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.TermSource;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.GroupNode;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.SampleNode;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.AbstractNodeAttributeOntology;
+import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.AbstractRelationshipAttribute;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.CharacteristicAttribute;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.CommentAttribute;
+import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.DatabaseAttribute;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.SCDNodeAttribute;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.UnitAttribute;
 import uk.ac.ebi.arrayexpress2.sampletab.parser.SampleTabSaferParser;
@@ -66,7 +68,15 @@ public class Loader {
         BioCharacteristicType h = new BioCharacteristicType ( a.getAttributeType() );
         BioCharacteristicValue v = new BioCharacteristicValue( a.getAttributeValue(), h);
         
-        if (AbstractNodeAttributeOntology.class.isInstance(a)){
+        boolean isOntologyAttribute = false;
+        synchronized (AbstractNodeAttributeOntology.class) {
+            isOntologyAttribute = AbstractNodeAttributeOntology.class.isInstance(a);
+        }
+        boolean isRelationshipAttribute = false;
+        synchronized (AbstractRelationshipAttribute.class) {
+            isRelationshipAttribute = AbstractRelationshipAttribute.class.isInstance(a);
+        }
+        if (isOntologyAttribute){
             AbstractNodeAttributeOntology ao = (AbstractNodeAttributeOntology) a;
             
             //ontology
@@ -107,8 +117,8 @@ public class Loader {
             }
             
         }
-        
-        //TODO database attribute
+        //Relationship attributes need no special processing
+        //Database Attributes are processed elsewhere
         
         return v;
     }
@@ -123,6 +133,7 @@ public class Loader {
         bs.addPropertyValue(
                 new BioCharacteristicValue(s.getNodeName(), 
                         new BioCharacteristicType("Sample Name")));
+        
         if (s.getSampleDescription() != null){
             bs.addPropertyValue(
                     new BioCharacteristicValue(s.getSampleDescription(), 
@@ -130,11 +141,21 @@ public class Loader {
         }
         
         for(SCDNodeAttribute a: s.attributes){
-            BioCharacteristicValue v = convertAtttribute(a, st);
-            bs.addPropertyValue(v);
+            boolean isDatabaseAttribute = false;
+            synchronized (DatabaseAttribute.class) {
+                isDatabaseAttribute = DatabaseAttribute.class.isInstance(a);
+            }
+            if (isDatabaseAttribute) {
+                DatabaseAttribute da = (DatabaseAttribute) a;
+                bs.addDatabase( 
+                        new DatabaseRefSource(da.databaseID, da.databaseURI) );                
+            } else {
+                bs.addPropertyValue(convertAtttribute(a, st));
+            }
         }
         
         //handle child nodes
+        //NB these are currently (Jul 13) removed in toload step
         for (Node n : s.getChildNodes()){
             if (SampleNode.class.isInstance(n)){
                 SampleNode sn = (SampleNode) n;
@@ -196,6 +217,7 @@ public class Loader {
         msi.setDescription(st.msi.submissionDescription);
         msi.setUpdateDate(st.msi.submissionUpdateDate);
         msi.setReleaseDate(st.msi.submissionReleaseDate);
+        msi.setFormatVersion(st.msi.submissionVersion);
         //TODO st.msi.submissionReferenceLayer
         
         for (uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Organization org : st.msi.organizations){
@@ -220,14 +242,24 @@ public class Loader {
 
         for (GroupNode g : st.scd.getNodes(GroupNode.class)){
             BioSampleGroup bg = new BioSampleGroup ( g.getGroupAccession());
-            //TODO name
-            //TODO description
+            
+            bg.addPropertyValue(
+                    new BioCharacteristicValue(g.getNodeName(), 
+                            new BioCharacteristicType("Group Name")));
+            
+            if (g.getGroupDescription() != null){
+                bg.addPropertyValue(
+                        new BioCharacteristicValue(g.getGroupDescription(), 
+                                new BioCharacteristicType("Group Description")));
+            }
             
             for(SCDNodeAttribute a: g.attributes){
                 BioCharacteristicValue v = convertAtttribute(a,st);
-                //TODO make sure a value can be applied to a group
-                //bg.addPropertyValue(v);
+                bg.addPropertyValue(v);
             }
+            
+            //referenceLayer is in MSI in SampleTab, but group in SCD in DB
+            bg.setInReferenceLayer(st.msi.submissionReferenceLayer);
             
             msi.addSampleGroup(bg);
         }
@@ -250,6 +282,7 @@ public class Loader {
                 }
             }
             //check bg is not null at this point
+            if (bg == null) throw new RuntimeException("Unable to refind group "+g.getGroupAccession());
             
             for(Node p : g.getParentNodes()){
                 //check this is a sample;
@@ -263,9 +296,7 @@ public class Loader {
                 }
             }
         }
-        
-        //TODO sample relationships
-        
+                
         
         return msi;
     }
