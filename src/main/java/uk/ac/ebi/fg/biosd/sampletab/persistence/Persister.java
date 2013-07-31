@@ -5,6 +5,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
+import uk.ac.ebi.fg.biosd.sampletab.Loader;
 import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.DBStore;
 import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.MemoryStore;
 import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.organizational.MSINormalizer;
@@ -22,11 +23,14 @@ import uk.ac.ebi.fg.core_model.resources.Resources;
  */
 public class Persister
 {
+	/**
+	 * WARNING: this doesn not invoke new {@link MSINormalizer} ( new {@link MemoryStore} () ).normalize ( msi ), 
+	 * i.e., you have to normalise in-memory objects that look duplicate. You don't need to do that if your objects come
+	 * from the {@link Loader}, since this invokes the normaliser automatically.
+	 *  
+	 */
 	public MSI persist ( MSI msi )
 	{    		
-		// Normalise (i.e., removes duplicates) in-memory duplicates
-		new MSINormalizer ( new MemoryStore () ).normalize ( msi );
-		
 		EntityManagerFactory emf = Resources.getInstance ().getEntityManagerFactory ();
 		EntityManager em = emf.createEntityManager ();
 
@@ -37,7 +41,7 @@ public class Persister
 		new MSINormalizer ( new DBStore ( em ) ).normalize ( msi );
 			
 		// Ready to go now.
-
+		//
 		AccessibleDAO<MSI> dao = new AccessibleDAO<MSI> ( MSI.class,  em );
 		ts.begin ();
 		dao.create ( msi );

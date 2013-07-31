@@ -22,7 +22,8 @@ import uk.ac.ebi.fg.biosd.model.expgraph.BioSample;
 import uk.ac.ebi.fg.biosd.model.organizational.BioSampleGroup;
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
 import uk.ac.ebi.fg.biosd.model.xref.DatabaseRefSource;
-import uk.ac.ebi.fg.biosd.sampletab.persistence.Persister;
+import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.MemoryStore;
+import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.organizational.MSINormalizer;
 import uk.ac.ebi.fg.core_model.expgraph.properties.BioCharacteristicType;
 import uk.ac.ebi.fg.core_model.expgraph.properties.BioCharacteristicValue;
 import uk.ac.ebi.fg.core_model.expgraph.properties.Unit;
@@ -33,9 +34,6 @@ import uk.ac.ebi.fg.core_model.xref.ReferenceSource;
 
 /**
  * Loads a SampleTab file (or equivalent) into memory, mapping it as a set of BioSD model objects.
- *
- * TODO: probably we want to move 'new MSINormalizer ( new MemoryStore () ).normalize ( msi );' here, i.e., 
- * unify duped objects just after loading. @see {@link Persister}. 
  * 
  * <dl><dt>date</dt><dd>Apr 8, 2013</dd></dl>
  * @author Adam Falcounbridge
@@ -299,8 +297,9 @@ public class Loader {
             }
         }
                 
+        // Merge equivalent objects together
+        new MSINormalizer ( new MemoryStore () ).normalize ( msi );
         
         return msi;
     }
-
 }

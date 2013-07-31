@@ -14,7 +14,7 @@
   
   <!-- 
  		The path specified here is overridden by the -r option and the log file name that is created has a timestamp postfix
-		(something like myequivalents_date_hour.log).
+		(something like biosd_loader_date_hour.log).
 		If you don't want this behaviour (e.g., you want a fixed file name in a fixed location) just use an appender with a 
 		different name (or add it, if you want both behaviours).
   -->  

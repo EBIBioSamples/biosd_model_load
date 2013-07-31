@@ -23,6 +23,8 @@ import uk.ac.ebi.fg.biosd.model.organizational.MSI;
 import uk.ac.ebi.fg.biosd.model.persistence.hibernate.application_mgmt.JobRegisterDAO;
 import uk.ac.ebi.fg.biosd.model.utils.MSIDumper;
 import uk.ac.ebi.fg.biosd.model.utils.test.TestModel;
+import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.MemoryStore;
+import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.organizational.MSINormalizer;
 import uk.ac.ebi.fg.biosd.sampletab.persistence.Persister;
 import uk.ac.ebi.fg.biosd.sampletab.persistence.Unloader;
 import uk.ac.ebi.fg.core_model.expgraph.properties.BioCharacteristicType;
@@ -212,6 +214,7 @@ public class LoadExistingEntitiesTest
 		
 		m2.msi.addPublication ( pub );
 		
+		new MSINormalizer ( new MemoryStore () ).normalize ( m1.msi );
 		Persister persister = new Persister ();
 		persister.persist ( m1.msi );
 		
@@ -219,6 +222,7 @@ public class LoadExistingEntitiesTest
 		Date sg2Date = m1.sg2.getUpdateDate ();
 		assertNotNull ( "sg2.updateDate not set!", sg2Date );
 		
+		new MSINormalizer ( new MemoryStore () ).normalize ( m2.msi );
 		persister.persist ( m2.msi );
 
 		EntityManager em = emProvider.getEntityManager ();
