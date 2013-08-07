@@ -11,7 +11,7 @@ import javax.persistence.EntityManagerFactory;
 import org.apache.commons.lang.StringEscapeUtils;
 
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
-import uk.ac.ebi.fg.biosd.sampletab.Loader;
+import uk.ac.ebi.fg.biosd.sampletab.loader.Loader;
 import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.MemoryStore;
 import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.organizational.MSINormalizer;
 import uk.ac.ebi.fg.biosd.sampletab.persistence.Persister;
