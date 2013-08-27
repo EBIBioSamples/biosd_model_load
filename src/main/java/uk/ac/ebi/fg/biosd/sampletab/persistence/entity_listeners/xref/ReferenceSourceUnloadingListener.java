@@ -33,18 +33,24 @@ public class ReferenceSourceUnloadingListener extends UnloadingListener<Referenc
 	@Override
 	public long postRemove ( ReferenceSource entity )
 	{
-		// do not add oe.id or remove oeX.id. While this would be a more proper syntax, this not-so-correct syntax is the
-		// only way I can make Hibernate to translate correctly the query into SQL
-		// TODO: use classes for entity names
-		//
-		String hql = "DELETE FROM ReferenceSource src WHERE\n" +
-			"  src NOT IN ( SELECT srcA.id FROM OntologyEntry oe JOIN oe.source srcA )\n" + 
-		  "  AND src NOT IN ( SELECT srcB.id FROM XRef xr JOIN xr.source srcB )\n" +
-			"  AND src NOT IN ( SELECT db.id FROM MSI msi JOIN msi.databases db )\n" + 
-			"  AND src NOT IN ( SELECT db.id FROM BioSample smp JOIN smp.databases db )\n" + 
-			"  AND src NOT IN ( SELECT db.id FROM BioSampleGroup sg JOIN sg.databases db )\n"; 
+		// We previosuly used HQL, however this seems to have bad performance, due to temporary tables 
+		// (http://in.relation.to/Bloggers/MultitableBulkOperations)
 		
-		long result = entityManager.createQuery ( hql ).executeUpdate ();
+		String sql = "DELETE FROM reference_source\n" +
+			"WHERE id NOT IN ( SELECT source_id FROM onto_entry )\n" + 
+			"AND id NOT IN ( SELECT source_id FROM xref )\n" + 
+			"AND id NOT IN ( SELECT source_id FROM xref )";
+
+		long result = entityManager.createNativeQuery ( sql ).executeUpdate (); 
+
+		sql = "DELETE FROM db_ref_src\n" +
+			"WHERE id NOT IN ( SELECT source_id FROM onto_entry )\n" + 
+			"AND id NOT IN ( SELECT source_id FROM xref )\n" + 
+			"AND id NOT IN ( SELECT database_id FROM msi_database )\n" +
+			"AND id NOT IN ( SELECT database_id FROM sample_database )\n" +
+			"AND id NOT IN ( SELECT database_id FROM sg_database )\n";
+
+		result += entityManager.createNativeQuery ( sql ).executeUpdate (); 
 
 		// TODO: AOP
 		log.trace ( String.format ( "%s.postRemove( null ): returning %d", ReferenceSource.class.getSimpleName (), result ));

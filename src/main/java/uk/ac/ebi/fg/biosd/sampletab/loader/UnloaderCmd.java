@@ -53,7 +53,6 @@ public class UnloaderCmd
 				throw new RuntimeException ( "Submission with accession '" + msiAcc + "' not found" );
 			}
 			
-			
 			nitems = msi.getSamples ().size () + msi.getSampleGroups ().size ();
 			out.println ( "\nUnloading " + nitems + " samples+groups" );
 			
