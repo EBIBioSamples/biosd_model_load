@@ -244,6 +244,17 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
+
+		<!-- Has the Oracle driver, which cannot be published outside, for copyright reasons -->		
+		<repository>
+			<id>coconut.ebi.ac.uk-snapshots</id>
+			<name>Coconut Snapshot Repository</name>
+			<url>http://coconut.ebi.ac.uk:8081/artifactory/local-repo/</url>
+			<snapshots>
+			  <enabled>true</enabled>
+			</snapshots>
+		</repository>
+		
 	</repositories>
 
   <distributionManagement>
