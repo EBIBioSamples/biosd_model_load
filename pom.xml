@@ -83,7 +83,12 @@
 			<artifactId>commons-lang3</artifactId>
 			<version>3.1</version>		
 		</dependency>
-		
+
+		<dependency>
+				<groupId>uk.ac.ebi</groupId>
+				<artifactId>jutils</artifactId>
+				<version>3.0</version>
+		</dependency>
 	</dependencies>
 
 
@@ -224,16 +229,7 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
-		
-		<repository>
-			<id>coconut.ebi.ac.uk-snapshots</id>
-			<name>Coconut Snapshot Repository</name>
-			<url>http://coconut.ebi.ac.uk:8081/artifactory/local-repo/</url>
-			<snapshots>
-			  <enabled>true</enabled>
-			</snapshots>
-		</repository>
-		
+				
 		<repository>
 			<id>limpopo-repo</id>
 			<name>Limpopo Mini-SF Repository</name>
