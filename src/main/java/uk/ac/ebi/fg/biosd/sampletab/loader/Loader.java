@@ -4,6 +4,9 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import uk.ac.ebi.arrayexpress2.magetab.datamodel.graph.Node;
 import uk.ac.ebi.arrayexpress2.magetab.exception.ParseException;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.SampleData;
@@ -40,6 +43,7 @@ import uk.ac.ebi.fg.core_model.xref.ReferenceSource;
  *
  */
 public class Loader {
+    private Logger log = LoggerFactory.getLogger(getClass());
     
     public MSI fromSampleData(String filename) throws ParseException {
         return fromSampleData(new File(filename));
@@ -61,6 +65,106 @@ public class Loader {
         return fromSampleData(sampledata);
     }
     
+    public synchronized MSI fromSampleData(SampleData st) {
+        MSI msi = new MSI(st.msi.submissionIdentifier);
+        msi.setTitle(st.msi.submissionTitle);
+        msi.setDescription(st.msi.submissionDescription);
+        msi.setUpdateDate(st.msi.submissionUpdateDate);
+        msi.setReleaseDate(st.msi.submissionReleaseDate);
+        msi.setFormatVersion(st.msi.submissionVersion);
+        //TODO st.msi.submissionReferenceLayer
+        
+        for (uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Organization org : st.msi.organizations){
+            convertOrganization(org, msi);
+        }
+        
+        for (uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Person per : st.msi.persons){
+            convertPerson(per, msi);
+        }
+
+        for (uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Publication pub : st.msi.publications) {
+            convertPublication(pub, msi);
+        }
+        
+        for (uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.TermSource ts : st.msi.termSources) {
+            convertTermSource(ts, msi);
+        }
+
+        for (uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Database db : st.msi.databases) {
+            convertDatabase(db, msi);
+        }
+
+        for (GroupNode g : st.scd.getNodes(GroupNode.class)) {
+            BioSampleGroup bg = new BioSampleGroup ( g.getGroupAccession());
+            
+            bg.addPropertyValue(
+                    new BioCharacteristicValue(g.getNodeName(), 
+                            new BioCharacteristicType("Group Name")));
+            
+            if (g.getGroupDescription() != null) {
+                bg.addPropertyValue(
+                        new BioCharacteristicValue(g.getGroupDescription(), 
+                                new BioCharacteristicType("Group Description")));
+            }
+            
+            for(SCDNodeAttribute a: g.attributes) {
+                BioCharacteristicValue v = convertAtttribute(a,st);
+                bg.addPropertyValue(v);
+            }
+            
+            //referenceLayer is in MSI in SampleTab, but group in SCD in DB
+            bg.setInReferenceLayer(st.msi.submissionReferenceLayer);
+            
+            msi.addSampleGroup(bg);
+        }
+        
+        for (Node n : st.scd.getRootNodes()) {
+            if (SampleNode.class.isInstance(n)) {
+                SampleNode sn = (SampleNode) n;
+                BioSample bs = convertSampleNode(st, msi, sn);
+            }
+            
+        }
+
+        //put BioSamples into BioSampleGroups
+        for (GroupNode g : st.scd.getNodes(GroupNode.class)) {
+            BioSampleGroup bg = null;
+            for (BioSampleGroup bg_test : msi.getSampleGroups()) {
+                if (bg_test.getAcc().equals(g.getGroupAccession())) {
+                    bg = bg_test;
+                    break;
+                }
+            }
+            //check bg is not null at this point
+            if (bg == null) throw new RuntimeException("Unable to refind group "+g.getGroupAccession());
+            
+            for(Node p : g.getParentNodes()) {
+                //check this is a sample;
+                SampleNode s = (SampleNode) p;
+                
+                for (BioSample bs : msi.getSamples()) {
+                    if (bs.getAcc().equals(s.getSampleAccession())) {
+                        bg.addSample(bs);
+                        break;
+                    }
+                }
+            }
+        }
+        
+        if (msi.getSamples().size()+msi.getSampleGroups().size() == 0) {
+            throw new RuntimeException("No samples or groups");
+        }
+        
+        // Merge equivalent objects together
+        new MSINormalizer ( new MemoryStore () ).normalize ( msi );
+
+        if (msi.getSamples().size()+msi.getSampleGroups().size() == 0) {
+            throw new RuntimeException("No samples or groups");
+        }
+        
+        return msi;
+    }
+    
     private BioCharacteristicValue convertAtttribute(SCDNodeAttribute a, SampleData st) {
         
         BioCharacteristicType h = new BioCharacteristicType ( a.getAttributeType() );
@@ -80,10 +184,15 @@ public class Loader {
             //ontology
             if (ao.getTermSourceID() != null && ao.getTermSourceREF() != null) {
                 TermSource t = st.msi.getTermSource(ao.getTermSourceREF());
-                if (t != null && t.getURI() != null && t.getVersion() != null) {
+                if (t != null) {
+                    ReferenceSource rs = new ReferenceSource(t.getURI(), t.getVersion());
+                    rs.setUrl(t.getURI());
                     v.addOntologyTerm ( 
-                        new OntologyEntry( ao.getTermSourceID() , 
-                            new ReferenceSource(t.getURI(), t.getVersion()) ) );
+                        new OntologyEntry( ao.getTermSourceID(), rs ));
+                    
+                    log.info("Added ontology term");
+                } else {
+                    log.warn("Unable to find Term Source "+ao.getTermSourceREF());
                 }
             }
             
@@ -107,9 +216,10 @@ public class Loader {
                 if (aou.getTermSourceID() != null && aou.getTermSourceREF() != null) {
                     TermSource t = st.msi.getTermSource(aou.getTermSourceREF());
                     if (t != null && t.getURI() != null && t.getVersion() != null) {
-                        u.addOntologyTerm ( 
-                            new OntologyEntry( aou.getTermSourceID() , 
-                                new ReferenceSource(t.getURI(), t.getVersion()) ) );
+                        ReferenceSource rs = new ReferenceSource(t.getURI(), t.getVersion());
+                        rs.setUrl(t.getURI());
+                        v.addOntologyTerm ( 
+                            new OntologyEntry( ao.getTermSourceID(), rs ));
                     }
                 }
             }
@@ -200,106 +310,16 @@ public class Loader {
     
     public void convertTermSource(uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.TermSource termsource, MSI msi) {
         uk.ac.ebi.fg.core_model.xref.ReferenceSource r = new uk.ac.ebi.fg.core_model.xref.ReferenceSource(termsource.getName(), termsource.getVersion());
+        r.setName(termsource.getName());
         r.setUrl(termsource.getURI());
         msi.addReferenceSource(r);
     }
     
     public void convertDatabase(uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Database database, MSI msi) {
         //id to acc not an ideal match...
-        DatabaseRefSource d = new DatabaseRefSource(database.getName(), database.getID());
+        DatabaseRefSource d = new DatabaseRefSource(database.getID(), null);
+        d.setName(database.getName());
         d.setUrl(database.getURI());
         msi.addDatabase(d);
-    }
-    
-    public synchronized MSI fromSampleData(SampleData st) {
-        MSI msi = new MSI(st.msi.submissionIdentifier);
-        msi.setTitle(st.msi.submissionTitle);
-        msi.setDescription(st.msi.submissionDescription);
-        msi.setUpdateDate(st.msi.submissionUpdateDate);
-        msi.setReleaseDate(st.msi.submissionReleaseDate);
-        msi.setFormatVersion(st.msi.submissionVersion);
-        //TODO st.msi.submissionReferenceLayer
-        
-        for (uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Organization org : st.msi.organizations){
-            convertOrganization(org, msi);
-        }
-        
-        for (uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Person per : st.msi.persons){
-            convertPerson(per, msi);
-        }
-
-        for (uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Publication pub : st.msi.publications) {
-            convertPublication(pub, msi);
-        }
-        
-        for (uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.TermSource ts : st.msi.termSources) {
-            convertTermSource(ts, msi);
-        }
-
-        for (uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Database db : st.msi.databases) {
-            convertDatabase(db, msi);
-        }
-
-        for (GroupNode g : st.scd.getNodes(GroupNode.class)) {
-            BioSampleGroup bg = new BioSampleGroup ( g.getGroupAccession());
-            
-            bg.addPropertyValue(
-                    new BioCharacteristicValue(g.getNodeName(), 
-                            new BioCharacteristicType("Group Name")));
-            
-            if (g.getGroupDescription() != null) {
-                bg.addPropertyValue(
-                        new BioCharacteristicValue(g.getGroupDescription(), 
-                                new BioCharacteristicType("Group Description")));
-            }
-            
-            for(SCDNodeAttribute a: g.attributes) {
-                BioCharacteristicValue v = convertAtttribute(a,st);
-                bg.addPropertyValue(v);
-            }
-            
-            //referenceLayer is in MSI in SampleTab, but group in SCD in DB
-            bg.setInReferenceLayer(st.msi.submissionReferenceLayer);
-            
-            msi.addSampleGroup(bg);
-        }
-        
-        for (Node n : st.scd.getRootNodes()) {
-            if (SampleNode.class.isInstance(n)) {
-                SampleNode sn = (SampleNode) n;
-                convertSampleNode(st, msi, sn);
-            }
-            
-        }
-
-        //put BioSamples into BioSampleGroups
-        for (GroupNode g : st.scd.getNodes(GroupNode.class)) {
-            BioSampleGroup bg = null;
-            for (BioSampleGroup bg_test : msi.getSampleGroups()) {
-                if (bg_test.getAcc().equals(g.getGroupAccession())) {
-                    bg = bg_test;
-                    break;
-                }
-            }
-            //check bg is not null at this point
-            if (bg == null) throw new RuntimeException("Unable to refind group "+g.getGroupAccession());
-            
-            for(Node p : g.getParentNodes()) {
-                //check this is a sample;
-                SampleNode s = (SampleNode) p;
-                
-                for (BioSample bs : msi.getSamples()) {
-                    if (bs.getAcc().equals(s.getSampleAccession())) {
-                        bg.addSample(bs);
-                        break;
-                    }
-                }
-            }
-        }
-                
-        // Merge equivalent objects together
-        new MSINormalizer ( new MemoryStore () ).normalize ( msi );
-        
-        return msi;
     }
 }
