@@ -3,6 +3,9 @@ package uk.ac.ebi.fg.biosd.sampletab;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import uk.ac.ebi.arrayexpress2.magetab.exception.ParseException;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.SampleData;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.TermSource;
@@ -12,6 +15,7 @@ import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.AbstractNo
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.CharacteristicAttribute;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.ChildOfAttribute;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.CommentAttribute;
+import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.DatabaseAttribute;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.DerivedFromAttribute;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.MaterialAttribute;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.OrganismAttribute;
@@ -32,7 +36,7 @@ import uk.ac.ebi.fg.core_model.toplevel.Annotation;
 import uk.ac.ebi.fg.core_model.xref.ReferenceSource;
 
 public class Exporter {
-
+    private Logger log = LoggerFactory.getLogger(getClass());
     
     public SampleData fromMSI(MSI msi) throws ParseException{
         SampleData sd = new SampleData();
@@ -106,39 +110,54 @@ public class Exporter {
         for( BioSampleGroup g : msi.getSampleGroups()){
             GroupNode gn = new GroupNode();
             gn.setGroupAccession(g.getAcc());
-            //TODO gn.setNodeName();
-            //TODO gn.setGroupDescription();
+            
+            for (ExperimentalPropertyValue<ExperimentalPropertyType> v : g.getPropertyValues()){
+                ExperimentalPropertyType t = v.getType();
+                SCDNodeAttribute attr = null;
+                if (t.getTermText().equals("Group Name")){
+                    gn.setNodeName(v.getTermText());
+                } else if (t.getTermText().equals("Group Description")){
+                    gn.setGroupDescription(v.getTermText());
+                } else {
+                    //TODO finish this
+                    log.warn("Unexported group attribute");
+                }
+            }
             
             for (BioSample s : g.getSamples()){
                 //TODO check if this node already exists
                 
                 SampleNode sn = new SampleNode();
                 sn.setSampleAccession(s.getAcc());
-                //TODO sn.setNodeName()
-                //TODO sn.setSampleDescription();
                                 
                 for (ExperimentalPropertyValue<ExperimentalPropertyType> v : s.getPropertyValues()){
                     ExperimentalPropertyType t = v.getType();
                     SCDNodeAttribute attr = null;
-                    if (t.getTermText().equals("Sex")){
+                    if (t.getTermText().equals("Sample Name")) {
+                        sn.setNodeName(v.getTermText());
+                        
+                    } if (t.getTermText().equals("Sample Description")) {
+                        sn.setSampleDescription(v.getTermText());
+                        
+                    } else if (t.getTermText().equals("Sex")) {
                         attr = new SexAttribute(v.getTermText());
                         
-                    } else if (t.getTermText().equals("Organism")){
+                    } else if (t.getTermText().equals("Organism")) {
                         attr = new OrganismAttribute(v.getTermText());
                         
-                    } else if (t.getTermText().equals("Material")){
+                    } else if (t.getTermText().equals("Material")) {
                         attr = new MaterialAttribute(v.getTermText());
                         
-                    } else if (t.getTermText().toLowerCase().equals("same as")){
+                    } else if (t.getTermText().toLowerCase().equals("same as")) {
                         attr = new SameAsAttribute(v.getTermText());
                         
-                    } else if (t.getTermText().toLowerCase().equals("child of")){
+                    } else if (t.getTermText().toLowerCase().equals("child of")) {
                         attr = new ChildOfAttribute(v.getTermText());
                         
-                    } else if (t.getTermText().toLowerCase().equals("derived from")){
+                    } else if (t.getTermText().toLowerCase().equals("derived from")) {
                         attr = new DerivedFromAttribute(v.getTermText());
                         
-                    } else if (t.getTermText().toLowerCase().startsWith("comment[")){
+                    } else if (t.getTermText().toLowerCase().startsWith("comment[")) {
                         Pattern commentPattern = Pattern.compile("[Cc]omment\\[(.*)\\]");
                                                
                         Matcher matcher = commentPattern.matcher(t.getTermText());
@@ -190,15 +209,16 @@ public class Exporter {
                         }
                         attr = a;
                     }
+                    
                     //add any more attribute types that are used here
-                    //TODO database attribute
+                    //database attributes are below                    
                     
                     if (attr != null) {
                         if (AbstractNodeAttributeOntology.class.isInstance(attr)) {
                             AbstractNodeAttributeOntology attrOnt = (AbstractNodeAttributeOntology) attr;
                             //this can have an ontology, check for it
                             OntologyEntry oe = v.getSingleOntologyTerm();
-                            if (oe != null){
+                            if (oe != null) {
                                 ReferenceSource source = oe.getSource();
                                 String url = source.getUrl();
                                 String version = source.getVersion();
@@ -215,10 +235,16 @@ public class Exporter {
                 }
                 
                 //what is an annotation and what is an experimentalpropertyvalue?
-                for (Annotation a : s.getAnnotations()){
+                for (Annotation a : s.getAnnotations()) {
                     //TODO finish
                     a.getText();
                 }
+                
+                for (DatabaseRefSource db : s.getDatabases()) {
+                    DatabaseAttribute dba = new DatabaseAttribute(db.getName(), db.getAcc(), db.getUrl());
+                    sn.addAttribute(dba);
+                }                
+                
                 gn.addParentNode(sn);
             }
             
