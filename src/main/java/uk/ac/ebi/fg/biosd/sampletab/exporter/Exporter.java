@@ -1,4 +1,4 @@
-package uk.ac.ebi.fg.biosd.sampletab;
+package uk.ac.ebi.fg.biosd.sampletab.exporter;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
