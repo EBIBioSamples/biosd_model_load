@@ -4,18 +4,13 @@ Submission Identifier	GEN-SRP001145
 Submission Description	Twenty-seven diverse maize inbred lines were sequenced using Illumina GA technology in order to define regions of the genome with reduced genetic diversity, reduced historical recombination or increased genetic differentiation between tropical and temparate regions. The relationship of these regions to pericentromeric regions, selective sweeps during maize domestication and improvement, and divergent selection during the geographic expansion of maize are discussed. Suppressed genetic diversity and historical recombination in large pericentromeric regions on each chromosome may play an important role in heterosis. Implications of these results for the prospect of Genome-Wide association analysis in maize and other crops is discussed.
 Submission Version	1.2
 Submission Reference Layer	false
-Submission Release Date	2012/07/24
-Submission Update Date	2012/07/24
+Submission Release Date	2013/06/13
+Submission Update Date	2013/06/13
 Organization Name	Cornell	
 Organization Address		
 Organization URI		
 Organization Email		
 Organization Role	Submitter	
-Person Last Name	
-Person Initials	
-Person First Name	
-Person Email	
-Person Role	
 Publication PubMed ID	19965431	
 Publication DOI		
 Term Source Name	NCBI Taxonomy	
@@ -26,32 +21,32 @@ Database ID	SRP001145
 Database URI	http://www.ebi.ac.uk/ena/data/view/SRP001145	
 
 [SCD]
-Sample Name	Comment[Synonym]	Database Name	Database ID	Database URI	Organism	Term Source REF	Term Source ID	
-SRS005472	Zea mays	ENA SRA	SRS005472	http://www.ebi.ac.uk/ena/data/view/SRS005472	Zea mays	NCBI Taxonomy	4577	
-SRS005473	Zea mays	ENA SRA	SRS005473	http://www.ebi.ac.uk/ena/data/view/SRS005473	Zea mays	NCBI Taxonomy	4577	
-SRS005474	Zea mays	ENA SRA	SRS005474	http://www.ebi.ac.uk/ena/data/view/SRS005474	Zea mays	NCBI Taxonomy	4577	
-SRS005475	Zea mays	ENA SRA	SRS005475	http://www.ebi.ac.uk/ena/data/view/SRS005475	Zea mays	NCBI Taxonomy	4577	
-SRS005476	Zea mays	ENA SRA	SRS005476	http://www.ebi.ac.uk/ena/data/view/SRS005476	Zea mays	NCBI Taxonomy	4577	
-SRS005477	Zea mays	ENA SRA	SRS005477	http://www.ebi.ac.uk/ena/data/view/SRS005477	Zea mays	NCBI Taxonomy	4577	
-SRS005478	Zea mays	ENA SRA	SRS005478	http://www.ebi.ac.uk/ena/data/view/SRS005478	Zea mays	NCBI Taxonomy	4577	
-SRS005479	Zea mays	ENA SRA	SRS005479	http://www.ebi.ac.uk/ena/data/view/SRS005479	Zea mays	NCBI Taxonomy	4577	
-SRS005480	Zea mays	ENA SRA	SRS005480	http://www.ebi.ac.uk/ena/data/view/SRS005480	Zea mays	NCBI Taxonomy	4577	
-SRS005481	Zea mays	ENA SRA	SRS005481	http://www.ebi.ac.uk/ena/data/view/SRS005481	Zea mays	NCBI Taxonomy	4577	
-SRS005482	Zea mays	ENA SRA	SRS005482	http://www.ebi.ac.uk/ena/data/view/SRS005482	Zea mays	NCBI Taxonomy	4577	
-SRS005483	Zea mays	ENA SRA	SRS005483	http://www.ebi.ac.uk/ena/data/view/SRS005483	Zea mays	NCBI Taxonomy	4577	
-SRS005484	Zea mays	ENA SRA	SRS005484	http://www.ebi.ac.uk/ena/data/view/SRS005484	Zea mays	NCBI Taxonomy	4577	
-SRS005485	Zea mays	ENA SRA	SRS005485	http://www.ebi.ac.uk/ena/data/view/SRS005485	Zea mays	NCBI Taxonomy	4577	
-SRS005486	Zea mays	ENA SRA	SRS005486	http://www.ebi.ac.uk/ena/data/view/SRS005486	Zea mays	NCBI Taxonomy	4577	
-SRS005487	Zea mays	ENA SRA	SRS005487	http://www.ebi.ac.uk/ena/data/view/SRS005487	Zea mays	NCBI Taxonomy	4577	
-SRS005488	Zea mays	ENA SRA	SRS005488	http://www.ebi.ac.uk/ena/data/view/SRS005488	Zea mays	NCBI Taxonomy	4577	
-SRS005489	Zea mays	ENA SRA	SRS005489	http://www.ebi.ac.uk/ena/data/view/SRS005489	Zea mays	NCBI Taxonomy	4577	
-SRS005490	Zea mays	ENA SRA	SRS005490	http://www.ebi.ac.uk/ena/data/view/SRS005490	Zea mays	NCBI Taxonomy	4577	
-SRS005491	Zea mays	ENA SRA	SRS005491	http://www.ebi.ac.uk/ena/data/view/SRS005491	Zea mays	NCBI Taxonomy	4577	
-SRS005492	Zea mays	ENA SRA	SRS005492	http://www.ebi.ac.uk/ena/data/view/SRS005492	Zea mays	NCBI Taxonomy	4577	
-SRS005493	Zea mays	ENA SRA	SRS005493	http://www.ebi.ac.uk/ena/data/view/SRS005493	Zea mays	NCBI Taxonomy	4577	
-SRS005494	Zea mays	ENA SRA	SRS005494	http://www.ebi.ac.uk/ena/data/view/SRS005494	Zea mays	NCBI Taxonomy	4577	
-SRS005495	Zea mays	ENA SRA	SRS005495	http://www.ebi.ac.uk/ena/data/view/SRS005495	Zea mays	NCBI Taxonomy	4577	
-SRS005496	Zea mays	ENA SRA	SRS005496	http://www.ebi.ac.uk/ena/data/view/SRS005496	Zea mays	NCBI Taxonomy	4577	
-SRS005497	Zea mays	ENA SRA	SRS005497	http://www.ebi.ac.uk/ena/data/view/SRS005497	Zea mays	NCBI Taxonomy	4577	
-SRS005498	Zea mays	ENA SRA	SRS005498	http://www.ebi.ac.uk/ena/data/view/SRS005498	Zea mays	NCBI Taxonomy	4577	
-SRS005499	Zea mays	ENA SRA	SRS005499	http://www.ebi.ac.uk/ena/data/view/SRS005499	Zea mays	NCBI Taxonomy	4577	
+Sample Name	Sample Description	Comment[Synonym]	Comment[Synonym]	Comment[Synonym]	Database Name	Database ID	Database URI	Organism	Term Source REF	Term Source ID	
+SRS005472	Maize inbred line B73. The first maize line to have its genome fully sequenced.	B73	SAMN00003185	Zea mays	ENA SRA	SRS005472	http://www.ebi.ac.uk/ena/data/view/SRS005472	Zea mays	NCBI Taxonomy	4577	
+SRS005473	Maize inbred line B97	B97	SAMN00003186	Zea mays	ENA SRA	SRS005473	http://www.ebi.ac.uk/ena/data/view/SRS005473	Zea mays	NCBI Taxonomy	4577	
+SRS005474	Maize tropical inbred line CML103	CML103	SAMN00003187	Zea mays	ENA SRA	SRS005474	http://www.ebi.ac.uk/ena/data/view/SRS005474	Zea mays	NCBI Taxonomy	4577	
+SRS005475	Maize inbred line CML228	CML228	SAMN00003188	Zea mays	ENA SRA	SRS005475	http://www.ebi.ac.uk/ena/data/view/SRS005475	Zea mays	NCBI Taxonomy	4577	
+SRS005476	Maize tropical inbred line CML247	CML247	SAMN00003189	Zea mays	ENA SRA	SRS005476	http://www.ebi.ac.uk/ena/data/view/SRS005476	Zea mays	NCBI Taxonomy	4577	
+SRS005477	Maize tropical inbred line CML277	CML277	SAMN00003190	Zea mays	ENA SRA	SRS005477	http://www.ebi.ac.uk/ena/data/view/SRS005477	Zea mays	NCBI Taxonomy	4577	
+SRS005478	Maize tropical inbred line CML322	CML322	SAMN00003191	Zea mays	ENA SRA	SRS005478	http://www.ebi.ac.uk/ena/data/view/SRS005478	Zea mays	NCBI Taxonomy	4577	
+SRS005479	Maize tropical inbred line CML333	CML333	SAMN00003192	Zea mays	ENA SRA	SRS005479	http://www.ebi.ac.uk/ena/data/view/SRS005479	Zea mays	NCBI Taxonomy	4577	
+SRS005480	Maize tropical inbred line CML52	CML52	SAMN00003193	Zea mays	ENA SRA	SRS005480	http://www.ebi.ac.uk/ena/data/view/SRS005480	Zea mays	NCBI Taxonomy	4577	
+SRS005481	Maize tropical inbred line CML69	CML69	SAMN00003194	Zea mays	ENA SRA	SRS005481	http://www.ebi.ac.uk/ena/data/view/SRS005481	Zea mays	NCBI Taxonomy	4577	
+SRS005482	Maize popcorn inbred line Hp301	Hp301	SAMN00003195	Zea mays	ENA SRA	SRS005482	http://www.ebi.ac.uk/ena/data/view/SRS005482	Zea mays	NCBI Taxonomy	4577	
+SRS005483	Maize inbred line Il14H	Il14H	SAMN00003196	Zea mays	ENA SRA	SRS005483	http://www.ebi.ac.uk/ena/data/view/SRS005483	Zea mays	NCBI Taxonomy	4577	
+SRS005484	Maize inbred line Ki11	Ki11	SAMN00003197	Zea mays	ENA SRA	SRS005484	http://www.ebi.ac.uk/ena/data/view/SRS005484	Zea mays	NCBI Taxonomy	4577	
+SRS005485	Maize inbred line Ki3	Ki3	SAMN00003198	Zea mays	ENA SRA	SRS005485	http://www.ebi.ac.uk/ena/data/view/SRS005485	Zea mays	NCBI Taxonomy	4577	
+SRS005486	Maize inbred line Ky21	Ky21	SAMN00003199	Zea mays	ENA SRA	SRS005486	http://www.ebi.ac.uk/ena/data/view/SRS005486	Zea mays	NCBI Taxonomy	4577	
+SRS005487	Maize inbred line M162W	M162W	SAMN00003200	Zea mays	ENA SRA	SRS005487	http://www.ebi.ac.uk/ena/data/view/SRS005487	Zea mays	NCBI Taxonomy	4577	
+SRS005488	Maize inbred line M37W	M37W	SAMN00003201	Zea mays	ENA SRA	SRS005488	http://www.ebi.ac.uk/ena/data/view/SRS005488	Zea mays	NCBI Taxonomy	4577	
+SRS005489	Maize inbred line Mo17. This line is the second parent (with B73) of the maize mapping population referred to as IBM.	Mo17	SAMN00003202	Zea mays	ENA SRA	SRS005489	http://www.ebi.ac.uk/ena/data/view/SRS005489	Zea mays	NCBI Taxonomy	4577	
+SRS005490	Maize inbred line Mo18W	Mo18W	SAMN00003203	Zea mays	ENA SRA	SRS005490	http://www.ebi.ac.uk/ena/data/view/SRS005490	Zea mays	NCBI Taxonomy	4577	
+SRS005491	Maize inbred line MS71	MS71	SAMN00003204	Zea mays	ENA SRA	SRS005491	http://www.ebi.ac.uk/ena/data/view/SRS005491	Zea mays	NCBI Taxonomy	4577	
+SRS005492	Maize inbred line NC350	NC350	SAMN00003205	Zea mays	ENA SRA	SRS005492	http://www.ebi.ac.uk/ena/data/view/SRS005492	Zea mays	NCBI Taxonomy	4577	
+SRS005493	Maize inbred line NC358	NC358	SAMN00003206	Zea mays	ENA SRA	SRS005493	http://www.ebi.ac.uk/ena/data/view/SRS005493	Zea mays	NCBI Taxonomy	4577	
+SRS005494	Maize inbred line Oh43	Oh43	SAMN00003207	Zea mays	ENA SRA	SRS005494	http://www.ebi.ac.uk/ena/data/view/SRS005494	Zea mays	NCBI Taxonomy	4577	
+SRS005495	Maize inbred line Oh7B	Oh7B	SAMN00003208	Zea mays	ENA SRA	SRS005495	http://www.ebi.ac.uk/ena/data/view/SRS005495	Zea mays	NCBI Taxonomy	4577	
+SRS005496	Maize inbred line P39	P39	SAMN00003209	Zea mays	ENA SRA	SRS005496	http://www.ebi.ac.uk/ena/data/view/SRS005496	Zea mays	NCBI Taxonomy	4577	
+SRS005497	Maize inbred line Tx303	Tx303	SAMN00003210	Zea mays	ENA SRA	SRS005497	http://www.ebi.ac.uk/ena/data/view/SRS005497	Zea mays	NCBI Taxonomy	4577	
+SRS005498	Maize inbred line Tzi8	Tzi8	SAMN00003211	Zea mays	ENA SRA	SRS005498	http://www.ebi.ac.uk/ena/data/view/SRS005498	Zea mays	NCBI Taxonomy	4577	
+SRS005499	A recombinant inbred line putatively of CML52 definitely in a B73 background. Useful for quality control purposes.	CML52-B73_BC	SAMN00003212	Zea mays	ENA SRA	SRS005499	http://www.ebi.ac.uk/ena/data/view/SRS005499	Zea mays	NCBI Taxonomy	4577	
