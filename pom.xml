@@ -87,7 +87,7 @@
 		<dependency>
 				<groupId>uk.ac.ebi</groupId>
 				<artifactId>jutils</artifactId>
-				<version>3.0</version>
+				<version>3.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 
@@ -595,6 +595,27 @@
 				</dependency>
 			</dependencies>
 		</profile>
+
+
+  	<profile>
+  		<id>oracle_myeq_test</id>
+  		<activation><activeByDefault>false</activeByDefault></activation>
+  		<properties>
+				<jdbc.username>myeqtst</jdbc.username>
+				<jdbc.password>myeqtst</jdbc.password>
+				<jdbc.url>jdbc:oracle:thin:@bart.ebi.ac.uk:1521:biosdtst</jdbc.url>
+				<jdbc.driverClassName>oracle.jdbc.driver.OracleDriver</jdbc.driverClassName>
+				<hibernate.dialect>org.hibernate.dialect.Oracle10gDialect</hibernate.dialect>
+				<hibernate.hbm2ddl.auto>update</hibernate.hbm2ddl.auto>
+  		</properties>
+  		<dependencies>
+				<dependency>
+					<groupId>com.oracle</groupId>
+					<artifactId>ojdbc6</artifactId>
+					<version>11.2.0.3</version>
+				</dependency>
+  		</dependencies>
+  	</profile>
 
 	</profiles>
 </project>
