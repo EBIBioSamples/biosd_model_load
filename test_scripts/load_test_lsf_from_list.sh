@@ -9,7 +9,7 @@ cd "$MYDIR"/..
 if [ "$1" == "--help" ]; then
   cat <<EOT
 
-  usage: cat <sample-tab-paths> $0 [summary-file]
+  usage: cat <sample-tab-paths> | $0 [summary-file]
   
 Tests the loading of all files listed in the standard input. You need to first issue 'mvn -P<proper-profile> test-compile'  
 with a profile corresponding to your database target. Loading Results are reported in a summary file.
