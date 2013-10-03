@@ -12,11 +12,10 @@ import org.apache.commons.lang.StringEscapeUtils;
 
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
 import uk.ac.ebi.fg.biosd.sampletab.loader.Loader;
-import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.MemoryStore;
-import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.organizational.MSINormalizer;
 import uk.ac.ebi.fg.biosd.sampletab.persistence.Persister;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.toplevel.AccessibleDAO;
 import uk.ac.ebi.fg.core_model.resources.Resources;
+import uk.ac.ebi.utils.exceptions.ExceptionUtils;
 
 /**
  * Uses to perform loading tests, one submission at a time. See load_test.sh for details.
@@ -72,7 +71,7 @@ public class LoadTestCmd
 		catch ( Throwable ex ) 
 		{
 			ex.printStackTrace();
-			ex = getExceptionRootCause ( ex );
+			ex = ExceptionUtils.getRootCause ( ex );
 			exStr = ex.getClass ().getName ();
 			exMsg = ex.getMessage ();
 			exCode = 1;
@@ -104,11 +103,5 @@ public class LoadTestCmd
 			// This is yielded for sake of completeness, but not much used.
 			System.exit ( exCode );
 		}
-	}
-	
-	private static Throwable getExceptionRootCause ( Throwable ex )
-	{
-		for ( Throwable cause; ; ex = cause )
-			if ( ( cause = ex.getCause () ) == null ) return ex;
 	}
 }

@@ -108,7 +108,10 @@ public class SampleTabVerifier
     //
     String outFilePath = getExportedPath ();
     Writer stwr = new FileWriter ( outFilePath );
-    new SampleTabWriter ( stwr ).write ( xdata );
+    
+    SampleTabWriter stwrWrap = new SampleTabWriter ( stwr );
+    stwrWrap.write ( xdata );
+    stwrWrap.close ();
     
     // Now, re-import it, for in-memory verification
     Reader rdr = new FileReader ( outFilePath );
@@ -149,6 +152,8 @@ public class SampleTabVerifier
 			if ( line [ 0 ].startsWith ( "#" ) ) continue;
 			result.add ( line );
 		}
+		
+		csvReader.close ();
 		return result;
 	}
 	

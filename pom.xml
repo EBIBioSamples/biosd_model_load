@@ -7,7 +7,7 @@
 	
 	<properties>
 		<h2.version>1.3.168</h2.version>
-		<p6spy.version>1.3</p6spy.version>
+		<p6spy.version>2.0-SNAPSHOT</p6spy.version>
 		<hsql.version>2.2.9</hsql.version>
 		
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -54,7 +54,7 @@
 		<dependency>
 			<groupId>uk.ac.ebi.arrayexpress2</groupId>
 			<artifactId>limpopo-sampletab</artifactId>
-			<version>1.1.3</version>
+			<version>1.1.4-SNAPSHOT</version>
 		</dependency>
 
 
@@ -225,11 +225,15 @@
 			<id>ebi-repo-snapshots</id>
 			<name>EBI Repo Snapshots</name>
 			<url>http://www.ebi.ac.uk/~maven/m2repo_snapshots</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
+			<snapshots><enabled>true</enabled></snapshots>
 		</repository>
-				
+
+		<repository>
+			<id>sonatype</id>
+			<url>http://oss.sonatype.org/content/repositories/snapshots</url>
+			<snapshots><enabled>true</enabled></snapshots>
+		</repository>
+			
 		<repository>
 			<id>limpopo-repo</id>
 			<name>Limpopo Mini-SF Repository</name>
@@ -254,7 +258,7 @@
 			  <enabled>true</enabled>
 			</snapshots>
 		</repository>
-		
+				
 	</repositories>
 
   <distributionManagement>
@@ -399,7 +403,7 @@
 				<test.jdbc.url>jdbc:h2:target/database/testdb</test.jdbc.url>
 				<test.jdbc.driverClassName>org.h2.Driver</test.jdbc.driverClassName>
 				<test.hibernate.dialect>org.hibernate.dialect.H2Dialect</test.hibernate.dialect>
-				<test.hibernate.hbm2ddl.auto>update</test.hibernate.hbm2ddl.auto>
+				<test.hibernate.hbm2ddl.auto>create</test.hibernate.hbm2ddl.auto>
 			</properties>
 			<dependencies>
 				<dependency>
@@ -426,7 +430,7 @@
 				<test.jdbc.driverClassName>com.p6spy.engine.spy.P6SpyDriver</test.jdbc.driverClassName>
 				<test.jdbc.spy.driverClassName>org.h2.Driver</test.jdbc.spy.driverClassName>
 				<test.hibernate.dialect>org.hibernate.dialect.H2Dialect</test.hibernate.dialect>
-				<test.hibernate.hbm2ddl.auto>update</test.hibernate.hbm2ddl.auto>
+				<test.hibernate.hbm2ddl.auto>create</test.hibernate.hbm2ddl.auto>
 			</properties>
 			<dependencies>
 				<dependency>
@@ -617,5 +621,24 @@
   		</dependencies>
   	</profile>
 
+  	<profile>
+  		<id>test.oracle_myeq_test</id>
+  		<activation><activeByDefault>false</activeByDefault></activation>
+  		<properties>
+				<test.jdbc.username>myeqtst</test.jdbc.username>
+				<test.jdbc.password>myeqtst</test.jdbc.password>
+				<test.jdbc.url>jdbc:oracle:thin:@bart.ebi.ac.uk:1521:biosdtst</test.jdbc.url>
+				<test.jdbc.driverClassName>oracle.jdbc.driver.OracleDriver</test.jdbc.driverClassName>
+				<test.hibernate.dialect>org.hibernate.dialect.Oracle10gDialect</test.hibernate.dialect>
+				<test.hibernate.hbm2ddl.auto></test.hibernate.hbm2ddl.auto>
+  		</properties>
+  		<dependencies>
+				<dependency>
+					<groupId>com.oracle</groupId>
+					<artifactId>ojdbc6</artifactId>
+					<version>11.2.0.3</version>
+				</dependency>
+  		</dependencies>
+  	</profile>
 	</profiles>
 </project>

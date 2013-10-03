@@ -13,8 +13,12 @@
   
   <appender name="FileApp" class="ch.qos.logback.core.FileAppender">
 		<!-- Adds up to a possibly existing file  -->
-    <Append>false</Append>
-    <File>${project.build.directory}/app.log</File>
+    <Append>true</Append>
+
+    <!-- directory resolution doesn't work under the EBI cluster environment -->
+    <!-- File>${project.build.directory}/app.log</File -->
+    <File>target/app.log</File>
+
     <encoder>
       <pattern>%d{dd MMM yyyy HH:mm:ss.SSS} [%-6t] [%-5p] \(%C{1},%L\): %m%n</pattern>
     </encoder>
@@ -30,6 +34,6 @@
   </root>
 
   <!-- Add Loggers this way if you want finer reports for selected components -->
-  <!-- logger name="uk.ac.ebi.fg.biosd.sampletab.persistence" level="TRACE"/ -->
-  <!-- logger name = "org.hibernate.type" level = "TRACE" /  -->
+  <logger name="uk.ac.ebi.fg.biosd.sampletab.persistence" level="DEBUG"/>
+  <!-- logger name = "org.hibernate.type" level = "DEBUG" / -->
 </configuration>

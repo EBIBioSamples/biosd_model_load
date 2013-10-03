@@ -48,7 +48,7 @@ do
   if [ $[ $RANDOM % 100 ] -ge $SAMPLING_RATIO ]; then continue; fi
 	wfpath=$(echo "$fpath"| sed s/'\/'/'_'/g)
   echo bsub -K -oo "$bsub_out_path" -J $wfpath ./test_scripts/load_test_cmd.sh $fpath $outfpath
-done) | xargs -d '\n' -P 100 -n 1 --replace=_cmd_ -- bash -c "_cmd_; exit 0" 
+done) | xargs -d '\n' -P 50 -n 1 --replace=_cmd_ -- bash -c "_cmd_; exit 0" 
 
 echo
 echo 'All done.'
