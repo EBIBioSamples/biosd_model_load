@@ -1,7 +1,10 @@
-package uk.ac.ebi.fg.biosd.sampletab;
+package uk.ac.ebi.fg.biosd.sampletab.exporter;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.ebi.arrayexpress2.magetab.exception.ParseException;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.SampleData;
@@ -12,6 +15,7 @@ import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.AbstractNo
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.CharacteristicAttribute;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.ChildOfAttribute;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.CommentAttribute;
+import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.DatabaseAttribute;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.DerivedFromAttribute;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.MaterialAttribute;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.OrganismAttribute;
@@ -32,9 +36,17 @@ import uk.ac.ebi.fg.core_model.toplevel.Annotation;
 import uk.ac.ebi.fg.core_model.xref.ReferenceSource;
 
 public class Exporter {
-
+    private Logger log = LoggerFactory.getLogger(getClass());
+    
+    private final Pattern commentPattern = Pattern.compile("[Cc]omment\\[(.*)\\]");
+    private final Pattern characteristicPattern = Pattern.compile("[Cc]haracteristic\\[(.*)\\]");
     
     public SampleData fromMSI(MSI msi) throws ParseException{
+        
+        if (msi.getSamples().size()+msi.getSampleGroups().size() == 0) {
+            throw new RuntimeException("No samples or groups");
+        }
+        
         SampleData sd = new SampleData();
         sd.msi.submissionIdentifier = msi.getAcc();
         sd.msi.submissionTitle = msi.getTitle();
@@ -86,11 +98,10 @@ public class Exporter {
         
         for ( DatabaseRefSource d  : msi.getDatabases()){
             String name = d.getName();
-            //id to acc not an ideal match...
             String id = d.getAcc();
             String url = d.getUrl();
-            uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Database d2 = new uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Database(name, id, url);
-            sd.msi.databases.add(d2);
+            uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Database d2 = new uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Database(name, url, id);
+            sd.msi.databases.add(d2);            
         }
         
         for ( ReferenceSource r  : msi.getReferenceSources()){
@@ -103,46 +114,93 @@ public class Exporter {
         
         //SCD section
         
-        for( BioSampleGroup g : msi.getSampleGroups()){
+        for( BioSampleGroup g : msi.getSampleGroups()) {
             GroupNode gn = new GroupNode();
             gn.setGroupAccession(g.getAcc());
-            //TODO gn.setNodeName();
-            //TODO gn.setGroupDescription();
             
-            for (BioSample s : g.getSamples()){
+            for (ExperimentalPropertyValue<ExperimentalPropertyType> v : g.getPropertyValues()) {
+                ExperimentalPropertyType t = v.getType();
+                SCDNodeAttribute attr = null;
+                if (t.getTermText().equals("Group Name")) {
+                    gn.setNodeName(v.getTermText());
+                } else if (t.getTermText().equals("Group Description")) {
+                    gn.setGroupDescription(v.getTermText());
+                } else {
+                    //TODO finish this
+                    log.warn("Unexported group attribute");
+                }
+            }
+            
+            for (BioSample s : g.getSamples()) {
                 //TODO check if this node already exists
                 
                 SampleNode sn = new SampleNode();
                 sn.setSampleAccession(s.getAcc());
-                //TODO sn.setNodeName()
-                //TODO sn.setSampleDescription();
                                 
-                for (ExperimentalPropertyValue<ExperimentalPropertyType> v : s.getPropertyValues()){
+                for (ExperimentalPropertyValue<ExperimentalPropertyType> v : s.getPropertyValues()) {
                     ExperimentalPropertyType t = v.getType();
                     SCDNodeAttribute attr = null;
-                    if (t.getTermText().equals("Sex")){
-                        attr = new SexAttribute(v.getTermText());
+                    if (t.getTermText().equals("Sample Name")) {
+                        sn.setNodeName(v.getTermText());
                         
-                    } else if (t.getTermText().equals("Organism")){
-                        attr = new OrganismAttribute(v.getTermText());
+                    } if (t.getTermText().equals("Sample Description")) {
+                        sn.setSampleDescription(v.getTermText());
                         
-                    } else if (t.getTermText().equals("Material")){
-                        attr = new MaterialAttribute(v.getTermText());
+                    } else if (t.getTermText().equals("Sex")) {
+                        SexAttribute a = new SexAttribute(v.getTermText());
                         
-                    } else if (t.getTermText().toLowerCase().equals("same as")){
+                        OntologyEntry oe = v.getSingleOntologyTerm();
+                        if (oe != null) {
+                            ReferenceSource source = oe.getSource();
+                            String url = source.getUrl();
+                            String version = source.getVersion();
+                            String name = source.getName();
+                            TermSource ts = new TermSource(name, url, version);
+                            a.setTermSourceREF(sd.msi.getOrAddTermSource(ts));
+                            a.setTermSourceID(oe.getAcc());
+                        }
+                        attr = a;
+                    } else if (t.getTermText().equals("Organism")) {
+                        OrganismAttribute a = new OrganismAttribute(v.getTermText());
+                        
+                        OntologyEntry oe = v.getSingleOntologyTerm();
+                        if (oe != null) {
+                            ReferenceSource source = oe.getSource();
+                            String url = source.getUrl();
+                            String version = source.getVersion();
+                            String name = source.getName();
+                            TermSource ts = new TermSource(name, url, version);
+                            a.setTermSourceREF(sd.msi.getOrAddTermSource(ts));
+                            a.setTermSourceID(oe.getAcc());
+                        }
+                        attr = a;
+                        
+                    } else if (t.getTermText().equals("Material")) {
+                        MaterialAttribute a = new MaterialAttribute(v.getTermText());
+                        
+                        OntologyEntry oe = v.getSingleOntologyTerm();
+                        if (oe != null) {
+                            ReferenceSource source = oe.getSource();
+                            String url = source.getUrl();
+                            String version = source.getVersion();
+                            String name = source.getName();
+                            TermSource ts = new TermSource(name, url, version);
+                            a.setTermSourceREF(sd.msi.getOrAddTermSource(ts));
+                            a.setTermSourceID(oe.getAcc());
+                        }
+                        attr = a;
+                    } else if (t.getTermText().toLowerCase().equals("same as")) {
                         attr = new SameAsAttribute(v.getTermText());
                         
-                    } else if (t.getTermText().toLowerCase().equals("child of")){
+                    } else if (t.getTermText().toLowerCase().equals("child of")) {
                         attr = new ChildOfAttribute(v.getTermText());
                         
-                    } else if (t.getTermText().toLowerCase().equals("derived from")){
+                    } else if (t.getTermText().toLowerCase().equals("derived from")) {
                         attr = new DerivedFromAttribute(v.getTermText());
                         
-                    } else if (t.getTermText().toLowerCase().startsWith("comment[")){
-                        Pattern commentPattern = Pattern.compile("[Cc]omment\\[(.*)\\]");
-                                               
+                    } else if (commentPattern.matcher(t.getTermText()).matches()) {
                         Matcher matcher = commentPattern.matcher(t.getTermText());
-                        
+                        matcher.matches();
                         CommentAttribute a = new CommentAttribute(matcher.group(1), v.getTermText());
                         
                         Unit u = v.getUnit();
@@ -160,15 +218,24 @@ public class Exporter {
                                 a.unit.setTermSourceREF(sd.msi.getOrAddTermSource(ts));
                                 a.unit.setTermSourceID(oe.getAcc());
                             }
-                            
                         }
+                        
+                        OntologyEntry oe = v.getSingleOntologyTerm();
+                        if (oe != null) {
+                            ReferenceSource source = oe.getSource();
+                            String url = source.getUrl();
+                            String version = source.getVersion();
+                            String name = source.getName();
+                            TermSource ts = new TermSource(name, url, version);
+                            a.setTermSourceREF(sd.msi.getOrAddTermSource(ts));
+                            a.setTermSourceID(oe.getAcc());
+                        }
+                        
                         attr = a;
                         
-                    } else if (t.getTermText().toLowerCase().startsWith("characteristic[")) {
-                        Pattern commentPattern = Pattern.compile("[Cc]haracteristic\\[(.*)\\]");
-                                               
-                        Matcher matcher = commentPattern.matcher(t.getTermText());
-                        
+                    } else if (characteristicPattern.matcher(t.getTermText()).matches()) {
+                        Matcher matcher = characteristicPattern.matcher(t.getTermText());
+                        matcher.matches();
                         CharacteristicAttribute a = new CharacteristicAttribute(matcher.group(1), v.getTermText());
                         
                         Unit u = v.getUnit();
@@ -186,19 +253,31 @@ public class Exporter {
                                 a.unit.setTermSourceREF(sd.msi.getOrAddTermSource(ts));
                                 a.unit.setTermSourceID(oe.getAcc());
                             }
-                            
                         }
+                        
+                        OntologyEntry oe = v.getSingleOntologyTerm();
+                        if (oe != null) {
+                            ReferenceSource source = oe.getSource();
+                            String url = source.getUrl();
+                            String version = source.getVersion();
+                            String name = source.getName();
+                            TermSource ts = new TermSource(name, url, version);
+                            a.setTermSourceREF(sd.msi.getOrAddTermSource(ts));
+                            a.setTermSourceID(oe.getAcc());
+                        }
+                        
                         attr = a;
                     }
+                    
                     //add any more attribute types that are used here
-                    //TODO database attribute
+                    //database attributes are below                    
                     
                     if (attr != null) {
                         if (AbstractNodeAttributeOntology.class.isInstance(attr)) {
                             AbstractNodeAttributeOntology attrOnt = (AbstractNodeAttributeOntology) attr;
                             //this can have an ontology, check for it
                             OntologyEntry oe = v.getSingleOntologyTerm();
-                            if (oe != null){
+                            if (oe != null) {
                                 ReferenceSource source = oe.getSource();
                                 String url = source.getUrl();
                                 String version = source.getVersion();
@@ -215,14 +294,26 @@ public class Exporter {
                 }
                 
                 //what is an annotation and what is an experimentalpropertyvalue?
-                for (Annotation a : s.getAnnotations()){
+                for (Annotation a : s.getAnnotations()) {
                     //TODO finish
                     a.getText();
                 }
+                
+                for (DatabaseRefSource db : s.getDatabases()) {
+                    DatabaseAttribute dba = new DatabaseAttribute(db.getName(), db.getAcc(), db.getUrl());
+                    sn.addAttribute(dba);
+                }                
+                
+                sd.scd.addNode(sn);
                 gn.addParentNode(sn);
+                sn.addChildNode(gn);
             }
             
             sd.scd.addNode(gn);
+        }
+        
+        if (sd.scd.getNodeCount() == 0) {
+            throw new RuntimeException("No samples or groups");
         }
         
         return sd;

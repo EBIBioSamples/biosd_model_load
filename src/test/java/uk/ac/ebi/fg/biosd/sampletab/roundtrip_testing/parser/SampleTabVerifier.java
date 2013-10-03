@@ -19,7 +19,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.SampleData;
 import uk.ac.ebi.arrayexpress2.sampletab.renderer.SampleTabWriter;
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
-import uk.ac.ebi.fg.biosd.sampletab.Exporter;
+import uk.ac.ebi.fg.biosd.sampletab.exporter.Exporter;
 import uk.ac.ebi.fg.biosd.sampletab.loader.Loader;
 import au.com.bytecode.opencsv.CSVReader;
 
