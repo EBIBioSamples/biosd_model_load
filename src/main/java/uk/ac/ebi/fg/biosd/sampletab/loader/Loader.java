@@ -190,7 +190,7 @@ public class Loader {
                     v.addOntologyTerm ( 
                         new OntologyEntry( ao.getTermSourceID(), rs ));
                     
-                    log.info("Added ontology term");
+                    log.trace ("Added ontology term");
                 } else {
                     log.warn("Unable to find Term Source "+ao.getTermSourceREF());
                 }

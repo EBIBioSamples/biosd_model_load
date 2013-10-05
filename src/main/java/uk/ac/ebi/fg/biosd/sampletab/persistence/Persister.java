@@ -93,6 +93,7 @@ public class Persister
 		//
 		AccessibleDAO<MSI> dao = new AccessibleDAO<MSI> ( MSI.class,  em );
 
+		// Unfortunately the sesssion cannot start before normalisation (see Javadoc)
 		EntityTransaction ts = em.getTransaction ();
 		ts.begin ();
 		dao.create ( msi );
@@ -103,5 +104,5 @@ public class Persister
 		if ( em.isOpen () ) em.close ();
 		return msi;
 		
-	}  //persist
+	} // tryPersist
 }
