@@ -2,10 +2,13 @@ package uk.ac.ebi.fg.biosd.sampletab.loader;
 
 import static java.lang.System.out;
 
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
 
 import org.apache.commons.lang.time.DurationFormatUtils;
 
+import uk.ac.ebi.fg.biosd.model.application_mgmt.LoadingDiagnosticEntry;
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
 import uk.ac.ebi.fg.biosd.sampletab.persistence.Persister;
 import uk.ac.ebi.fg.core_model.resources.Resources;
@@ -29,11 +32,14 @@ public class LoaderCmd
 
 		String path = args [ 0 ];
 		int exCode = 0;
+
+		long parsingTime = -1, persistenceTime = -1;
+		int nitems = -1;
+		
+		Throwable ex = null;
 		
 		try
 		{
-			long parsingTime = 0, persistenceTime = 0;
-			int nitems = 0;
 
 			// Parse the submission sampletab file.
 			//
@@ -60,13 +66,16 @@ public class LoaderCmd
 				formatTimeDuration ( parsingTime + persistenceTime ) 
 			);
 		} 
-		catch ( Throwable ex ) 
+		catch ( Throwable ex1 ) 
 		{
-			ex.printStackTrace( System.err );
+			ex = ex1;
+			ex1.printStackTrace( System.err );
 			exCode = 1;
 		}
 		finally 
 		{
+			saveLoadingDiagnostics ( path, ex, parsingTime, persistenceTime, nitems );
+			
 			EntityManagerFactory emf = Resources.getInstance ().getEntityManagerFactory ();
 			if ( emf != null && emf.isOpen () ) emf.close ();
 			
@@ -102,5 +111,18 @@ public class LoaderCmd
 	  	: null;
 	  
 	  return timeStr == null ? "" + secs +  " sec" : timeStr + " (or " + secs + " sec)";
+	}
+	
+	private static void saveLoadingDiagnostics ( String sampleTabPath, Throwable ex, long parsingMsec, long persistenceMsec, int nitemsCount )
+	{
+		if ( !"true".equalsIgnoreCase ( System.getProperty ( "uk.ac.ebi.fg.biosd.sampletab.loader.debug" ) )) return;
+		
+		EntityManagerFactory emf = Resources.getInstance ().getEntityManagerFactory ();
+		EntityManager em = emf.createEntityManager ();
+		EntityTransaction ts = em.getTransaction ();
+		ts.begin ();
+		em.persist ( new LoadingDiagnosticEntry ( sampleTabPath, ex, parsingMsec, persistenceMsec, nitemsCount ) );
+		ts.commit ();
+		em.close ();
 	}
 }

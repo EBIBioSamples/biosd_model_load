@@ -519,6 +519,8 @@
 				<jdbc.username>sa</jdbc.username>
 				<jdbc.password />
 				<jdbc.url>jdbc:h2:target/database/testdb</jdbc.url>
+				<!-- You need java -cp h2*.jar org.h2.tools.Server for this (-? for options) 
+				<jdbc.url>jdbc:h2:tcp://localhost/~/testdb</jdbc.url -->
 				<jdbc.driverClassName>org.h2.Driver</jdbc.driverClassName>
 				<hibernate.dialect>org.hibernate.dialect.H2Dialect</hibernate.dialect>
 				<hibernate.hbm2ddl.auto>update</hibernate.hbm2ddl.auto>

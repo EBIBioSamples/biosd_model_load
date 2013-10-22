@@ -11,6 +11,7 @@ fi
 if [ "$source_dir" == "" ]; then
 	cat <<EOT
 
+DEPRECATED!!! Please build the command line package and use load_lsf.sh instead
 
   usage: $0 [-r 0-100] <target-dir>
   

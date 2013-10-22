@@ -2,6 +2,8 @@
 #
 # Runs the loading test (load_test.sh) through the EBI's LSF cluster.
 #
+#
+
 
 MYDIR=$(dirname "$0")
 cd "$MYDIR"/..
@@ -10,6 +12,8 @@ inputdir=$1
 
 if [ "$inputdir" == "" ]; then
   cat <<EOT
+
+DEPRECATED!!! Please build the command line package and use load_lsf.sh instead
 
   usage: $0 input-dir [summary-file]
   

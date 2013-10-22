@@ -9,6 +9,8 @@ cd "$MYDIR"/..
 if [ "$1" == "--help" ]; then
   cat <<EOT
 
+DEPRECATED!!! Please build the command line package and use load_lsf.sh instead
+
   usage: cat <sample-tab-paths> | $0 [summary-file]
   
 Tests the loading of all files listed in the standard input. You need to first issue 'mvn -P<proper-profile> test-compile'  

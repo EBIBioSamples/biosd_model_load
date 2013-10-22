@@ -12,6 +12,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
 import uk.ac.ebi.fg.biosd.sampletab.loader.Loader;
+import uk.ac.ebi.fg.biosd.sampletab.loader.LoaderCmd;
 import uk.ac.ebi.fg.biosd.sampletab.persistence.Persister;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.toplevel.AccessibleDAO;
 import uk.ac.ebi.fg.core_model.resources.Resources;
@@ -23,7 +24,11 @@ import uk.ac.ebi.utils.exceptions.ExceptionUtils;
  * <dl><dt>date</dt><dd>Sep 17, 2012</dd></dl>
  * @author Marco Brandizi
  *
+ * @deprecated please build the command line package and use load_lsf.sh instead. This will use {@link LoaderCmd} with
+ * reporting options similar to the ones implmemented in this class. 
+ *
  */
+@Deprecated
 public class LoadTestCmd
 {
 
