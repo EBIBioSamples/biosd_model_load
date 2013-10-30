@@ -1,6 +1,9 @@
 package uk.ac.ebi.fg.biosd.sampletab.persistence;
 
+import java.lang.reflect.Method;
 import java.sql.BatchUpdateException;
+import java.util.IdentityHashMap;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -19,6 +22,8 @@ import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.Normalizer;
 import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.organizational.MSINormalizer;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.toplevel.AccessibleDAO;
 import uk.ac.ebi.fg.core_model.resources.Resources;
+import uk.ac.ebi.fg.core_model.toplevel.Identifiable;
+import uk.ac.ebi.fg.core_model.utils.IdCleaner;
 import uk.ac.ebi.utils.exceptions.ExceptionUtils;
 
 /**
@@ -44,9 +49,16 @@ public class Persister
 	{  
 		// Do multiple attempts in case of exceptions, see explanations below.
 		//
+		IdCleaner idCleaner = null;
 		for ( int attempts = 5; ; )
 		{
 			try {
+
+			/* // DEBUG
+			if ( attempts == 5 ) 
+				throw new RuntimeException ( "test", new BatchUpdateException ( "unique constraint", new int[] { 1, 2, 3 } ) );
+			// DEBUG */
+				
 				return tryPersist ( msi );
 			} 
 			catch ( RuntimeException ex ) 
@@ -68,7 +80,24 @@ public class Persister
 			catch ( InterruptedException ex ) {
 				throw new RuntimeException ( "Internal error while trying to get loader lock:" + ex.getMessage (), ex );
 			}
-		}
+
+			/* DEBUG			
+			try {
+				Method idSetter = Identifiable.class.getDeclaredMethod ( "setId", Long.class );
+				idSetter.setAccessible ( true );
+				idSetter.invoke ( msi.getSamples ().iterator ().next (), new Long ( 10203 ) );
+			} 
+			catch ( Exception ex )
+			{
+				throw new RuntimeException ( ex );
+			}	
+			// DEBUG */
+
+			// We need to reset all IDs already assigned by Hibernate, else it will believe it's updating objects
+			if ( idCleaner == null ) idCleaner = new IdCleaner ();
+			idCleaner.resetIDs ( msi );
+			
+		} // for attempts
 	}  //persist
 	
 	/**
@@ -105,4 +134,5 @@ public class Persister
 		return msi;
 		
 	} // tryPersist
+
 }
