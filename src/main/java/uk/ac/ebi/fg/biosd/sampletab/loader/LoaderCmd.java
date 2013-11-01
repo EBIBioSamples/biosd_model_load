@@ -2,16 +2,23 @@ package uk.ac.ebi.fg.biosd.sampletab.loader;
 
 import static java.lang.System.out;
 
+import java.sql.BatchUpdateException;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 
+import org.apache.commons.lang.math.RandomUtils;
 import org.apache.commons.lang.time.DurationFormatUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.ebi.fg.biosd.model.application_mgmt.LoadingDiagnosticEntry;
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
 import uk.ac.ebi.fg.biosd.sampletab.persistence.Persister;
 import uk.ac.ebi.fg.core_model.resources.Resources;
+import uk.ac.ebi.utils.exceptions.ExceptionUtils;
 
 /**
  * 
@@ -24,52 +31,92 @@ import uk.ac.ebi.fg.core_model.resources.Resources;
  */
 public class LoaderCmd
 {
+	protected static Logger log = LoggerFactory.getLogger ( LoaderCmd.class );
 
 	public static void main ( String[] args ) throws Throwable
 	{
-		if ( args == null || args.length == 0 )
-			printUsage ();
+		if ( args == null || args.length == 0 ) printUsage ();
 
 		String path = args [ 0 ];
 		int exCode = 0;
 
-		long parsingTime = -1, persistenceTime = -1;
-		int nitems = -1;
+		Long parsingTime = null, persistenceTime = null;
+		Integer nitems = null;
 		
 		Throwable ex = null;
 		
 		try
 		{
-
 			// Parse the submission sampletab file.
 			//
 			out.println ( "\n\n >>> Loading '" + path + "'" );
-			
-			long time0 = System.currentTimeMillis ();
-			
-			Loader loader = new Loader();
-			MSI msi = loader.fromSampleData ( path );
-			
-			parsingTime = System.currentTimeMillis () - time0;
-			nitems = msi.getSamples ().size () + msi.getSampleGroups ().size ();
-			out.println ( 
-				"\n" + nitems + " samples+groups loaded in " + formatTimeDuration ( parsingTime ) + ". Now persisting it in the DB" );
-			
-			// Now persist it
+
+			// Sometimes, when loadings occur in parallel (and in a cluster), some of them fail cause one saves something before
+			// the other can learn an entity already exist in the database. Unfortunately, putting the normaliser inside a transaction
+			// causes horrible Hibernate complaints, since it starts flushing updated before the normalisation has completed.
+			// 
+			// So, our brutal solution is to re-attempt the loading from scratch. We have already tried to re-persist the 
+			// MSI in memory, so avoiding the re-load. Unfortunately, you face Hibernate problems this way as well, since it 
+			// has objects coming from the DB in the MSI you try to re-persist and it believes you're attempting to re-create 
+			// them. Maybe there is a smarter way to sort this out, but I have enough of struggling with it and it's not 
+			// something that happens so often anyway.
 			//
-			time0 = System.currentTimeMillis ();
-			new Persister ().persist ( msi );
+			for ( int attempts = 5; ; )
+			{
+				try 
+				{
+					long time0 = System.currentTimeMillis ();
+					
+					Loader loader = new Loader();
+					MSI msi = loader.fromSampleData ( path );
+					
+					parsingTime = System.currentTimeMillis () - time0;
+					nitems = msi.getSamples ().size () + msi.getSampleGroups ().size ();
+					out.println ( 
+						"\n" + nitems + " samples+groups loaded in " + formatTimeDuration ( parsingTime ) + ". Now persisting it in the DB" );
+					
+					// Now persist it
+					//
+					time0 = System.currentTimeMillis ();
+					new Persister ().persist ( msi );
+				
+					persistenceTime = System.currentTimeMillis () - time0;
+										
+					out.println ( 
+						"\nSubmission persisted in " + formatTimeDuration ( persistenceTime ) + ". Total time " +
+						formatTimeDuration ( parsingTime + persistenceTime ) 
+					);
+					
+					break;
+				}
+				catch ( RuntimeException aex ) 
+				{
+					if ( --attempts == 0 )
+						throw new RuntimeException ( "Error while saving '" + path + "': " + aex.getMessage (), ex );
+
+					Throwable aex1 = ExceptionUtils.getRootCause ( aex );
+					if ( !( aex1 instanceof BatchUpdateException && StringUtils.contains ( aex1.getMessage (), "unique constraint" ) ) )
+						throw new RuntimeException ( "Error while saving '" + path + "': " + aex.getMessage (), aex );
+					
+					log.warn ( "SQL exception: {} is likely due to concurrency, will retry {} more times", aex.getMessage (), attempts );
+					
+					// Have a random pause, minimises the likelihood to clash again 
+					try {
+						Thread.sleep ( RandomUtils.nextInt ( 2500 - 500 + 1 ) + 500 );
+					} 
+					catch ( InterruptedException sex ) { 
+						throw new RuntimeException ( "Internal error while trying to get loader lock:" + sex.getMessage (), sex );
+					}
+				}
+				
+			} // for attempts
 			
-			persistenceTime = System.currentTimeMillis () - time0;
-			out.println ( 
-				"\nSubmission persisted in " + formatTimeDuration ( persistenceTime ) + ". Total time " +
-				formatTimeDuration ( parsingTime + persistenceTime ) 
-			);
 		} 
 		catch ( Throwable ex1 ) 
 		{
 			ex = ex1;
 			ex1.printStackTrace( System.err );
+			log.error ( "Loader Command Error: {}", ex.getMessage (), ex  );
 			exCode = 1;
 		}
 		finally 
@@ -113,15 +160,18 @@ public class LoaderCmd
 	  return timeStr == null ? "" + secs +  " sec" : timeStr + " (or " + secs + " sec)";
 	}
 	
-	private static void saveLoadingDiagnostics ( String sampleTabPath, Throwable ex, long parsingMsec, long persistenceMsec, int nitemsCount )
+	private static void saveLoadingDiagnostics 
+		( String sampleTabPath, Throwable ex, Long parsingMsec, Long persistenceMsec, Integer nitemsCount )
 	{
-		if ( !"true".equalsIgnoreCase ( System.getProperty ( "uk.ac.ebi.fg.biosd.sampletab.loader.debug" ) )) return;
+		if ( !"true".equalsIgnoreCase ( System.getProperty ( "uk.ac.ebi.fg.biosd.sampletab.loader.debug" ) ) ) return;
+		
+		if ( ex != null ) ex = ExceptionUtils.getRootCause ( ex );
 		
 		EntityManagerFactory emf = Resources.getInstance ().getEntityManagerFactory ();
 		EntityManager em = emf.createEntityManager ();
 		EntityTransaction ts = em.getTransaction ();
 		ts.begin ();
-		em.persist ( new LoadingDiagnosticEntry ( sampleTabPath, ex, parsingMsec, persistenceMsec, nitemsCount ) );
+		em.persist ( new LoadingDiagnosticEntry ( sampleTabPath, ex, parsingMsec, persistenceMsec, nitemsCount ));
 		ts.commit ();
 		em.close ();
 	}

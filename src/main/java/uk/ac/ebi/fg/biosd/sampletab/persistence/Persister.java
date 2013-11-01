@@ -1,9 +1,6 @@
 package uk.ac.ebi.fg.biosd.sampletab.persistence;
 
-import java.lang.reflect.Method;
 import java.sql.BatchUpdateException;
-import java.util.IdentityHashMap;
-import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -22,9 +19,6 @@ import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.Normalizer;
 import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.organizational.MSINormalizer;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.toplevel.AccessibleDAO;
 import uk.ac.ebi.fg.core_model.resources.Resources;
-import uk.ac.ebi.fg.core_model.toplevel.Identifiable;
-import uk.ac.ebi.fg.core_model.utils.IdCleaner;
-import uk.ac.ebi.utils.exceptions.ExceptionUtils;
 
 /**
  * Persists an instance of the BioSD model into the database that it is mapped to via JPA/Hibernate.
@@ -42,97 +36,40 @@ public class Persister
 	/**
 	 * WARNING: this doesn't not invoke new {@link MSINormalizer} ( new {@link MemoryStore} () ).normalize ( msi ), 
 	 * i.e., you have to normalise in-memory objects that look duplicate. You don't need to do that if your objects come
-	 * from the {@link Loader}, since this invokes the normaliser automatically.
+	 * from the {@link Loader}, since this invokes such normaliser automatically.
+	 * 
+	 * Instead, this method takes care of invoking the normaliser with the {@link DBStore}, i.e., it takes entities 
+	 * that already exists in the DB into account.
 	 *  
 	 */
 	public MSI persist ( MSI msi )
 	{  
-		// Do multiple attempts in case of exceptions, see explanations below.
-		//
-		IdCleaner idCleaner = null;
-		for ( int attempts = 5; ; )
-		{
-			try {
-
-			/* // DEBUG
-			if ( attempts == 5 ) 
-				throw new RuntimeException ( "test", new BatchUpdateException ( "unique constraint", new int[] { 1, 2, 3 } ) );
-			// DEBUG */
-				
-				return tryPersist ( msi );
-			} 
-			catch ( RuntimeException ex ) 
-			{
-				if ( --attempts == 0 )
-					throw new RuntimeException ( "Error while saving '" + msi.getAcc () + "': " + ex.getMessage (), ex );
-
-				Throwable ex1 = ExceptionUtils.getRootCause ( ex );
-				if ( !( ex1 instanceof BatchUpdateException && StringUtils.contains ( ex1.getMessage (), "unique constraint" ) ) )
-					throw new RuntimeException ( "error while saving '" + msi.getAcc () + "': " + ex.getMessage (), ex );
-				
-				log.debug ( "SQL exception: {} is likely due to concurrency, will retry {} more times", ex.getMessage (), attempts );
-			}
-
-			// Have a random pause, minimises the likelihood to clash again 
-			try {
-				Thread.sleep ( RandomUtils.nextInt ( 2500 - 500 + 1 ) + 500 );
-			} 
-			catch ( InterruptedException ex ) {
-				throw new RuntimeException ( "Internal error while trying to get loader lock:" + ex.getMessage (), ex );
-			}
-
-			/* DEBUG			
-			try {
-				Method idSetter = Identifiable.class.getDeclaredMethod ( "setId", Long.class );
-				idSetter.setAccessible ( true );
-				idSetter.invoke ( msi.getSamples ().iterator ().next (), new Long ( 10203 ) );
-			} 
-			catch ( Exception ex )
-			{
-				throw new RuntimeException ( ex );
-			}	
-			// DEBUG */
-
-			// We need to reset all IDs already assigned by Hibernate, else it will believe it's updating objects
-			if ( idCleaner == null ) idCleaner = new IdCleaner ();
-			idCleaner.resetIDs ( msi );
-			
-		} // for attempts
-	}  //persist
-	
-	/**
-	 * Single persistence is re-attempted a couple of times inside {@link #persist(MSI)}, in case it gets SQL exceptions
-	 * or alike. Sometimes the persister fails just because of parallelism, e.g., a parallel loader first check if an 
-	 * object is in the DB (i.e., uses the {@link Normalizer}s), then it persists the submission, but meanwhile another
-	 * loader has created objects that the first still believes not to exist. It's not easy to wrap the normalization
-	 * stage into a transaction, cause in such case Hibernate attempts to save new objects as part of update operations
-	 * over existing ones. Because such cases are not frequent, we prefer to fix the problem by simply re-attempting. 
-	 * 
-	 */
-	private MSI tryPersist ( MSI msi )
-	{    		
 		EntityManagerFactory emf = Resources.getInstance ().getEntityManagerFactory ();
 		EntityManager em = emf.createEntityManager ();
 
-		// Normalise (i.e., removes duplicates) in-memory objects that appear to be duplicates of already-existing objects
-		// on the database side.
-		new MSINormalizer ( new DBStore ( em ) ).normalize ( msi );
-			
-		// Ready to go now.
-		//
-		AccessibleDAO<MSI> dao = new AccessibleDAO<MSI> ( MSI.class,  em );
+		try 
+		{
+			// Normalise (i.e., removes duplicates) in-memory objects that appear to be duplicates of already-existing objects
+			// on the database side.
+			new MSINormalizer ( new DBStore ( em ) ).normalize ( msi );
+				
+			// Ready to go now.
+			//
+			AccessibleDAO<MSI> dao = new AccessibleDAO<MSI> ( MSI.class,  em );
+	
+			// Unfortunately the transaction cannot start before normalisation (see Javadoc)
+			EntityTransaction ts = em.getTransaction ();
+			ts.begin ();
+			dao.create ( msi );
+			ts.commit ();
 
-		// Unfortunately the sesssion cannot start before normalisation (see Javadoc)
-		EntityTransaction ts = em.getTransaction ();
-		ts.begin ();
-		dao.create ( msi );
-		ts.commit ();
-		
-		// Just to be sure, we've noted some timeouts on Oracle side
-		//
-		if ( em.isOpen () ) em.close ();
-		return msi;
-		
-	} // tryPersist
-
+			return msi;
+		}
+		finally
+		{
+			// Just to be sure, we've noted some timeouts on Oracle side
+			//
+			if ( em != null && em.isOpen () ) em.close ();
+		}
+	}  //persist
 }

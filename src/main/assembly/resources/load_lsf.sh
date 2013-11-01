@@ -30,11 +30,11 @@ EOT
 fi
 
 # Pick a random sample if there is this variable defined, 100% otherwise.	 
-if [ "$SAMPLING_RATIO" == "" ]; then SAMPLING_RATIO=100; fi
+if [ "$BIOSD_LOAD_SAMPLING_RATIO" == "" ]; then BIOSD_LOAD_SAMPLING_RATIO=100; fi
 	 
 (while read fpath
 do
-  if [ $[ $RANDOM % 100 ] -ge $SAMPLING_RATIO ]; then continue; fi
+  if [ $[ $RANDOM % 100 ] -ge $BIOSD_LOAD_SAMPLING_RATIO ]; then continue; fi
 	wfpath=$(echo "$fpath"| sed s/'\/'/'_'/g)
   echo bsub -K -oo /dev/null -J $wfpath ./load.sh $fpath
 done) | xargs -d '\n' -P 100 -n 1 --replace=_cmd_ -- bash -c "_cmd_; exit 0" 
