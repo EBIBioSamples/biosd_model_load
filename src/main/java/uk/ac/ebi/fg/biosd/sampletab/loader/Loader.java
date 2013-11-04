@@ -13,6 +13,7 @@ import uk.ac.ebi.arrayexpress2.sampletab.datamodel.SampleData;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.TermSource;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.GroupNode;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.SampleNode;
+import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.AbstractNamedAttribute;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.AbstractNodeAttributeOntology;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.AbstractRelationshipAttribute;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.CharacteristicAttribute;
@@ -22,6 +23,8 @@ import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.SCDNodeAtt
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.UnitAttribute;
 import uk.ac.ebi.arrayexpress2.sampletab.parser.SampleTabSaferParser;
 import uk.ac.ebi.fg.biosd.model.expgraph.BioSample;
+import uk.ac.ebi.fg.biosd.model.expgraph.properties.SampleCommentType;
+import uk.ac.ebi.fg.biosd.model.expgraph.properties.SampleCommentValue;
 import uk.ac.ebi.fg.biosd.model.organizational.BioSampleGroup;
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
 import uk.ac.ebi.fg.biosd.model.xref.DatabaseRefSource;
@@ -29,6 +32,8 @@ import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.MemoryStore;
 import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.organizational.MSINormalizer;
 import uk.ac.ebi.fg.core_model.expgraph.properties.BioCharacteristicType;
 import uk.ac.ebi.fg.core_model.expgraph.properties.BioCharacteristicValue;
+import uk.ac.ebi.fg.core_model.expgraph.properties.ExperimentalPropertyType;
+import uk.ac.ebi.fg.core_model.expgraph.properties.ExperimentalPropertyValue;
 import uk.ac.ebi.fg.core_model.expgraph.properties.Unit;
 import uk.ac.ebi.fg.core_model.expgraph.properties.UnitDimension;
 import uk.ac.ebi.fg.core_model.organizational.ContactRole;
@@ -108,8 +113,7 @@ public class Loader {
             }
             
             for(SCDNodeAttribute a: g.attributes) {
-                BioCharacteristicValue v = convertAtttribute(a,st);
-                bg.addPropertyValue(v);
+                bg.addPropertyValue(convertAtttribute(a,st));
             }
             
             //referenceLayer is in MSI in SampleTab, but group in SCD in DB
@@ -165,18 +169,42 @@ public class Loader {
         return msi;
     }
     
-    private BioCharacteristicValue convertAtttribute(SCDNodeAttribute a, SampleData st) {
+    private ExperimentalPropertyValue convertAtttribute(SCDNodeAttribute a, SampleData st) {
         
-        BioCharacteristicType h = new BioCharacteristicType ( a.getAttributeType() );
-        BioCharacteristicValue v = new BioCharacteristicValue( a.getAttributeValue(), h);
+        ExperimentalPropertyValue v = null;
+        
+        boolean isRelationshipAttribute = false;
+        synchronized (AbstractRelationshipAttribute.class) {
+            isRelationshipAttribute = AbstractRelationshipAttribute.class.isInstance(a);
+        }
+        boolean isCommentAttribute = false;
+        synchronized (CommentAttribute.class) {
+            isCommentAttribute = CommentAttribute.class.isInstance(a);
+        }
+        boolean isCharacteristicAttribute = false;
+        synchronized (CharacteristicAttribute.class) {
+            isCharacteristicAttribute = CharacteristicAttribute.class.isInstance(a);
+        }
+        boolean isNamedAttribute = false;
+        synchronized (AbstractNamedAttribute.class) {
+            isNamedAttribute = AbstractNamedAttribute.class.isInstance(a);
+        }
+
+        if (isCommentAttribute) {
+            CommentAttribute ca = (CommentAttribute) a;
+            v = new SampleCommentValue( a.getAttributeValue(), new SampleCommentType( ca.type ));
+        } else if (isCharacteristicAttribute) {
+            CharacteristicAttribute ca = (CharacteristicAttribute) a;
+            v = new BioCharacteristicValue( a.getAttributeValue(), new BioCharacteristicType( ca.type ));
+        } else if (isRelationshipAttribute || isNamedAttribute) {
+            v = new ExperimentalPropertyValue<ExperimentalPropertyType>( a.getAttributeValue(), new ExperimentalPropertyType( a.getAttributeType() ));
+        } else {
+            throw new RuntimeException("Unrecognized attribute "+a.getAttributeType());
+        }
         
         boolean isOntologyAttribute = false;
         synchronized (AbstractNodeAttributeOntology.class) {
             isOntologyAttribute = AbstractNodeAttributeOntology.class.isInstance(a);
-        }
-        boolean isRelationshipAttribute = false;
-        synchronized (AbstractRelationshipAttribute.class) {
-            isRelationshipAttribute = AbstractRelationshipAttribute.class.isInstance(a);
         }
         if (isOntologyAttribute) {
             AbstractNodeAttributeOntology ao = (AbstractNodeAttributeOntology) a;
@@ -225,7 +253,9 @@ public class Loader {
             }
             
         }
-        //Relationship attributes need no special processing
+        
+        
+        
         //Database Attributes are processed elsewhere
         
         return v;

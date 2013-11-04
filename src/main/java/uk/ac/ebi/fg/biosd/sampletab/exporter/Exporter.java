@@ -12,6 +12,7 @@ import uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.TermSource;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.GroupNode;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.SampleNode;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.AbstractNodeAttributeOntology;
+import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.AbstractRelationshipAttribute;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.CharacteristicAttribute;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.ChildOfAttribute;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.CommentAttribute;
@@ -24,9 +25,11 @@ import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.SameAsAttr
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.SexAttribute;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.UnitAttribute;
 import uk.ac.ebi.fg.biosd.model.expgraph.BioSample;
+import uk.ac.ebi.fg.biosd.model.expgraph.properties.SampleCommentValue;
 import uk.ac.ebi.fg.biosd.model.organizational.BioSampleGroup;
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
 import uk.ac.ebi.fg.biosd.model.xref.DatabaseRefSource;
+import uk.ac.ebi.fg.core_model.expgraph.properties.BioCharacteristicValue;
 import uk.ac.ebi.fg.core_model.expgraph.properties.ExperimentalPropertyType;
 import uk.ac.ebi.fg.core_model.expgraph.properties.ExperimentalPropertyValue;
 import uk.ac.ebi.fg.core_model.expgraph.properties.Unit;
@@ -37,10 +40,7 @@ import uk.ac.ebi.fg.core_model.xref.ReferenceSource;
 
 public class Exporter {
     private Logger log = LoggerFactory.getLogger(getClass());
-    
-    private final Pattern commentPattern = Pattern.compile("[Cc]omment\\[(.*)\\]");
-    private final Pattern characteristicPattern = Pattern.compile("[Cc]haracteristic\\[(.*)\\]");
-    
+        
     public SampleData fromMSI(MSI msi) throws ParseException{
         
         if (msi.getSamples().size()+msi.getSampleGroups().size() == 0) {
@@ -140,6 +140,18 @@ public class Exporter {
                 for (ExperimentalPropertyValue<ExperimentalPropertyType> v : s.getPropertyValues()) {
                     ExperimentalPropertyType t = v.getType();
                     SCDNodeAttribute attr = null;
+                    
+
+                    boolean isSampleCommentValue = false;
+                    synchronized (SampleCommentValue.class) {
+                        isSampleCommentValue = SampleCommentValue.class.isInstance(v);
+                    }
+                    boolean isBioCharacteristicValue = false;
+                    synchronized (BioCharacteristicValue.class) {
+                        isBioCharacteristicValue = BioCharacteristicValue.class.isInstance(v);
+                    }
+                    
+                    
                     if (t.getTermText().equals("Sample Name")) {
                         sn.setNodeName(v.getTermText());
                         
@@ -198,10 +210,8 @@ public class Exporter {
                     } else if (t.getTermText().toLowerCase().equals("derived from")) {
                         attr = new DerivedFromAttribute(v.getTermText());
                         
-                    } else if (commentPattern.matcher(t.getTermText()).matches()) {
-                        Matcher matcher = commentPattern.matcher(t.getTermText());
-                        matcher.matches();
-                        CommentAttribute a = new CommentAttribute(matcher.group(1), v.getTermText());
+                    } else if (isSampleCommentValue) {
+                        CommentAttribute a = new CommentAttribute(t.getTermText(), v.getTermText());
                         
                         Unit u = v.getUnit();
                         if (u != null) {
@@ -233,10 +243,8 @@ public class Exporter {
                         
                         attr = a;
                         
-                    } else if (characteristicPattern.matcher(t.getTermText()).matches()) {
-                        Matcher matcher = characteristicPattern.matcher(t.getTermText());
-                        matcher.matches();
-                        CharacteristicAttribute a = new CharacteristicAttribute(matcher.group(1), v.getTermText());
+                    } else if (isBioCharacteristicValue) {
+                        CharacteristicAttribute a = new CharacteristicAttribute(t.getTermText(), v.getTermText());
                         
                         Unit u = v.getUnit();
                         if (u != null) {
