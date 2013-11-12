@@ -84,9 +84,16 @@ public class MSINormalizer extends AnnotatableNormalizer<MSI>
 		linkExistingSampleGroups ( msi );	
 
 		// mark the time the object creation occurs 
-		if ( store instanceof DBStore ) { 
+		if ( store instanceof DBStore ) 
+		{ 
 			msi.setUpdateDate ( new Date () );
-			new JobRegisterDAO ( ((DBStore) store).getEntityManager () ).create ( msi, Operation.ADD, msi.getUpdateDate () );
+			JobRegisterDAO jrDao = new JobRegisterDAO ( ((DBStore) store).getEntityManager () );
+			jrDao.create ( msi, Operation.ADD, msi.getUpdateDate () );
+			
+			for ( BioSample sample: msi.getSamples () ) 
+				if ( sample.getId () == null ) jrDao.create ( sample, Operation.ADD, sample.getUpdateDate () );
+			for ( BioSampleGroup sg: msi.getSampleGroups () )  
+				if ( sg.getId () == null ) jrDao.create ( sg, Operation.ADD, sg.getUpdateDate () );
 		}
 		
 		return true;

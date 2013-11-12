@@ -51,16 +51,17 @@ public class MemoryStore extends ForwardingTable<Class, String, Object> implemen
 		return (T) get ( target.getClass (), targetId );
 	} 
 
-	/**
-	 * Invokes {@link #get(Class, String)} and, if the target object is not in the table, saves newObject (returning null). 
-	 */
-	private <T> T getOrPut ( Class<? extends T> targetClass, String targetId, T newObject ) 
-	{
-		T result = get ( targetClass, targetId );
-		if ( result == null )
-			put ( targetClass, targetId, newObject );
-		return result;
-	}
+// TODO: remove
+//	/**
+//	 * Invokes {@link #get(Class, String)} and, if the target object is not in the table, saves newObject (returning null). 
+//	 */
+//	private <T> T getOrPut ( Class<? extends T> targetClass, String targetId, T newObject ) 
+//	{
+//		T result = get ( targetClass, targetId );
+//		if ( result == null )
+//			put ( targetClass, targetId, newObject );
+//		return result;
+//	}
 	
 	/**
 	 * A wrapper of {@link #getOrPut(Class, String, Object)} that uses newObject.getClass(). 

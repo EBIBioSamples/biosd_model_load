@@ -1,7 +1,7 @@
 #!/bin/sh
 
-#ÊThis is used to invoke both the loader and the unloader. Do not call me directly. Use <loader/unloader>.sh instead
-#Ê
+# This is used to invoke both the loader and the unloader. Do not call me directly. Use <loader/unloader>.sh instead
+# 
 
 # These are passed to the JVM. they're appended, so that you can predefine it from the shell
 OPTS="$OPTS -Xms2G -Xmx4G -XX:PermSize=128m -XX:MaxPermSize=256m"
@@ -38,7 +38,7 @@ if [ "$JDBCPATH" != "" ]; then
   CP="$CP:$JDBCPATH"
 fi
 
-#ÊSee here for an explaination about ${1+"$@"} :
+# See here for an explaination about ${1+"$@"} :
 # http://stackoverflow.com/questions/743454/space-in-java-command-line-arguments 
 
 java $OPTS -cp $CP $javaClass ${1+"$@"}

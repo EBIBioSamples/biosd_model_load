@@ -6,8 +6,6 @@ package uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.ter
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import org.apache.commons.lang.StringUtils;
-
 import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.Normalizer;
 import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.Store;
 import uk.ac.ebi.fg.core_model.terms.OntologyEntry;

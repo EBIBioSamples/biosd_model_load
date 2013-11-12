@@ -81,10 +81,7 @@ public class BioSampleGroupNormalizer extends AnnotatableNormalizer<BioSampleGro
 		
 		// mark the time the object creation occurs 
 		if ( store instanceof DBStore ) 
-		{
 			sg.setUpdateDate ( new Date () );
-			jobRegDao.create ( sg, Operation.ADD, sg.getUpdateDate () );
-		}
 		
 		return true;
 	}

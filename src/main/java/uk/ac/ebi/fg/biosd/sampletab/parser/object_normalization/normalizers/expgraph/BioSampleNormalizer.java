@@ -41,10 +41,7 @@ public class BioSampleNormalizer extends ProductNormalizer<BioSample>
 		
 		// mark the time the object creation occurs 
 		if ( store instanceof DBStore ) 
-		{
 			smp.setUpdateDate ( new Date () );
-			jobRegDao.create ( smp, Operation.ADD, smp.getUpdateDate () );
-		}
 		
 		return true;
 	}

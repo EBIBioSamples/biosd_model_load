@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# DEPRECATED!!! Please build the command line package and use load_lsf.sh instead
+
+
 # Used for load_test_lsf.sh
 #
 

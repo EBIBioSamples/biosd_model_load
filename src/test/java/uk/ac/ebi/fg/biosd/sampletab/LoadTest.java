@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.ebi.arrayexpress2.magetab.exception.ParseException;
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
-import uk.ac.ebi.fg.biosd.sampletab.Loader;
+import uk.ac.ebi.fg.biosd.sampletab.loader.Loader;
 import uk.ac.ebi.fg.biosd.sampletab.persistence.Persister;
 
 /**

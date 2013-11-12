@@ -1,7 +1,7 @@
 /*
  * 
  */
-package uk.ac.ebi.fg.biosd.sampletab;
+package uk.ac.ebi.fg.biosd.sampletab.loader;
 
 import static java.lang.System.out;
 
@@ -52,7 +52,6 @@ public class UnloaderCmd
 				exCode = 2;
 				throw new RuntimeException ( "Submission with accession '" + msiAcc + "' not found" );
 			}
-			
 			
 			nitems = msi.getSamples ().size () + msi.getSampleGroups ().size ();
 			out.println ( "\nUnloading " + nitems + " samples+groups" );

@@ -1,6 +1,3 @@
-/*
- * 
- */
 package uk.ac.ebi.fg.biosd.sampletab.roundtrip_testing.parser;
 
 import java.io.BufferedInputStream;
@@ -16,14 +13,14 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.SampleData;
 import uk.ac.ebi.arrayexpress2.sampletab.renderer.SampleTabWriter;
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
-import uk.ac.ebi.fg.biosd.sampletab.Exporter;
-import uk.ac.ebi.fg.biosd.sampletab.Loader;
+import uk.ac.ebi.fg.biosd.sampletab.exporter.Exporter;
+import uk.ac.ebi.fg.biosd.sampletab.loader.Loader;
 import au.com.bytecode.opencsv.CSVReader;
 
 /**
@@ -111,7 +108,10 @@ public class SampleTabVerifier
     //
     String outFilePath = getExportedPath ();
     Writer stwr = new FileWriter ( outFilePath );
-    new SampleTabWriter ( stwr ).write ( xdata );
+    
+    SampleTabWriter stwrWrap = new SampleTabWriter ( stwr );
+    stwrWrap.write ( xdata );
+    stwrWrap.close ();
     
     // Now, re-import it, for in-memory verification
     Reader rdr = new FileReader ( outFilePath );
@@ -152,6 +152,8 @@ public class SampleTabVerifier
 			if ( line [ 0 ].startsWith ( "#" ) ) continue;
 			result.add ( line );
 		}
+		
+		csvReader.close ();
 		return result;
 	}
 	

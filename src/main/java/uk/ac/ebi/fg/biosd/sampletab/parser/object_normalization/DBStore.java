@@ -5,6 +5,7 @@ package uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization;
 
 import javax.persistence.EntityManager;
 
+import uk.ac.ebi.fg.biosd.model.xref.DatabaseRefSource;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.terms.CVTermDAO;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.terms.OntologyEntryDAO;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.toplevel.AccessibleDAO;
@@ -57,7 +58,10 @@ public class DBStore implements Store
 		
 		if ( newObject instanceof CVTerm )	
 			return (T) findCVTerm ( targetIds [ 0 ], (CVTerm) newObject );
-		
+
+		if ( newObject instanceof DatabaseRefSource ) 
+			return (T) findDbRefSrc ( targetIds [ 0 ], targetIds [ 1 ], (DatabaseRefSource) newObject );
+
 		if ( newObject instanceof ReferenceSource ) 
 			return (T) findRefSrc ( targetIds [ 0 ], targetIds [ 1 ], (ReferenceSource) newObject );
 		
@@ -82,7 +86,12 @@ public class DBStore implements Store
 	
 	@SuppressWarnings ( "unchecked" )
 	private <S extends ReferenceSource> S findRefSrc ( String accession, String version, S newObject ) {
-		return (S) refSrcDao.find ( accession, version, newObject.getClass () );
+		return (S) refSrcDao.find ( accession, version, ReferenceSource.class );
+	}
+
+	@SuppressWarnings ( "unchecked" )
+	private <DS extends DatabaseRefSource> DS findDbRefSrc ( String accession, String version, DS newObject ) {
+		return (DS) refSrcDao.find ( accession, version, DatabaseRefSource.class );
 	}
 
 	private OntologyEntry findOE ( String acc, String srcAcc, String srcVer ) {

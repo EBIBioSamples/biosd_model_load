@@ -1,65 +1,66 @@
-/*
- * 
- */
-package uk.ac.ebi.fg.biosd.sampletab;
+package uk.ac.ebi.fg.biosd.sampletab.exporter;
 
 import static java.lang.System.out;
 
+import java.io.FileWriter;
+import java.io.Writer;
+
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
 import org.apache.commons.lang.time.DurationFormatUtils;
 
+import uk.ac.ebi.arrayexpress2.sampletab.datamodel.SampleData;
+import uk.ac.ebi.arrayexpress2.sampletab.renderer.SampleTabWriter;
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
 import uk.ac.ebi.fg.biosd.sampletab.persistence.Persister;
+import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.toplevel.AccessibleDAO;
 import uk.ac.ebi.fg.core_model.resources.Resources;
 
 /**
  * 
- * The SampleTab loader command line manager. This will load a SampleTab submission into a relational database that
+ * The SampleTab exporter command line manager. This will export a SampleTab file from a relational database that
  * maps the BioSD object model.
  *
- * <dl><dt>date</dt><dd>Nov 5, 2012</dd></dl>
- * @author Marco Brandizi
+ * <dl><dt>date</dt><dd>Sep 27, 2013</dd></dl>
+ * @author Adam Faulconbridge
  *
  */
-public class LoaderCmd
+public class ExporterCmd
 {
 
 	public static void main ( String[] args ) throws Throwable
 	{
-		if ( args == null || args.length == 0 )
+		if ( args == null || args.length != 2 )
 			printUsage ();
 
-		String path = args [ 0 ];
+		String accession = args [ 0 ];
+        String path = args [ 1 ];
 		int exCode = 0;
 		
 		try
 		{
 			long parsingTime = 0, persistenceTime = 0;
-			int nitems = 0;
 
 			// Parse the submission sampletab file.
 			//
-			out.println ( "\n\n >>> Loading '" + path + "'" );
+			out.println ( "\n\n >>> Exporting '" + accession + "' to '" + path + "'" );
 			
 			long time0 = System.currentTimeMillis ();
 			
-			Loader loader = new Loader();
-			MSI msi = loader.fromSampleData ( path );
+			EntityManager   em = Resources.getInstance ().getEntityManagerFactory ().createEntityManager ();
+			AccessibleDAO<MSI> msiDao = new AccessibleDAO<MSI> ( MSI.class, em );
+			MSI msi = msiDao.find ( accession ); // Or ID
+
+			Exporter exporter = new Exporter();
+			SampleData xdata = exporter.fromMSI ( msi );
+			SampleTabWriter stwr = new SampleTabWriter (new FileWriter ( path ));
+			stwr.write ( xdata );
 			
-			parsingTime = System.currentTimeMillis () - time0;
-			nitems = msi.getSamples ().size () + msi.getSampleGroups ().size ();
-			out.println ( 
-				"\n" + nitems + " samples+groups loaded in " + formatTimeDuration ( parsingTime ) + ". Now persisting it in the DB" );
-			
-			// Now persist it
-			//
-			time0 = System.currentTimeMillis ();
-			new Persister ().persist ( msi );
 			
 			persistenceTime = System.currentTimeMillis () - time0;
 			out.println ( 
-				"\nSubmission persisted in " + formatTimeDuration ( persistenceTime ) + ". Total time " +
+				"\nSubmission exported in " + formatTimeDuration ( persistenceTime ) + ". Total time " +
 				formatTimeDuration ( parsingTime + persistenceTime ) 
 			);
 		} 
