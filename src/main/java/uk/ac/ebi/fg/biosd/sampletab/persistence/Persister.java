@@ -1,13 +1,9 @@
 package uk.ac.ebi.fg.biosd.sampletab.persistence;
 
-import java.sql.BatchUpdateException;
-
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 
-import org.apache.commons.lang.math.RandomUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +11,6 @@ import uk.ac.ebi.fg.biosd.model.organizational.MSI;
 import uk.ac.ebi.fg.biosd.sampletab.loader.Loader;
 import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.DBStore;
 import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.MemoryStore;
-import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.Normalizer;
 import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.organizational.MSINormalizer;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.toplevel.AccessibleDAO;
 import uk.ac.ebi.fg.core_model.resources.Resources;
