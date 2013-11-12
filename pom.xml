@@ -512,7 +512,7 @@
 				</dependency>
 			</dependencies>
 		</profile>		
-<<<<<<< HEAD
+
 		
 		
 		<profile>
@@ -536,7 +536,6 @@
 				</dependency>
 			</dependencies>
 		</profile>	
-=======
 
 		<profile>
 			<id>h2_file</id>
@@ -559,7 +558,6 @@
 			</dependencies>
 		</profile>
 
->>>>>>> 3a33e61f50ed16ca12f4fab4bf99ac34000218c4
 
 		<profile>
 			<id>hsql_file</id>
