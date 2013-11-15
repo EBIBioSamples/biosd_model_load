@@ -159,7 +159,7 @@ public abstract class AbstractValuesVerifier extends AbstractSampleTabVerifier
 							StringUtils.abbreviate ( inval, 40 ) ) );
 						ParserComparisonTest.report.writeNext ( new String[] {
 							inputPath, "ERROR", "Extra-value in the Exporter", "[" + sectionName + "] " + header, 
-							String.format ( "The value '%s' for the header '%s' is not exported", displayVal, header )
+							String.format ( "The value '%s' for the header '%s' doesn't come from the input", displayVal, header )
 						});
 					}
 					else
