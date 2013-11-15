@@ -236,7 +236,7 @@ public class Loader {
             }
             if (unit != null) {
                 Unit u = new Unit();
-                u.setDimension(new UnitDimension(unit.getAttributeValue()));
+                u.setTermText(unit.getAttributeValue());
                 v.setUnit(u);
                 AbstractNodeAttributeOntology aou = (AbstractNodeAttributeOntology) unit;
                 
