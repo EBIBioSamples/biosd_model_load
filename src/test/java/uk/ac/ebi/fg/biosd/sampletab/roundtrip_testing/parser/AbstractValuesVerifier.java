@@ -159,7 +159,7 @@ public abstract class AbstractValuesVerifier extends AbstractSampleTabVerifier
 							StringUtils.abbreviate ( inval, 40 ) ) );
 						ParserComparisonTest.report.writeNext ( new String[] {
 							inputPath, "ERROR", "Extra-value in the Exporter", "[" + sectionName + "] " + header, 
-							"The value '" + displayVal + "for the header '" + header + "' is not exported"
+							String.format ( "The value '%s' for the header '%s' is not exported", displayVal, header )
 						});
 					}
 					else
@@ -210,7 +210,7 @@ public abstract class AbstractValuesVerifier extends AbstractSampleTabVerifier
 				
 				ParserComparisonTest.report.writeNext ( new String[] {
 					inputPath, "ERROR", "Extra-value in the Exporter", "[" + sectionName + "] " + header, 
-					"The value '" + displayVal + "' in the export file doesn't come from the input"
+					"The value '" + displayVal + "' is in the export file doesn't come from the input"
 				});
 				
 				continue;
@@ -220,7 +220,7 @@ public abstract class AbstractValuesVerifier extends AbstractSampleTabVerifier
 			// 
 			ParserComparisonTest.report.writeNext ( new String[] {
 				inputPath, "ERROR", "Extra-header in the Exporter", "[" + sectionName + "] " + header, 
-				"The header in the exported file but not in the input"
+				"The header is in the exported file but not in the input"
 			});
 			
 		} // for export headers

@@ -21,6 +21,8 @@ import uk.ac.ebi.arrayexpress2.sampletab.renderer.SampleTabWriter;
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
 import uk.ac.ebi.fg.biosd.sampletab.exporter.Exporter;
 import uk.ac.ebi.fg.biosd.sampletab.loader.Loader;
+import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.toplevel.AccessibleDAO;
+import uk.ac.ebi.fg.core_model.resources.Resources;
 import au.com.bytecode.opencsv.CSVReader;
 
 /**
@@ -36,12 +38,20 @@ import au.com.bytecode.opencsv.CSVReader;
 public class SampleTabVerifier
 {
 	private File inputFile;
+	private boolean useDb = false;
 	
-	public SampleTabVerifier ( File inputFile )
+	public SampleTabVerifier ( File inputFile, boolean useDb )
 	{
 		super ();
 		this.inputFile = inputFile;
+		this.useDb = useDb;
 	}
+	
+	public SampleTabVerifier ( File inputFile )
+	{
+		this ( inputFile, false );
+	}
+	
 
 	public void verify ()
 	{
@@ -101,6 +111,18 @@ public class SampleTabVerifier
 		Loader loader = new Loader();
 		MSI msi = loader.fromSampleData ( inputFile );
 		
+		if ( useDb ) 
+		{
+			AccessibleDAO<MSI> dao = new AccessibleDAO<MSI> ( 
+				MSI.class, Resources.getInstance ().getEntityManagerFactory ().createEntityManager () );
+			String acc = msi.getAcc ();
+			msi = dao.find ( acc );
+			if ( msi == null ) throw new IllegalArgumentException ( String.format ( 
+				"Cannot find the accession '%s' in the database", acc 
+			));
+		}
+		
+		
 		Exporter exporter = new Exporter();
     final SampleData xdata = exporter.fromMSI ( msi );
 
@@ -121,7 +143,7 @@ public class SampleTabVerifier
 	private String getExportedPath ()
 	{
     String outFileName = inputFile.getAbsolutePath ().replace ( '/', '_' );
-    return "target/exports/" + outFileName + ".csv";
+    return ParserComparisonTest.TEST_DATA_PATH + "/exports/" + outFileName + ".csv";
 	}
 	
 	
