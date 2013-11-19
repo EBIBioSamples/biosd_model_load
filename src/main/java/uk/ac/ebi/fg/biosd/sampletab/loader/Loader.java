@@ -313,6 +313,7 @@ public class Loader {
         uk.ac.ebi.fg.core_model.organizational.Organization o = new uk.ac.ebi.fg.core_model.organizational.Organization();
         o.setName(org.getName());
         o.setEmail(org.getEmail());
+        o.setAddress(org.getAddress());
         if (org.getRole() != null) {
             o.addOrganizationRole(new ContactRole(org.getRole()));
         }
