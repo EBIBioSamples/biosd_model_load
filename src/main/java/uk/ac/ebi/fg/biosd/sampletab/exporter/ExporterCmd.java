@@ -3,7 +3,7 @@ package uk.ac.ebi.fg.biosd.sampletab.exporter;
 import static java.lang.System.out;
 
 import java.io.FileWriter;
-import java.io.Writer;
+import java.io.OutputStreamWriter;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -13,7 +13,6 @@ import org.apache.commons.lang.time.DurationFormatUtils;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.SampleData;
 import uk.ac.ebi.arrayexpress2.sampletab.renderer.SampleTabWriter;
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
-import uk.ac.ebi.fg.biosd.sampletab.persistence.Persister;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.toplevel.AccessibleDAO;
 import uk.ac.ebi.fg.core_model.resources.Resources;
 
@@ -31,11 +30,11 @@ public class ExporterCmd
 
 	public static void main ( String[] args ) throws Throwable
 	{
-		if ( args == null || args.length != 2 )
+		if ( args == null || args.length == 0 )
 			printUsage ();
 
 		String accession = args [ 0 ];
-        String path = args [ 1 ];
+        String path = args.length > 1 ? args [ 1 ] : null;
 		int exCode = 0;
 		
 		try
@@ -54,9 +53,10 @@ public class ExporterCmd
 
 			Exporter exporter = new Exporter();
 			SampleData xdata = exporter.fromMSI ( msi );
-			SampleTabWriter stwr = new SampleTabWriter (new FileWriter ( path ));
-			stwr.write ( xdata );
 			
+			SampleTabWriter stwr = new SampleTabWriter ( path == null ? new OutputStreamWriter ( out ) : new FileWriter ( path ) );
+			stwr.write ( xdata );
+			stwr.close ();
 			
 			persistenceTime = System.currentTimeMillis () - time0;
 			out.println ( 
@@ -87,7 +87,9 @@ public class ExporterCmd
 		out.println ( "\nLoads a SampleTAB submission into the relational database" );
 		
 		out.println ( "Syntax:" );
-		out.println ( "\n\tload.sh <path-to-biosampletab-file>\n\n" );
+		out.println ( "\n\texport.sh <accession> [<path-to-biosampletab-file>]\n\n" );
+		
+		out.println ( "If no output is specified, writes the resulting SampleTAB on the standard output." );
 		out.println ( "See also hibernate.properites for the configuration of the target database.\n\n" );
 		
 		System.exit ( 1 ); // TODO: proper exit codes.

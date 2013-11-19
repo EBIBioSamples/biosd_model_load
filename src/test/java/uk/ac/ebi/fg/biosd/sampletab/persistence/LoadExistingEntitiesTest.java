@@ -15,7 +15,6 @@ import org.apache.commons.io.output.WriterOutputStream;
 import org.junit.Rule;
 import org.junit.Test;
 
-
 import uk.ac.ebi.fg.biosd.model.application_mgmt.JobRegisterEntry.Operation;
 import uk.ac.ebi.fg.biosd.model.expgraph.BioSample;
 import uk.ac.ebi.fg.biosd.model.organizational.BioSampleGroup;
@@ -25,8 +24,6 @@ import uk.ac.ebi.fg.biosd.model.utils.MSIDumper;
 import uk.ac.ebi.fg.biosd.model.utils.test.TestModel;
 import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.MemoryStore;
 import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.organizational.MSINormalizer;
-import uk.ac.ebi.fg.biosd.sampletab.persistence.Persister;
-import uk.ac.ebi.fg.biosd.sampletab.persistence.Unloader;
 import uk.ac.ebi.fg.core_model.expgraph.properties.BioCharacteristicType;
 import uk.ac.ebi.fg.core_model.expgraph.properties.BioCharacteristicValue;
 import uk.ac.ebi.fg.core_model.expgraph.properties.Unit;

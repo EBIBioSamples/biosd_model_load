@@ -1,8 +1,5 @@
 package uk.ac.ebi.fg.biosd.sampletab.exporter;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,7 +9,6 @@ import uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.TermSource;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.GroupNode;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.SampleNode;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.AbstractNodeAttributeOntology;
-import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.AbstractRelationshipAttribute;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.CharacteristicAttribute;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.ChildOfAttribute;
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.scd.node.attribute.CommentAttribute;
@@ -79,11 +75,14 @@ public class Exporter {
             if (p.getContactRoles().size() > 0){
                 for ( ContactRole c : p.getContactRoles()){
                     String role = c.getName();
-                    uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Person p2 = new uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Person(firstName, initials, lastName, email, role);
+                    // TODO: it would be more appropriate a constructor in the form firts, mid, last, instead of this, 
+                    // I leave this to Adam. Obviosly this call needs to be changed after such a change.
+                    uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Person p2 = new uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Person(lastName, initials, firstName, email, role);
                     sd.msi.persons.add(p2);
                 }
             } else {
-                uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Person p2 = new uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Person(firstName, initials, lastName, email, null);
+            		// TODO: same as above
+                uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Person p2 = new uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Person(lastName, initials, firstName, email, null);
                 sd.msi.persons.add(p2);
             }
         }

@@ -3,11 +3,7 @@ package uk.ac.ebi.fg.biosd.sampletab;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.Writer;
 import java.net.URL;
 
 import org.junit.Ignore;
