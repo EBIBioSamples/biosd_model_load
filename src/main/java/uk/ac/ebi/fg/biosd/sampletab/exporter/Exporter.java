@@ -53,7 +53,6 @@ public class Exporter {
         sd.msi.submissionDescription = msi.getDescription();
         sd.msi.submissionUpdateDate = msi.getUpdateDate();
         sd.msi.submissionReleaseDate = msi.getReleaseDate();
-        //TODO sd.msi.submissionReferenceLayer = msi. ???
         
         for ( uk.ac.ebi.fg.core_model.organizational.Organization o  : msi.getOrganizations()){
             String name = o.getName();
@@ -172,6 +171,7 @@ public class Exporter {
                             a.setTermSourceID(oe.getAcc());
                         }
                         attr = a;
+                        
                     } else if (t.getTermText().equals("Organism")) {
                         OrganismAttribute a = new OrganismAttribute(v.getTermText());
                         
@@ -275,6 +275,8 @@ public class Exporter {
                         }
                         
                         attr = a;
+                    } else {
+                        throw new RuntimeException("unknown attribute "+t);
                     }
                     
                     //add any more attribute types that are used here
