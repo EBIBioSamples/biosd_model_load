@@ -115,6 +115,9 @@ public class Exporter {
         for( BioSampleGroup g : msi.getSampleGroups()) {
             GroupNode gn = new GroupNode();
             gn.setGroupAccession(g.getAcc());
+            if (g.isInReferenceLayer()) {
+                sd.msi.submissionReferenceLayer = true;
+            }
             
             for (ExperimentalPropertyValue<ExperimentalPropertyType> v : g.getPropertyValues()) {
                 ExperimentalPropertyType t = v.getType();

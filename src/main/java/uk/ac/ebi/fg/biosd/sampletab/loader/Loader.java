@@ -141,6 +141,11 @@ public class Loader {
             //check bg is not null at this point
             if (bg == null) throw new RuntimeException("Unable to refind group "+g.getGroupAccession());
             
+            //in the java object model reference layer is a group property
+            if (st.msi.submissionReferenceLayer) {
+                bg.setInReferenceLayer(true);
+            }
+            
             for(Node p : g.getParentNodes()) {
                 //check this is a sample;
                 SampleNode s = (SampleNode) p;
