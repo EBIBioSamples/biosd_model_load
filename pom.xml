@@ -200,6 +200,7 @@
 		</resources>
 
 		<extensions>
+			<!-- Needed for scp-based deployment -->
 			<extension>
 				<groupId>org.apache.maven.wagon</groupId>
 				<artifactId>wagon-ssh</artifactId>
