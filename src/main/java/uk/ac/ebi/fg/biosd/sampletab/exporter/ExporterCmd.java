@@ -1,6 +1,7 @@
 package uk.ac.ebi.fg.biosd.sampletab.exporter;
 
 import static java.lang.System.out;
+import static java.lang.System.err;
 
 import java.io.FileWriter;
 import java.io.OutputStreamWriter;
@@ -43,7 +44,7 @@ public class ExporterCmd
 
 			// Parse the submission sampletab file.
 			//
-			out.println ( "\n\n >>> Exporting '" + accession + "' to '" + path + "'" );
+			err.println ( "\n\n >>> Exporting '" + accession + "' to " + ( path == null ? "<standard output>" : "'" + path + "'" ) );
 			
 			long time0 = System.currentTimeMillis ();
 			
