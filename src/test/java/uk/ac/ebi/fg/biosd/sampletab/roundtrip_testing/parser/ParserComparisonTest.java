@@ -113,7 +113,7 @@ public class ParserComparisonTest
 	 * Does the comparison test by taking path values from a list in a file and does the export from the configured 
 	 * relational database.
 	 */
-	@Test //@Ignore ( "Time-consuming test, normally disabled" )
+	@Test @Ignore ( "Time-consuming test, normally disabled" )
 	public void testFromDBWithListFile () throws Exception
 	{
 		Random rnd = new Random ( System.currentTimeMillis () );
