@@ -157,6 +157,22 @@ public class Loader {
                     }
                 }
             }
+            
+            for (SCDNodeAttribute a : g.attributes) {
+                boolean isDatabaseAttribute = false;
+                synchronized (DatabaseAttribute.class) {
+                    isDatabaseAttribute = DatabaseAttribute.class.isInstance(a);
+                }
+                if (isDatabaseAttribute) {
+                    DatabaseAttribute da = (DatabaseAttribute) a;
+                    DatabaseRefSource dbref = new DatabaseRefSource ( da.databaseID, null );
+                    dbref.setUrl ( da.databaseURI );
+                    dbref.setName ( da.getAttributeValue () );
+                    bg.addDatabase( dbref );
+                } else {
+                    bg.addPropertyValue(convertAtttribute(a, st));
+                }
+            }
         }
         
         if (msi.getSamples().size()+msi.getSampleGroups().size() == 0) {
