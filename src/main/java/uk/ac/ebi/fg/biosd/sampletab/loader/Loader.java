@@ -111,8 +111,20 @@ public class Loader {
                                 new BioCharacteristicType("Group Description")));
             }
             
-            for(SCDNodeAttribute a: g.attributes) {
-                bg.addPropertyValue(convertAtttribute(a,st));
+            for (SCDNodeAttribute a : g.attributes) {
+                boolean isDatabaseAttribute = false;
+                synchronized (DatabaseAttribute.class) {
+                    isDatabaseAttribute = DatabaseAttribute.class.isInstance(a);
+                }
+                if (isDatabaseAttribute) {
+                    DatabaseAttribute da = (DatabaseAttribute) a;
+                    DatabaseRefSource dbref = new DatabaseRefSource ( da.databaseID, null );
+                    dbref.setUrl ( da.databaseURI );
+                    dbref.setName ( da.getAttributeValue () );
+                    bg.addDatabase( dbref );
+                } else {
+                    bg.addPropertyValue(convertAtttribute(a, st));
+                }
             }
             
             //referenceLayer is in MSI in SampleTab, but group in SCD in DB
@@ -155,22 +167,6 @@ public class Loader {
                         bg.addSample(bs);
                         break;
                     }
-                }
-            }
-            
-            for (SCDNodeAttribute a : g.attributes) {
-                boolean isDatabaseAttribute = false;
-                synchronized (DatabaseAttribute.class) {
-                    isDatabaseAttribute = DatabaseAttribute.class.isInstance(a);
-                }
-                if (isDatabaseAttribute) {
-                    DatabaseAttribute da = (DatabaseAttribute) a;
-                    DatabaseRefSource dbref = new DatabaseRefSource ( da.databaseID, null );
-                    dbref.setUrl ( da.databaseURI );
-                    dbref.setName ( da.getAttributeValue () );
-                    bg.addDatabase( dbref );
-                } else {
-                    bg.addPropertyValue(convertAtttribute(a, st));
                 }
             }
         }
