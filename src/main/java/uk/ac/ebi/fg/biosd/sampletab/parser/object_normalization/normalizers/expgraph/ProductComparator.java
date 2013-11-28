@@ -7,7 +7,7 @@ import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.topl
 import uk.ac.ebi.fg.core_model.expgraph.Product;
 
 /**
- * Two biological product are considered the same if the share: the same accession, the set of attributes, the set of 
+ * Two biological product are considered the same if they share: the same accession, the set of attributes, the set of 
  * nodes it is derivedFrom. 
  * 
  * TODO: Only the accession used for the moment. 

@@ -1,6 +1,3 @@
-/*
- * 
- */
 package uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization;
 
 import com.google.common.collect.ForwardingTable;

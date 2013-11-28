@@ -1,6 +1,3 @@
-/*
- * 
- */
 package uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.organizational;
 
 import uk.ac.ebi.fg.biosd.model.organizational.BioSampleGroup;
