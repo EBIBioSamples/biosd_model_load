@@ -52,7 +52,73 @@ public class Exporter {
             isBioCharacteristicValue = BioCharacteristicValue.class.isInstance(v);
         }
         
-        if (t.getTermText().equals("Sex")) {
+        if (isBioCharacteristicValue) {
+            CharacteristicAttribute a = new CharacteristicAttribute(t.getTermText(), v.getTermText());
+            
+            Unit u = v.getUnit();
+            if (u != null) {
+                a.unit = new UnitAttribute();
+                a.unit.setAttributeValue(u.getTermText());
+                OntologyEntry oe = u.getSingleOntologyTerm();
+                if (oe != null) {
+                    ReferenceSource source = oe.getSource();
+                    String url = source.getUrl();
+                    String version = source.getVersion();
+                    String name = source.getName();
+                    TermSource ts = new TermSource(name, url, version);
+                    
+                    a.unit.setTermSourceREF(sd.msi.getOrAddTermSource(ts));
+                    a.unit.setTermSourceID(oe.getAcc());
+                }
+            }
+            
+            OntologyEntry oe = v.getSingleOntologyTerm();
+            if (oe != null) {
+                ReferenceSource source = oe.getSource();
+                String url = source.getUrl();
+                String version = source.getVersion();
+                String name = source.getName();
+                TermSource ts = new TermSource(name, url, version);
+                a.setTermSourceREF(sd.msi.getOrAddTermSource(ts));
+                a.setTermSourceID(oe.getAcc());
+            }
+            
+            attr = a;
+            
+        } else if (isSampleCommentValue) {
+            CommentAttribute a = new CommentAttribute(t.getTermText(), v.getTermText());
+            
+            Unit u = v.getUnit();
+            if (u != null) {
+                a.unit = new UnitAttribute();
+                a.unit.setAttributeValue(u.getTermText());
+                OntologyEntry oe = u.getSingleOntologyTerm();
+                if (oe != null) {
+                    ReferenceSource source = oe.getSource();
+                    String url = source.getUrl();
+                    String version = source.getVersion();
+                    String name = source.getName();
+                    TermSource ts = new TermSource(name, url, version);
+                    
+                    a.unit.setTermSourceREF(sd.msi.getOrAddTermSource(ts));
+                    a.unit.setTermSourceID(oe.getAcc());
+                }
+            }
+            
+            OntologyEntry oe = v.getSingleOntologyTerm();
+            if (oe != null) {
+                ReferenceSource source = oe.getSource();
+                String url = source.getUrl();
+                String version = source.getVersion();
+                String name = source.getName();
+                TermSource ts = new TermSource(name, url, version);
+                a.setTermSourceREF(sd.msi.getOrAddTermSource(ts));
+                a.setTermSourceID(oe.getAcc());
+            }
+            
+            attr = a;
+            
+        } else if (t.getTermText().equals("Sex")) {
             SexAttribute a = new SexAttribute(v.getTermText());
             
             OntologyEntry oe = v.getSingleOntologyTerm();
@@ -105,71 +171,6 @@ public class Exporter {
         } else if (t.getTermText().toLowerCase().equals("derived from")) {
             attr = new DerivedFromAttribute(v.getTermText());
             
-        } else if (isSampleCommentValue) {
-            CommentAttribute a = new CommentAttribute(t.getTermText(), v.getTermText());
-            
-            Unit u = v.getUnit();
-            if (u != null) {
-                a.unit = new UnitAttribute();
-                a.unit.setAttributeValue(u.getTermText());
-                OntologyEntry oe = u.getSingleOntologyTerm();
-                if (oe != null) {
-                    ReferenceSource source = oe.getSource();
-                    String url = source.getUrl();
-                    String version = source.getVersion();
-                    String name = source.getName();
-                    TermSource ts = new TermSource(name, url, version);
-                    
-                    a.unit.setTermSourceREF(sd.msi.getOrAddTermSource(ts));
-                    a.unit.setTermSourceID(oe.getAcc());
-                }
-            }
-            
-            OntologyEntry oe = v.getSingleOntologyTerm();
-            if (oe != null) {
-                ReferenceSource source = oe.getSource();
-                String url = source.getUrl();
-                String version = source.getVersion();
-                String name = source.getName();
-                TermSource ts = new TermSource(name, url, version);
-                a.setTermSourceREF(sd.msi.getOrAddTermSource(ts));
-                a.setTermSourceID(oe.getAcc());
-            }
-            
-            attr = a;
-            
-        } else if (isBioCharacteristicValue) {
-            CharacteristicAttribute a = new CharacteristicAttribute(t.getTermText(), v.getTermText());
-            
-            Unit u = v.getUnit();
-            if (u != null) {
-                a.unit = new UnitAttribute();
-                a.unit.setAttributeValue(u.getTermText());
-                OntologyEntry oe = u.getSingleOntologyTerm();
-                if (oe != null) {
-                    ReferenceSource source = oe.getSource();
-                    String url = source.getUrl();
-                    String version = source.getVersion();
-                    String name = source.getName();
-                    TermSource ts = new TermSource(name, url, version);
-                    
-                    a.unit.setTermSourceREF(sd.msi.getOrAddTermSource(ts));
-                    a.unit.setTermSourceID(oe.getAcc());
-                }
-            }
-            
-            OntologyEntry oe = v.getSingleOntologyTerm();
-            if (oe != null) {
-                ReferenceSource source = oe.getSource();
-                String url = source.getUrl();
-                String version = source.getVersion();
-                String name = source.getName();
-                TermSource ts = new TermSource(name, url, version);
-                a.setTermSourceREF(sd.msi.getOrAddTermSource(ts));
-                a.setTermSourceID(oe.getAcc());
-            }
-            
-            attr = a;
         } else {
             throw new RuntimeException("unknown attribute "+t);
         }
