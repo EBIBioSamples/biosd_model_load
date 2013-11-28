@@ -217,8 +217,8 @@ public class Exporter {
             if (p.getContactRoles().size() > 0){
                 for ( ContactRole c : p.getContactRoles()){
                     String role = c.getName();
-                    // TODO: it would be more appropriate a constructor in the form firts, mid, last, instead of this, 
-                    // I leave this to Adam. Obviosly this call needs to be changed after such a change.
+                    // TODO: it would be more appropriate a constructor in the form firsts, mid, last, instead of this, 
+                    // I leave this to Adam. Obviously this call needs to be changed after such a change.
                     uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Person p2 = new uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Person(lastName, initials, firstName, email, role);
                     sd.msi.persons.add(p2);
                 }
@@ -315,7 +315,7 @@ public class Exporter {
                     if (t.getTermText().equals("Sample Name")) {
                         sn.setNodeName(v.getTermText());
                         
-                    } if (t.getTermText().equals("Sample Description")) {
+                    } else if (t.getTermText().equals("Sample Description")) {
                         sn.setSampleDescription(v.getTermText());
                         
                     } else { 
