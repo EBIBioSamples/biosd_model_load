@@ -1,6 +1,3 @@
-/*
- * 
- */
 package uk.ac.ebi.fg.biosd.sampletab.roundtrip_testing.parser;
 
 import java.util.List;
@@ -210,7 +207,7 @@ public abstract class AbstractValuesVerifier extends AbstractSampleTabVerifier
 				
 				ParserComparisonTest.report.writeNext ( new String[] {
 					inputPath, "ERROR", "Extra-value in the Exporter", "[" + sectionName + "] " + header, 
-					"The value '" + displayVal + "' is in the export file doesn't come from the input"
+					"The value '" + displayVal + "' in the export file doesn't come from the input"
 				});
 				
 				continue;

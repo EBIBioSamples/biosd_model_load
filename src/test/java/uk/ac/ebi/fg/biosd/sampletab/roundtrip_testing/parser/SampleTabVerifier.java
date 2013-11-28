@@ -143,7 +143,7 @@ public class SampleTabVerifier
 	private String getExportedPath ()
 	{
     String outFileName = inputFile.getAbsolutePath ().replace ( '/', '_' );
-    return ParserComparisonTest.TEST_DATA_PATH + "/exports/" + outFileName + ".csv";
+    return ParserComparisonTest.TEST_EXPORT_PATH + "/" + outFileName + ".csv";
 	}
 	
 	

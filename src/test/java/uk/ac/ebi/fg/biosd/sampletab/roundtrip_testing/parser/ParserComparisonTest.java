@@ -30,19 +30,22 @@ import au.com.bytecode.opencsv.CSVWriter;
  */
 public class ParserComparisonTest
 {
-	public static final float SAMPLING_RATIO = 1f/100;
+	public static final float SAMPLING_RATIO = 10f/100;
 	
-	public static final String TEST_DATA_PATH = "comparison_test_20131120";
+	public static final String TEST_DATA_PATH = "./loading_dev_20131124";
 	
 	public static final String TEST_FILES_PATH = "/Users/brandizi/Documents/Work/ebi/esd/data_sets/pride";
 	public static final String BIOSD_FTP_PATH = "/ebi/microarray/home/biosamples/ftp";
+	
+	public static final String TEST_EXPORT_PATH = TEST_DATA_PATH + "/exports";
+	
 	
 	public static CSVWriter report;
 	
 	@BeforeClass
 	public static void createExportDir ()
 	{
-		File exportDir = new File ( TEST_DATA_PATH + "/exports" );
+		File exportDir = new File ( TEST_EXPORT_PATH );
 		if ( !exportDir.exists () ) exportDir.mkdir ();
 	}
 	
@@ -113,7 +116,7 @@ public class ParserComparisonTest
 	 * Does the comparison test by taking path values from a list in a file and does the export from the configured 
 	 * relational database.
 	 */
-	@Test @Ignore ( "Time-consuming test, normally disabled" )
+	@Test //@Ignore ( "Time-consuming test, normally disabled" )
 	public void testFromDBWithListFile () throws Exception
 	{
 		Random rnd = new Random ( System.currentTimeMillis () );
