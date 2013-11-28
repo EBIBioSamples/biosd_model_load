@@ -84,8 +84,8 @@ public class ExporterCmd
 	{
 		out.println ();
 
-		out.println ( "\n\n *** BioSD Relational Database Loader ***" );
-		out.println ( "\nLoads a SampleTAB submission into the relational database" );
+		out.println ( "\n\n *** BioSD Relational Database Exporter ***" );
+		out.println ( "\nExports a SampleTAB submission from the relational database" );
 		
 		out.println ( "Syntax:" );
 		out.println ( "\n\texport.sh <accession> [<path-to-biosampletab-file>]\n\n" );
