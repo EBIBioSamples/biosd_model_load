@@ -262,8 +262,8 @@ public class Loader {
                     if (t != null && t.getURI() != null && t.getVersion() != null) {
                         ReferenceSource rs = new ReferenceSource(t.getURI(), t.getVersion());
                         rs.setUrl(t.getURI());
-                        v.addOntologyTerm ( 
-                            new OntologyEntry( ao.getTermSourceID(), rs ));
+                        OntologyEntry oe = new OntologyEntry( aou.getTermSourceID(), rs );
+                        v.addOntologyTerm ( oe );
                     }
                 }
             }
