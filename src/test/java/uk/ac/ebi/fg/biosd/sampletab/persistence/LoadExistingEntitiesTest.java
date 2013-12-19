@@ -299,17 +299,17 @@ public class LoadExistingEntitiesTest
 		
 		// Verify the job register
 		JobRegisterDAO jr = new JobRegisterDAO ( em );
-		assertTrue ( "Unload log didn't work for smp3!", jr.hasEntry ( msi2DB, 1, Operation.ADD ) );
-		assertTrue ( "Unload log didn't work for smp7!", jr.hasEntry ( smp7, 1, Operation.ADD ) );
-		assertTrue ( "Unload log didn't work for sg1!", jr.hasEntry ( m2.sg1, 1, Operation.UPDATE ) );
-		assertTrue ( "Unload log didn't work for sg1!", jr.hasEntry ( m2.sg1, 1, Operation.ADD ) );
+		assertTrue ( "JobRegister didn't work for smp3!", jr.hasEntry ( msi2DB, 1, Operation.ADD ) );
+		assertTrue ( "JobRegister didn't work for smp7!", jr.hasEntry ( smp7, 1, Operation.ADD ) );
+		assertTrue ( "JobRegister didn't work for sg1!", jr.hasEntry ( m2.sg1, 1, Operation.UPDATE ) );
+		assertTrue ( "JobRegister didn't work for sg1!", jr.hasEntry ( m2.sg1, 1, Operation.ADD ) );
 
 		
 		
 		// ------------------------------ Unloading Test --------------------------------------
 		// 
 		
-		Unloader unloader = new Unloader ();
+		Unloader unloader = new Unloader ().setDoPurge ( true );
 		unloader.unload ( msi2DB );
 		
 		em = emProvider.newEntityManager ();

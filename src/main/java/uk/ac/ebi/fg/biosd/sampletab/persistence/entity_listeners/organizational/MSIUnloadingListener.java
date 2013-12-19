@@ -1,5 +1,6 @@
 package uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.organizational;
 
+import java.util.Date;
 import java.util.LinkedList;
 
 import javax.persistence.EntityManager;
@@ -26,27 +27,32 @@ import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.toplevel.AccessibleDAO;
  */
 public class MSIUnloadingListener extends UnloadingListener<MSI>
 {
-	
+	private boolean doPurge = false;
+
 	public MSIUnloadingListener ( EntityManager entityManager ) {
 		super ( entityManager );
 	}
 
 	/**
+	 * TODO: re-comment me! 
+	 * 
 	 * Uses {@link JobRegisterDAO#delete(int)} to flush older entries (TODO: the constant parameter of 90 days to be moved
 	 * to a configuration property).
 	 * Removes the sample groups that are linked only to this submission.
-	 * Tracks the operation by adding {@link JobRegisterEntry}s. 
+	 * Tracks the operation by adding {@link JobRegisterEntry}s.
 	 */
 	@Override
 	public long preRemove ( MSI msi ) 
 	{
 		long result = 0;
-		AccessibleDAO<BioSampleGroup> sgDao = new AccessibleDAO<BioSampleGroup> ( BioSampleGroup.class, entityManager );
 		JobRegisterDAO jrDao = new JobRegisterDAO ( entityManager );
 
 		// Flush old entries in the unload log.
 		result += jrDao.clean ( 90 ); 
 
+		if ( msi == null ) return result;
+		
+		AccessibleDAO<BioSampleGroup> sgDao = new AccessibleDAO<BioSampleGroup> ( BioSampleGroup.class, entityManager );
 		for ( BioSampleGroup sg: new LinkedList<BioSampleGroup> ( msi.getSampleGroups () ) ) 
 		{
 			if ( sg.getMSIs ().size () > 1 ) continue;
@@ -60,21 +66,53 @@ public class MSIUnloadingListener extends UnloadingListener<MSI>
 	}
 
 	/**
-	 * Removes linked objects.
+	 * Removes linked objects, if {@link #isDoPurge()} and {@link #hasOldSubmissionsToBePurged()}.
 	 * Tracks the operation using {@link JobRegisterEntry}. 
 	 */
 	@Override
 	public long postRemove ( MSI msi )
 	{
 		long result = new BioSampleUnloadingListener ( entityManager ).postRemove ( null );
-		result += new OntologyEntryUnloadingListener ( entityManager ).postRemove ( null );
-		result += new XRefUnloadingListener ( entityManager ).postRemove ( null );
-		result += new ReferenceSourceUnloadingListener ( entityManager ).postRemove ( null );
-		result += new CVTermUnloadingListener ( entityManager ).postRemove ( null );
-		
+
+		boolean doPurge = isDoPurge () && ( msi != null || hasOldSubmissionsToBePurged () );
+		if ( doPurge ) 
+		{
+			result += new OntologyEntryUnloadingListener ( entityManager ).postRemove ( null );
+			result += new XRefUnloadingListener ( entityManager ).postRemove ( null );
+			result += new ReferenceSourceUnloadingListener ( entityManager ).postRemove ( null );
+			result += new CVTermUnloadingListener ( entityManager ).postRemove ( null );
+		}
+
 		JobRegisterDAO jrDao = new JobRegisterDAO ( entityManager );
-		jrDao.create ( msi, Operation.DELETE );
-		
+
+		if ( msi != null )
+			jrDao.create ( msi, Operation.DELETE );
+
+		if ( doPurge )
+			jrDao.create ( null, Operation.DB_PURGE );
+
 		return result;
+	}
+	
+	public boolean isDoPurge ()
+	{
+		return doPurge;
+	}
+
+	public MSIUnloadingListener setDoPurge ( boolean doPurge )
+	{
+		this.doPurge = doPurge;
+		return this;
+	}
+	
+	private boolean hasOldSubmissionsToBePurged ()
+	{
+		JobRegisterDAO jrdao = new JobRegisterDAO ( this.entityManager );
+		
+		// When did we do the last purge?
+		JobRegisterEntry jrLast = jrdao.findLast ( (String) null, null, Operation.DB_PURGE );
+
+		// Did we do any unloads since then? If yes, we need to purge
+		return !jrdao.find ( jrLast == null ? null : jrLast.getTimestamp (), new Date (), MSI.class, Operation.DELETE ).isEmpty ();
 	}
 }

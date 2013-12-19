@@ -25,9 +25,11 @@ import uk.ac.ebi.fg.core_model.resources.Resources;
 public class Unloader
 {
 	protected final Logger log = LoggerFactory.getLogger ( this.getClass () );
+	
+	private boolean doPurge = false;
 
 	public long unload ( MSI msi ) {
-		return unload ( msi.getAcc () );
+		return unload ( msi == null ? null : msi.getAcc () );
 	}
 	
 	public long unload ( String msiAcc )
@@ -36,20 +38,24 @@ public class Unloader
 		EntityManager em = emf.createEntityManager ();
     
 		AccessibleDAO<MSI> dao = new AccessibleDAO<MSI> ( MSI.class,  em );
-		EntityTransaction ts = em.getTransaction ();
+		MSI msi = null;
 		
+		EntityTransaction ts = em.getTransaction ();
 		ts.begin ();
-		MSI msi = dao.find ( msiAcc );
-		if ( msi == null ) {
-			log.warn ( "Unloading request for a non-existing submission: '" + msiAcc + "'" );
-			return 0;
+		if ( msiAcc != null )
+		{
+			msi = dao.find ( msiAcc );
+			if ( msi == null ) {
+				log.warn ( "Unloading request for a non-existing submission: '" + msiAcc + "'" );
+				return 0;
+			}
 		}
 		
-		MSIUnloadingListener unloadListener = new MSIUnloadingListener ( em );
+		MSIUnloadingListener unloadListener = new MSIUnloadingListener ( em ).setDoPurge ( this.isDoPurge () );
 		
 		long result = unloadListener.preRemove ( msi );
-		result += dao.delete ( msi ) ? 1 : 0;
-		result += new MSIUnloadingListener ( em ).postRemove ( msi );
+		if ( msi != null ) result += dao.delete ( msi ) ? 1 : 0;
+		result += unloadListener.postRemove ( msi );
 		ts.commit ();
 		
 		// Just to be sure, we've noted some timeouts on Oracle side
@@ -58,4 +64,16 @@ public class Unloader
 		
 		return result;
 	}
+
+	public boolean isDoPurge ()
+	{
+		return doPurge;
+	}
+
+	public Unloader setDoPurge ( boolean doPurge )
+	{
+		this.doPurge = doPurge;
+		return this;
+	}
+	
 }

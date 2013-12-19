@@ -3,10 +3,21 @@
  */
 package uk.ac.ebi.fg.biosd.sampletab.loader;
 
+import static java.lang.System.err;
 import static java.lang.System.out;
+
+import java.io.PrintWriter;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
 import uk.ac.ebi.fg.biosd.sampletab.persistence.Unloader;
@@ -26,43 +37,55 @@ public class UnloaderCmd
 
 	public static void main ( String[] args ) throws Throwable
 	{
-		if ( args == null || args.length == 0 )
-			printUsage ();
-
-		String msiAcc = args [ 0 ];
+		CommandLineParser clparser = new GnuParser ();
+		CommandLine cli = clparser.parse ( getOptions(), args );
+		
+		if ( cli.hasOption ( 'h' ) ) printUsage ();
+		
+		String msiAcc = null;
+		
+		if ( (args = cli.getArgs ()) == null || args.length == 0 ) {
+			if ( !cli.hasOption ( 'g' ) ) printUsage ();
+		}
+		else
+			msiAcc = args [ 0 ];
+		
 		int exCode = 0;
 		
 		try
 		{
 			long persistenceTime = 0;
-			int nitems = 0;
-
-			// Parse the submission sampletab file.
-			//
-			out.println ( "\n\n >>> Unloading '" + msiAcc + "'" );
+			int nitems = 0;			
 			
-			
-			// Get the number of items
-			//
 			EntityManagerFactory emf = Resources.getInstance ().getEntityManagerFactory ();
 			EntityManager em = emf.createEntityManager ();
-			AccessibleDAO<MSI> msiDao = new AccessibleDAO<MSI> ( MSI.class, em );
-			MSI msi = msiDao.find ( msiAcc );
-			if ( msi == null ) {
-				exCode = 2;
-				throw new RuntimeException ( "Submission with accession '" + msiAcc + "' not found" );
+			
+			MSI msi = null; 
+			
+			if ( msiAcc !=null )
+			{
+				out.println ( "\n\n >>> Unloading '" + msiAcc + "'" );
+
+				AccessibleDAO<MSI> msiDao = new AccessibleDAO<MSI> ( MSI.class, em );
+				msi = msiDao.find ( msiAcc );
+				if ( msi == null ) {
+					exCode = 2;
+					throw new RuntimeException ( "Submission with accession '" + msiAcc + "' not found" );
+				}
+			
+				nitems = msi.getSamples ().size () + msi.getSampleGroups ().size ();
+				out.println ( "\nUnloading " + nitems + " samples+groups" );
 			}
+			else
+				out.println ( "\n\n>>> Purging the database" );
 			
-			nitems = msi.getSamples ().size () + msi.getSampleGroups ().size ();
-			out.println ( "\nUnloading " + nitems + " samples+groups" );
-			
-			// Now persist it
+			// Do it
 			//
 			long time0 = System.currentTimeMillis ();
-			new Unloader().unload ( msi );
+			new Unloader().setDoPurge ( cli.hasOption ( 'g' ) ).unload ( msi );
 			
 			persistenceTime = System.currentTimeMillis () - time0;
-			out.println ( "\nSubmission unloaded in " + LoaderCmd.formatTimeDuration ( persistenceTime ) + "." );
+			out.println ( "\nUnloading/Purging done in " + LoaderCmd.formatTimeDuration ( persistenceTime ) + "." );
 		} 
 		catch ( Throwable ex ) 
 		{
@@ -86,11 +109,36 @@ public class UnloaderCmd
 		out.println ( "\n\n *** BioSD Relational Database Unloader ***" );
 		out.println ( "\nUnloads a SampleTAB submission from the relational database" );
 		
-		out.println ( "Syntax:" );
-		out.println ( "\n\tunload.sh <submission accession>\n\n" );
-		out.println ( "See also hibernate.properites for the configuration of the target database.\n\n" );
+		out.println ( "\nSyntax:" );
+		out.println ( "\n\tunload.sh <submission accession> | <--purge|-g> [submission accession]" );		
+		
+		out.println ( "\nOptions:" );
+		HelpFormatter helpFormatter = new HelpFormatter ();
+		PrintWriter pw = new PrintWriter ( err, true );
+		helpFormatter.printOptions ( pw, 100, getOptions (), 2, 4 );
+		
+		err.println ( "\nSee also hibernate.properites for the configuration of the target database.\n\n" );
 		
 		System.exit ( 1 ); // TODO: proper exit codes.
 	}
 
+	@SuppressWarnings ( { "static-access" } )
+	private static Options getOptions ()
+	{
+		Options opts = new Options ();
+
+		opts.addOption ( OptionBuilder
+			.withDescription ( "Purge the database from dangling (i.e., unreferred) objects, such as ontology terms. See the documentation for details" )
+			.withLongOpt ( "purge" )
+			.create ( 'g' )
+		);
+
+		opts.addOption ( OptionBuilder
+			.withDescription ( "Prints out this message" )
+			.withLongOpt ( "help" )
+			.create ( 'h' )
+		);
+		
+		return opts;		
+	}
 }
