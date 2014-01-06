@@ -38,10 +38,14 @@ if [ "$JDBCPATH" != "" ]; then
   CP="$CP:$JDBCPATH"
 fi
 
+JAVA_BIN=java
+if [ "$JAVA_HOME" != "" ]
+	JAVA_BIN="$JAVA_HOME/bin/java"
+fi
+
 # See here for an explaination about ${1+"$@"} :
 # http://stackoverflow.com/questions/743454/space-in-java-command-line-arguments 
-
-java $OPTS -cp $CP $javaClass ${1+"$@"}
+"$JAVA_BIN" $OPTS -cp $CP $javaClass ${1+"$@"}
 EXCODE=$?
 
 echo Java Finished. Quitting the Shell Too. >&2
