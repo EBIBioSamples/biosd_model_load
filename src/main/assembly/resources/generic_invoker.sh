@@ -39,7 +39,7 @@ if [ "$JDBCPATH" != "" ]; then
 fi
 
 JAVA_BIN=java
-if [ "$JAVA_HOME" != "" ]
+if [ "$JAVA_HOME" != "" ]; then
 	JAVA_BIN="$JAVA_HOME/bin/java"
 fi
 
