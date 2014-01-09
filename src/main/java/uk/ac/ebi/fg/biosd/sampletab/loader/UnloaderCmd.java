@@ -121,6 +121,9 @@ public class UnloaderCmd
 		System.exit ( 1 ); // TODO: proper exit codes.
 	}
 
+	/**
+	 * The command line options used for this command.  
+	 */
 	@SuppressWarnings ( { "static-access" } )
 	private static Options getOptions ()
 	{

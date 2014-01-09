@@ -17,11 +17,14 @@ be reported in the loading_diagnostics in the target database (see below).
 
 This command is affected by the environment variables and Java options:
 
-  BIOSD_LOAD_SAMPLING_RATIO, if it is less than 100, only a random subset of the 
+  export BIOSD_LOAD_SAMPLING_RATIO, if it is less than 100, only a random subset of the 
   submissions in the target directory is loaded.
   
-  OPTS="\$OPTS -Duk.ac.ebi.fg.biosd.sampletab.loader.debug=true"
+  export OPTS="\$OPTS -Duk.ac.ebi.fg.biosd.sampletab.loader.debug=true"
   causes the loader to record some diagnostic data into the target database (in the loading_diagnostics table)
+  
+  export LOADER_OPTS='...'
+  allows to send more options to load.sh, together with the file path (e.g., --update)
   
 EOT
   exit 1
@@ -34,7 +37,7 @@ if [ "$BIOSD_LOAD_SAMPLING_RATIO" == "" ]; then BIOSD_LOAD_SAMPLING_RATIO=100; f
 do
   if [ $[ $RANDOM % 100 ] -ge $BIOSD_LOAD_SAMPLING_RATIO ]; then continue; fi
 	wfpath=$(echo "$fpath"| sed s/'\/'/'_'/g)
-  echo bsub -K -oo /dev/null -J $wfpath ./load.sh $fpath
+  echo bsub -K -oo /dev/null -J "$wfpath" ./load.sh "$LOADER_OPTS" "$fpath"
 done) | xargs -d '\n' -P 100 -n 1 --replace=_cmd_ -- bash -c "_cmd_; exit 0" 
 
 echo

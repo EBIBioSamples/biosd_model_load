@@ -1,13 +1,21 @@
 package uk.ac.ebi.fg.biosd.sampletab.loader;
 
+import static java.lang.System.err;
 import static java.lang.System.out;
 
+import java.io.PrintWriter;
 import java.sql.BatchUpdateException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.Options;
 import org.apache.commons.lang.math.RandomUtils;
 import org.apache.commons.lang.time.DurationFormatUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -17,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import uk.ac.ebi.fg.biosd.model.application_mgmt.LoadingDiagnosticEntry;
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
 import uk.ac.ebi.fg.biosd.sampletab.persistence.Persister;
+import uk.ac.ebi.fg.biosd.sampletab.persistence.Unloader;
 import uk.ac.ebi.fg.core_model.resources.Resources;
 import uk.ac.ebi.utils.exceptions.ExceptionUtils;
 
@@ -35,7 +44,11 @@ public class LoaderCmd
 
 	public static void main ( String[] args ) throws Throwable
 	{
-		if ( args == null || args.length == 0 ) printUsage ();
+		CommandLineParser clparser = new GnuParser ();
+		CommandLine cli = clparser.parse ( getOptions(), args );
+		
+		if ( cli.hasOption ( 'h' ) ) printUsage ();
+		if ( ( args = cli.getArgs () ) == null || args.length == 0 ) printUsage ();
 
 		String path = args [ 0 ];
 		int exCode = 0;
@@ -74,6 +87,14 @@ public class LoaderCmd
 					nitems = msi.getSamples ().size () + msi.getSampleGroups ().size ();
 					out.println ( 
 						"\n" + nitems + " samples+groups loaded in " + formatTimeDuration ( parsingTime ) + ". Now persisting it in the DB" );
+
+					// First remove it if that's required
+					if ( attempts == 5 && cli.hasOption ( 'u' ) ) 
+					{
+						out.print ( "\nUnloading previous version of " + msi.getAcc () + " (if any)..." );
+						new Unloader().setDoPurge ( cli.hasOption ( 'g' ) ).unload ( msi );
+						out.println ( " done." );
+					}
 					
 					// Now persist it
 					//
@@ -138,11 +159,18 @@ public class LoaderCmd
 		out.println ( "\n\n *** BioSD Relational Database Loader ***" );
 		out.println ( "\nLoads a SampleTAB submission into the relational database" );
 		
-		out.println ( "Syntax:" );
-		out.println ( "\n\tload.sh <path-to-biosampletab-file>\n\n" );
-		out.println ( "See also hibernate.properites for the configuration of the target database.\n\n" );
+		out.println ( "\nSyntax:" );
+		out.println ( "\n\tload.sh [options] <submission accession>" );		
+		
+		out.println ( "\nOptions:" );
+		HelpFormatter helpFormatter = new HelpFormatter ();
+		PrintWriter pw = new PrintWriter ( err, true );
+		helpFormatter.printOptions ( pw, 100, getOptions (), 2, 4 );
+		
+		err.println ( "\nSee also hibernate.properites for the configuration of the target database.\n\n" );
 		
 		System.exit ( 1 ); // TODO: proper exit codes.
+		
 	}
 
 	
@@ -160,6 +188,15 @@ public class LoaderCmd
 	  return timeStr == null ? "" + secs +  " sec" : timeStr + " (or " + secs + " sec)";
 	}
 	
+	/**
+	 * Saves loading diagnostics data, if System.getProperty ( "uk.ac.ebi.fg.biosd.sampletab.loader.debug" ) is true. 
+	 * 
+	 * @param sampleTabPath the file being loaded
+	 * @param ex	the exception that made the command to fail, null if success
+	 * @param parsingMsec  how long time the parser took to build a BioSD model instance, null in case of exception
+	 * @param persistenceMsec how long time it took to store the submission, null in case of exception
+	 * @param nitemsCount how many samples, sample groups, the submission being loaded has
+	 */
 	private static void saveLoadingDiagnostics 
 		( String sampleTabPath, Throwable ex, Long parsingMsec, Long persistenceMsec, Integer nitemsCount )
 	{
@@ -174,5 +211,36 @@ public class LoaderCmd
 		em.persist ( new LoadingDiagnosticEntry ( sampleTabPath, ex, parsingMsec, persistenceMsec, nitemsCount ));
 		ts.commit ();
 		em.close ();
+	}
+	
+	/**
+	 * The command line options used for this command.  
+	 */
+	@SuppressWarnings ( { "static-access" } )
+	private static Options getOptions ()
+	{
+		Options opts = new Options ();
+
+		opts.addOption ( OptionBuilder
+			.withDescription ( "Deletes the current submission before (re)loading it, if there is already a version in the DB" )
+			.withLongOpt ( "update" )
+			.create ( 'u' )
+		);
+		
+		opts.addOption ( OptionBuilder
+			.withDescription ( 
+				"Only used with -u. Purge the database from dangling (i.e., unreferred) objects, such as ontology terms. " +
+				"See the documentation for details." )
+			.withLongOpt ( "purge" )
+			.create ( 'g' )
+		);
+
+		opts.addOption ( OptionBuilder
+			.withDescription ( "Prints out this message" )
+			.withLongOpt ( "help" )
+			.create ( 'h' )
+		);
+		
+		return opts;		
 	}
 }

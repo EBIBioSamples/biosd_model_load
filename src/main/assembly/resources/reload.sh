@@ -1,12 +1,17 @@
 #!/bin/sh
 
-# This is the entry point that invokes the unloader and then the loader
-#
+cat <<EOT
+
+			***** !!! DEPRECATED !!! **** 
+
+Use load.sh --update in place of this command, it's much more efficient. This script will be removed soon.
+
+EOT
 
 cd "$(dirname $0)"
 MYDIR="$(pwd)"
 
-FILENAME=$1
+FILENAME="$1"
 
 # this should be an absolute path
 echo "FILENAME = "$FILENAME 
