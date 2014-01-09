@@ -10,8 +10,6 @@ cd "$MYDIR"
 if [ "$1" == "--help" ]; then
   cat <<EOT
 
-  ********* WARNING THIS HASN'T BEEN TESTED YET *********
-
   usage: $0 < sample_tab_paths
   
 Loads all the files listed in the standard input, using and LSF cluster and its commands. Loading results will possibly
