@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>uk.ac.ebi.fg</groupId>
 	<artifactId>biosd_loader</artifactId>
-	<version>1.0</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<name>SampleTab loader</name>
 	
 	<properties>
