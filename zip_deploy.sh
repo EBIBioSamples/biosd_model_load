@@ -17,7 +17,7 @@ echo
 echo _______________ Deploying the Command Line Binary to $target _________________
 
 yes A| unzip biosd_loader_shell_*.zip -d "$target"
-chmod -R ug=rwX,o=rX "$target"
+chmod -R ug=rwX,o=rX "$target/biosd_loader_shell_*"
 
 echo ______________________________________________________________________________
 echo
