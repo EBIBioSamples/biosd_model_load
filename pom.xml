@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>uk.ac.ebi.fg</groupId>
 	<artifactId>biosd_loader</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>1.0</version>
 	<name>SampleTab loader</name>
 	
 	<properties>
@@ -480,7 +480,7 @@
 				<test.jdbc.url>jdbc:oracle:thin:@bart.ebi.ac.uk:1521:biosdtst</test.jdbc.url>
 				<test.jdbc.driverClassName>oracle.jdbc.driver.OracleDriver</test.jdbc.driverClassName>
 				<test.hibernate.dialect>org.hibernate.dialect.Oracle10gDialect</test.hibernate.dialect>
-				<test.hibernate.hbm2ddl.auto></test.hibernate.hbm2ddl.auto>
+				<test.hibernate.hbm2ddl.auto />
 			</properties>
 			<dependencies>
 				<dependency>
@@ -527,7 +527,7 @@
 				<test.jdbc.url>jdbc:oracle:thin:@ora-vm-023.ebi.ac.uk:1531:BIOSDPRO</test.jdbc.url>
 				<test.jdbc.driverClassName>oracle.jdbc.driver.OracleDriver</test.jdbc.driverClassName>
 				<test.hibernate.dialect>org.hibernate.dialect.Oracle10gDialect</test.hibernate.dialect>
-				<test.hibernate.hbm2ddl.auto></test.hibernate.hbm2ddl.auto>
+				<test.hibernate.hbm2ddl.auto />
 			</properties>
 			<dependencies>
 				<dependency>
@@ -591,7 +591,7 @@
 				<jdbc.url>jdbc:oracle:thin:@bart.ebi.ac.uk:1521:biosdtst</jdbc.url>
 				<jdbc.driverClassName>oracle.jdbc.driver.OracleDriver</jdbc.driverClassName>
 				<hibernate.dialect>org.hibernate.dialect.Oracle10gDialect</hibernate.dialect>
-				<hibernate.hbm2ddl.auto></hibernate.hbm2ddl.auto>
+				<hibernate.hbm2ddl.auto />
 			</properties>
 			<dependencies>
 				<dependency>
@@ -639,7 +639,7 @@
 				<jdbc.url>jdbc:oracle:thin:@bart.ebi.ac.uk:1521:biosdtst</jdbc.url>
 				<jdbc.driverClassName>oracle.jdbc.driver.OracleDriver</jdbc.driverClassName>
 				<hibernate.dialect>org.hibernate.dialect.Oracle10gDialect</hibernate.dialect>
-				<hibernate.hbm2ddl.auto></hibernate.hbm2ddl.auto>
+				<hibernate.hbm2ddl.auto />
 			</properties>
 			<dependencies>
 				<dependency>
@@ -661,7 +661,7 @@
 				<jdbc.driverClassName>com.p6spy.engine.spy.P6SpyDriver</jdbc.driverClassName>
 				<jdbc.spy.driverClassName>oracle.jdbc.driver.OracleDriver</jdbc.spy.driverClassName>
 				<hibernate.dialect>org.hibernate.dialect.Oracle10gDialect</hibernate.dialect>
-				<hibernate.hbm2ddl.auto></hibernate.hbm2ddl.auto>
+				<hibernate.hbm2ddl.auto />
 			</properties>
 			<dependencies>
 				<dependency>
@@ -712,7 +712,7 @@
 				<test.jdbc.url>jdbc:oracle:thin:@bart.ebi.ac.uk:1521:biosdtst</test.jdbc.url>
 				<test.jdbc.driverClassName>oracle.jdbc.driver.OracleDriver</test.jdbc.driverClassName>
 				<test.hibernate.dialect>org.hibernate.dialect.Oracle10gDialect</test.hibernate.dialect>
-				<test.hibernate.hbm2ddl.auto></test.hibernate.hbm2ddl.auto>
+				<test.hibernate.hbm2ddl.auto />
   		</properties>
   		<dependencies>
 				<dependency>
