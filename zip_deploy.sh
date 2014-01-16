@@ -3,6 +3,16 @@
 # Deploys the command line binary. This doesn't do much, but it's needed with Bamboo.
 # 
 
+# Needed under EBI/Bamboo environment
+
+if [ "$USER" == 'ma-svc' ]; then
+ export JAVA_HOME=/ebi/research/software/Linux_x86_64/opt/java/jdk1.6.0_31
+ export PATH="$PATH:$JAVA_HOME/bin"
+
+ export M2_HOME=/ebi/microarray/home/bamboo/maven-3.0.4
+ export PATH="$PATH:$M2_HOME/bin" 
+fi
+
 MYDIR=$(dirname "$0")
 
 cd "$MYDIR"
