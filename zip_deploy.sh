@@ -16,7 +16,7 @@ fi
 MYDIR=$(dirname "$0")
 
 cd "$MYDIR"
-vcmd='mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version --offline'
+vcmd='mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version'
 version=$($vcmd | grep -Ei '^[0-9]+[a-z,+,-,\.,_]')
 
 cd "$MYDIR"/target
