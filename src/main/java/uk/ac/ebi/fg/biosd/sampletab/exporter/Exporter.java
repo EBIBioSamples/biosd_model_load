@@ -24,7 +24,7 @@ import uk.ac.ebi.fg.biosd.model.expgraph.BioSample;
 import uk.ac.ebi.fg.biosd.model.expgraph.properties.SampleCommentValue;
 import uk.ac.ebi.fg.biosd.model.organizational.BioSampleGroup;
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
-import uk.ac.ebi.fg.biosd.model.xref.DatabaseRefSource;
+import uk.ac.ebi.fg.biosd.model.xref.DatabaseRecordRef;
 import uk.ac.ebi.fg.core_model.expgraph.properties.BioCharacteristicValue;
 import uk.ac.ebi.fg.core_model.expgraph.properties.ExperimentalPropertyType;
 import uk.ac.ebi.fg.core_model.expgraph.properties.ExperimentalPropertyValue;
@@ -237,8 +237,8 @@ public class Exporter {
             sd.msi.publications.add(p2);
         }
         
-        for ( DatabaseRefSource d  : msi.getDatabases()){
-            String name = d.getName();
+        for ( DatabaseRecordRef d  : msi.getDatabaseRecordRefs () ){
+            String name = d.getDbName ();
             String id = d.getAcc();
             String url = d.getUrl();
             uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Database d2 = new uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Database(name, url, id);
@@ -296,8 +296,8 @@ public class Exporter {
             }
 
             //group database links
-            for (DatabaseRefSource db : g.getDatabases()) {
-                DatabaseAttribute dba = new DatabaseAttribute(db.getName(), db.getAcc(), db.getUrl());
+            for (DatabaseRecordRef db : g.getDatabaseRecordRefs()) {
+                DatabaseAttribute dba = new DatabaseAttribute(db.getDbName (), db.getAcc(), db.getUrl());
                 gn.addAttribute(dba);
             }  
             
@@ -346,8 +346,8 @@ public class Exporter {
                     }
                 }
                                 
-                for (DatabaseRefSource db : s.getDatabases()) {
-                    DatabaseAttribute dba = new DatabaseAttribute(db.getName(), db.getAcc(), db.getUrl());
+                for (DatabaseRecordRef db : s.getDatabaseRecordRefs () ) {
+                    DatabaseAttribute dba = new DatabaseAttribute(db.getDbName (), db.getAcc(), db.getUrl());
                     sn.addAttribute(dba);
                 }                
                 

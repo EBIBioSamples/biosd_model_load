@@ -27,7 +27,7 @@ import uk.ac.ebi.fg.biosd.model.expgraph.properties.SampleCommentType;
 import uk.ac.ebi.fg.biosd.model.expgraph.properties.SampleCommentValue;
 import uk.ac.ebi.fg.biosd.model.organizational.BioSampleGroup;
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
-import uk.ac.ebi.fg.biosd.model.xref.DatabaseRefSource;
+import uk.ac.ebi.fg.biosd.model.xref.DatabaseRecordRef;
 import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.MemoryStore;
 import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.organizational.MSINormalizer;
 import uk.ac.ebi.fg.core_model.expgraph.properties.BioCharacteristicType;
@@ -118,10 +118,9 @@ public class Loader {
                 }
                 if (isDatabaseAttribute) {
                     DatabaseAttribute da = (DatabaseAttribute) a;
-                    DatabaseRefSource dbref = new DatabaseRefSource ( da.databaseID, null );
+                    DatabaseRecordRef dbref = new DatabaseRecordRef ( da.getAttributeValue (), da.databaseID, null );
                     dbref.setUrl ( da.databaseURI );
-                    dbref.setName ( da.getAttributeValue () );
-                    bg.addDatabase( dbref );
+                    bg.addDatabaseRecordRef( dbref );
                 } else {
                     bg.addPropertyValue(convertAtttribute(a, st));
                 }
@@ -301,10 +300,8 @@ public class Loader {
             }
             if (isDatabaseAttribute) {
                 DatabaseAttribute da = (DatabaseAttribute) a;
-                DatabaseRefSource dbref = new DatabaseRefSource ( da.databaseID, null );
-                dbref.setUrl ( da.databaseURI );
-                dbref.setName ( da.getAttributeValue () );
-                bs.addDatabase( dbref );
+                DatabaseRecordRef dbref = new DatabaseRecordRef ( da.getAttributeValue (), da.databaseID, null, da.databaseURI, null );
+                bs.addDatabaseRecordRef ( dbref );
             } else {
                 bs.addPropertyValue(convertAtttribute(a, st));
             }
@@ -363,10 +360,7 @@ public class Loader {
     }
     
     public void convertDatabase(uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Database database, MSI msi) {
-        //id to acc not an ideal match...
-        DatabaseRefSource d = new DatabaseRefSource(database.getID(), null);
-        d.setName(database.getName());
-        d.setUrl(database.getURI());
-        msi.addDatabase(d);
+      	DatabaseRecordRef d = new DatabaseRecordRef( database.getName (), database.getID(), null, database.getURI (), null );
+        msi.addDatabaseRecordRef ( d );
     }
 }

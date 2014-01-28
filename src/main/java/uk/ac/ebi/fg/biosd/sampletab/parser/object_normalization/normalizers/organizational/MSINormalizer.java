@@ -12,7 +12,7 @@ import uk.ac.ebi.fg.biosd.model.expgraph.BioSample;
 import uk.ac.ebi.fg.biosd.model.organizational.BioSampleGroup;
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
 import uk.ac.ebi.fg.biosd.model.persistence.hibernate.application_mgmt.JobRegisterDAO;
-import uk.ac.ebi.fg.biosd.model.xref.DatabaseRefSource;
+import uk.ac.ebi.fg.biosd.model.xref.DatabaseRecordRef;
 import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.DBStore;
 import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.MemoryStore;
 import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.Store;
@@ -74,8 +74,8 @@ public class MSINormalizer extends AnnotatableNormalizer<MSI>
 		for ( Organization org: msi.getOrganizations () ) organizationNormalizer.normalize ( org );
 		for ( Publication pub: msi.getPublications () ) publicationNormalizer.normalize ( pub );
 
-		normalizeReferenceSources ( this.store, ReferenceSource.class, msi.getReferenceSources () );
-		normalizeReferenceSources ( this.store, DatabaseRefSource.class, msi.getDatabases () );
+		normalizeReferenceSources ( this.store, msi.getReferenceSources () );
+		normalizeDatabaseRecordRefs ( this.store, msi.getDatabaseRecordRefs () );
 
 		for ( BioSample sample: msi.getSamples () ) sampleNormalizer.normalize ( sample );
 		for ( BioSampleGroup sg: msi.getSampleGroups () ) sgNormalizer.normalize ( sg );
@@ -100,19 +100,17 @@ public class MSINormalizer extends AnnotatableNormalizer<MSI>
 	}
 	
 	/**
-	 * Removes those ref sources of type targetEntity that already exists in store and replaces them with the existing
+	 * Removes those ref sources that already exists in store and replaces them with the existing
 	 * ones.
 	 */
-	public static <R extends ReferenceSource> void normalizeReferenceSources ( 
-		Store store, Class<R> targetEntityClass, Set<R> sources 
-	)
+	public static void normalizeReferenceSources ( Store store, Set<ReferenceSource> sources )
 	{
-  	Set<R> addSrcs = new HashSet<R> (), delSrcs = new HashSet<R> ();
-  	for ( R source: sources )
+  	Set<ReferenceSource> addSrcs = new HashSet<ReferenceSource> (), delSrcs = new HashSet<ReferenceSource> ();
+  	for ( ReferenceSource source: sources )
   	{
   		if ( source.getId () != null ) continue;
   		
-  		R srcS = store.find ( source, source.getAcc (), source.getVersion () );
+  		ReferenceSource srcS = store.find ( source, source.getAcc (), source.getVersion () );
   		if ( srcS == null || source == srcS ) continue;
  
   		delSrcs.add ( source ); addSrcs.add ( srcS );
@@ -120,6 +118,28 @@ public class MSINormalizer extends AnnotatableNormalizer<MSI>
   	
   	sources.removeAll ( delSrcs ); sources.addAll ( addSrcs );
 	}
+
+	/**
+	 * Removes those {@link DatabaseRecordRef}s that already exist in the store and replaces them with the existing ones.
+	 */
+	public static void normalizeDatabaseRecordRefs ( Store store, Set<DatabaseRecordRef> sources )
+	{
+  	Set<DatabaseRecordRef> addSrcs = new HashSet<DatabaseRecordRef> (), delSrcs = new HashSet<DatabaseRecordRef> ();
+  	for ( DatabaseRecordRef source: sources )
+  	{
+  		if ( source.getId () != null ) continue;
+  		
+  		DatabaseRecordRef srcS = store.find ( source, source.getDbName (), source.getAcc (), source.getVersion () );
+  		if ( srcS == null || source == srcS ) continue;
+ 
+  		delSrcs.add ( source ); addSrcs.add ( srcS );
+  	}
+  	
+  	sources.removeAll ( delSrcs ); sources.addAll ( addSrcs );
+	}
+
+	
+	
 	
 	/**
 	 * Replace those MSI's samples that have an equivalent in the DB with such equivalent. Uses {@link ProductComparator}

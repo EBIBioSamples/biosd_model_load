@@ -5,7 +5,7 @@ import java.util.Date;
 import uk.ac.ebi.fg.biosd.model.application_mgmt.JobRegisterEntry.Operation;
 import uk.ac.ebi.fg.biosd.model.expgraph.BioSample;
 import uk.ac.ebi.fg.biosd.model.persistence.hibernate.application_mgmt.JobRegisterDAO;
-import uk.ac.ebi.fg.biosd.model.xref.DatabaseRefSource;
+import uk.ac.ebi.fg.biosd.model.xref.DatabaseRecordRef;
 import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.DBStore;
 import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.Store;
 import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.organizational.MSINormalizer;
@@ -37,7 +37,7 @@ public class BioSampleNormalizer extends ProductNormalizer<BioSample>
 	{
 		if ( !super.normalize ( smp ) ) return false;
 		
-		MSINormalizer.normalizeReferenceSources ( this.store, DatabaseRefSource.class, smp.getDatabases () );
+		MSINormalizer.normalizeDatabaseRecordRefs ( this.store, smp.getDatabaseRecordRefs () );
 		
 		// mark the time the object creation occurs 
 		if ( store instanceof DBStore ) 

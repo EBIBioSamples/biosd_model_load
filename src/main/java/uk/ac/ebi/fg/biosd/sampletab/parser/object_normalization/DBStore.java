@@ -2,7 +2,8 @@ package uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization;
 
 import javax.persistence.EntityManager;
 
-import uk.ac.ebi.fg.biosd.model.xref.DatabaseRefSource;
+import uk.ac.ebi.fg.biosd.model.persistence.hibernate.xref.DatabaseRecRefDAO;
+import uk.ac.ebi.fg.biosd.model.xref.DatabaseRecordRef;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.terms.CVTermDAO;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.terms.OntologyEntryDAO;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.toplevel.AccessibleDAO;
@@ -26,6 +27,7 @@ public class DBStore implements Store
 	private final AccessibleDAO<Accessible> accessibleDao;
 	private final CVTermDAO<CVTerm> cvTermDao;
 	private final ReferenceSourceDAO<ReferenceSource> refSrcDao;
+	private final DatabaseRecRefDAO dbRecDao;
 	private final OntologyEntryDAO<OntologyEntry> oeDao;
 	private final EntityManager entityManager;
 	
@@ -40,6 +42,7 @@ public class DBStore implements Store
 		accessibleDao = new AccessibleDAO<Accessible> ( Accessible.class, entityManager );
 		cvTermDao = new CVTermDAO<CVTerm> ( CVTerm.class, entityManager );
 		refSrcDao = new ReferenceSourceDAO<ReferenceSource> ( ReferenceSource.class, entityManager );
+		dbRecDao = new DatabaseRecRefDAO ( entityManager );
 		oeDao = new OntologyEntryDAO<OntologyEntry> ( OntologyEntry.class, entityManager );
 	}
 	
@@ -56,11 +59,11 @@ public class DBStore implements Store
 		if ( newObject instanceof CVTerm )	
 			return (T) findCVTerm ( targetIds [ 0 ], (CVTerm) newObject );
 
-		if ( newObject instanceof DatabaseRefSource ) 
-			return (T) findDbRefSrc ( targetIds [ 0 ], targetIds [ 1 ], (DatabaseRefSource) newObject );
+		if ( newObject instanceof DatabaseRecordRef ) 
+			return (T) findDbRefSrc ( targetIds [ 0 ], targetIds [ 1 ], targetIds [ 1 ] );
 
 		if ( newObject instanceof ReferenceSource ) 
-			return (T) findRefSrc ( targetIds [ 0 ], targetIds [ 1 ], (ReferenceSource) newObject );
+			return (T) findRefSrc ( targetIds [ 0 ], targetIds [ 1 ] );
 		
 		if ( newObject instanceof OntologyEntry ) 
 			return (T) findOE ( targetIds [ 0 ], targetIds [ 1 ], targetIds [ 2 ] );
@@ -81,14 +84,12 @@ public class DBStore implements Store
 		return (CV) cvTermDao.find ( label, newObject.getClass () );
 	}
 	
-	@SuppressWarnings ( "unchecked" )
-	private <S extends ReferenceSource> S findRefSrc ( String accession, String version, S newObject ) {
-		return (S) refSrcDao.find ( accession, version, ReferenceSource.class );
+	private ReferenceSource findRefSrc ( String accession, String version ) {
+		return refSrcDao.find ( accession, version );
 	}
 
-	@SuppressWarnings ( "unchecked" )
-	private <DS extends DatabaseRefSource> DS findDbRefSrc ( String accession, String version, DS newObject ) {
-		return (DS) refSrcDao.find ( accession, version, DatabaseRefSource.class );
+	private DatabaseRecordRef findDbRefSrc ( String dbName, String accession, String version ) {
+		return dbRecDao.find ( dbName, accession, version );
 	}
 
 	private OntologyEntry findOE ( String acc, String srcAcc, String srcVer ) {
