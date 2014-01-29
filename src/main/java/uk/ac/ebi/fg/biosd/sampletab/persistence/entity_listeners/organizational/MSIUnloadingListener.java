@@ -14,6 +14,7 @@ import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.UnloadingListen
 import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.expgraph.BioSampleUnloadingListener;
 import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.terms.CVTermUnloadingListener;
 import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.terms.OntologyEntryUnloadingListener;
+import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.xref.DatabaseRecRefUnloadingListener;
 import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.xref.ReferenceSourceUnloadingListener;
 import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.xref.XRefUnloadingListener;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.toplevel.AccessibleDAO;
@@ -80,6 +81,7 @@ public class MSIUnloadingListener extends UnloadingListener<MSI>
 			result += new OntologyEntryUnloadingListener ( entityManager ).postRemove ( null );
 			result += new XRefUnloadingListener ( entityManager ).postRemove ( null );
 			result += new ReferenceSourceUnloadingListener ( entityManager ).postRemove ( null );
+			result += new DatabaseRecRefUnloadingListener ( entityManager ).postRemove ( null );
 			result += new CVTermUnloadingListener ( entityManager ).postRemove ( null );
 		}
 

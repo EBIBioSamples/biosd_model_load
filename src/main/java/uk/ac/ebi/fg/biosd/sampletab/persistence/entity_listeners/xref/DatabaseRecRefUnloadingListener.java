@@ -5,6 +5,7 @@ package uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.xref;
 
 import javax.persistence.EntityManager;
 
+import uk.ac.ebi.fg.biosd.model.xref.DatabaseRecordRef;
 import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.UnloadingListener;
 import uk.ac.ebi.fg.core_model.xref.ReferenceSource;
 
@@ -15,14 +16,14 @@ import uk.ac.ebi.fg.core_model.xref.ReferenceSource;
  * @author Marco Brandizi
  *
  */
-public class ReferenceSourceUnloadingListener extends UnloadingListener<ReferenceSource>
+public class DatabaseRecRefUnloadingListener extends UnloadingListener<DatabaseRecordRef>
 {
-	public ReferenceSourceUnloadingListener ( EntityManager entityManager ) {
+	public DatabaseRecRefUnloadingListener ( EntityManager entityManager ) {
 		super ( entityManager );
 	}
 
 	@Override
-	public long preRemove ( ReferenceSource entity )
+	public long preRemove ( DatabaseRecordRef entity )
 	{
 		return 0;
 	}
@@ -31,20 +32,20 @@ public class ReferenceSourceUnloadingListener extends UnloadingListener<Referenc
 	 * Removes all dangling {@link ReferenceSource} records.
 	 */
 	@Override
-	public long postRemove ( ReferenceSource entity )
+	public long postRemove ( DatabaseRecordRef entity )
 	{
 		// We previosuly used HQL, however this seems to have bad performance, due to temporary tables 
 		// (http://in.relation.to/Bloggers/MultitableBulkOperations)
 		
-		String sql = "DELETE FROM reference_source\n" +
-			"WHERE id NOT IN ( SELECT source_id FROM onto_entry )\n" + 
-			"AND id NOT IN ( SELECT source_id FROM xref )\n" + 
-			"AND id NOT IN ( SELECT referencesources_id FROM msi_reference_source )";
+		String sql = "DELETE FROM db_rec_ref WHERE\n" +
+			"id NOT IN ( SELECT db_rec_id FROM msi_db_rec_ref )\n" +
+			"AND id NOT IN ( SELECT db_rec_id FROM sample_db_rec_ref )\n" +
+			"AND id NOT IN ( SELECT db_rec_id FROM sg_db_rec_ref )\n";
 
 		long result = entityManager.createNativeQuery ( sql ).executeUpdate (); 
 
 		// TODO: AOP
-		log.trace ( String.format ( "%s.postRemove( null ): returning %d", ReferenceSource.class.getSimpleName (), result ));
+		log.trace ( String.format ( "%s.postRemove( null ): returning %d", DatabaseRecordRef.class.getSimpleName (), result ));
 		return result;
 	}
 

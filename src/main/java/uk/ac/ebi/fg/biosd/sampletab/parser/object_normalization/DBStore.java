@@ -59,11 +59,11 @@ public class DBStore implements Store
 		if ( newObject instanceof CVTerm )	
 			return (T) findCVTerm ( targetIds [ 0 ], (CVTerm) newObject );
 
-		if ( newObject instanceof DatabaseRecordRef ) 
-			return (T) findDbRefSrc ( targetIds [ 0 ], targetIds [ 1 ], targetIds [ 1 ] );
-
 		if ( newObject instanceof ReferenceSource ) 
 			return (T) findRefSrc ( targetIds [ 0 ], targetIds [ 1 ] );
+
+		if ( newObject instanceof DatabaseRecordRef ) 
+			return (T) findDbRefSrc ( targetIds [ 0 ], targetIds [ 1 ], targetIds [ 1 ] );
 		
 		if ( newObject instanceof OntologyEntry ) 
 			return (T) findOE ( targetIds [ 0 ], targetIds [ 1 ], targetIds [ 2 ] );

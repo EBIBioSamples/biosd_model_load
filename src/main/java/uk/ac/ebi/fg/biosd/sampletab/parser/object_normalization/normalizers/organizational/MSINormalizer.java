@@ -74,8 +74,8 @@ public class MSINormalizer extends AnnotatableNormalizer<MSI>
 		for ( Organization org: msi.getOrganizations () ) organizationNormalizer.normalize ( org );
 		for ( Publication pub: msi.getPublications () ) publicationNormalizer.normalize ( pub );
 
-		normalizeReferenceSources ( this.store, msi.getReferenceSources () );
 		normalizeDatabaseRecordRefs ( this.store, msi.getDatabaseRecordRefs () );
+		normalizeReferenceSources ( this.store, msi.getReferenceSources () );
 
 		for ( BioSample sample: msi.getSamples () ) sampleNormalizer.normalize ( sample );
 		for ( BioSampleGroup sg: msi.getSampleGroups () ) sgNormalizer.normalize ( sg );
