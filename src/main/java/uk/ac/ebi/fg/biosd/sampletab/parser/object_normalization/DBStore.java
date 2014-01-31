@@ -63,7 +63,7 @@ public class DBStore implements Store
 			return (T) findRefSrc ( targetIds [ 0 ], targetIds [ 1 ] );
 
 		if ( newObject instanceof DatabaseRecordRef ) 
-			return (T) findDbRefSrc ( targetIds [ 0 ], targetIds [ 1 ], targetIds [ 1 ] );
+			return (T) findDbRefSrc ( targetIds [ 0 ], targetIds [ 1 ], targetIds [ 2 ] );
 		
 		if ( newObject instanceof OntologyEntry ) 
 			return (T) findOE ( targetIds [ 0 ], targetIds [ 1 ], targetIds [ 2 ] );

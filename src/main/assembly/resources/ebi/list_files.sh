@@ -11,7 +11,7 @@ ct=1
 for d in $(find $dir -mindepth 1 -maxdepth 1 -type d)
 do
   find $d \
-  -type d -name 'age' -prune -type d -name '*_log' -prune \
+  -type d \( -name 'age' -or -name '*_log' \) -prune \
   -name '*.sampletab.toload.txt' -or -name 'sampletab.toload.txt' >_files_$ct.lst 2>_files_$ct.err &
   ct=$(($ct + 1))
 done
