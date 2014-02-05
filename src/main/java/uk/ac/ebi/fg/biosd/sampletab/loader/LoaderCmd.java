@@ -3,6 +3,9 @@ package uk.ac.ebi.fg.biosd.sampletab.loader;
 import static java.lang.System.err;
 import static java.lang.System.out;
 
+import java.io.File;
+import java.io.IOError;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.BatchUpdateException;
 
@@ -58,6 +61,8 @@ public class LoaderCmd
 		
 		Throwable ex = null;
 		
+		String msiAcc = null;
+				
 		try
 		{
 			// Parse the submission sampletab file.
@@ -82,6 +87,7 @@ public class LoaderCmd
 					
 					Loader loader = new Loader();
 					MSI msi = loader.fromSampleData ( path );
+					msiAcc = msi.getAcc ();
 					
 					parsingTime = System.currentTimeMillis () - time0;
 					nitems = msi.getSamples ().size () + msi.getSampleGroups ().size ();
@@ -91,7 +97,7 @@ public class LoaderCmd
 					// First remove it if that's required
 					if ( attempts == 5 && cli.hasOption ( 'u' ) ) 
 					{
-						out.print ( "\nUnloading previous version of " + msi.getAcc () + " (if any)..." );
+						out.print ( "\nUnloading previous version of " + msiAcc + " (if any)..." );
 						new Unloader().setDoPurge ( cli.hasOption ( 'g' ) ).unload ( msi );
 						out.println ( " done." );
 					}
@@ -142,7 +148,7 @@ public class LoaderCmd
 		}
 		finally 
 		{
-			saveLoadingDiagnostics ( path, ex, parsingTime, persistenceTime, nitems );
+			saveLoadingDiagnostics ( msiAcc, path, ex, parsingTime, persistenceTime, nitems );
 			
 			EntityManagerFactory emf = Resources.getInstance ().getEntityManagerFactory ();
 			if ( emf != null && emf.isOpen () ) emf.close ();
@@ -191,6 +197,7 @@ public class LoaderCmd
 	/**
 	 * Saves loading diagnostics data, if System.getProperty ( "uk.ac.ebi.fg.biosd.sampletab.loader.debug" ) is true. 
 	 * 
+	 * @param msiAcc the submission accession being loaded
 	 * @param sampleTabPath the file being loaded
 	 * @param ex	the exception that made the command to fail, null if success
 	 * @param parsingMsec  how long time the parser took to build a BioSD model instance, null in case of exception
@@ -198,17 +205,20 @@ public class LoaderCmd
 	 * @param nitemsCount how many samples, sample groups, the submission being loaded has
 	 */
 	private static void saveLoadingDiagnostics 
-		( String sampleTabPath, Throwable ex, Long parsingMsec, Long persistenceMsec, Integer nitemsCount )
+		( String msiAcc, String sampleTabPath, Throwable ex, Long parsingMsec, Long persistenceMsec, Integer nitemsCount )
+	throws IOException
 	{
 		if ( !"true".equalsIgnoreCase ( System.getProperty ( "uk.ac.ebi.fg.biosd.sampletab.loader.debug" ) ) ) return;
 		
 		if ( ex != null ) ex = ExceptionUtils.getRootCause ( ex );
 		
+		sampleTabPath = new File ( sampleTabPath ).getCanonicalPath ();
+		
 		EntityManagerFactory emf = Resources.getInstance ().getEntityManagerFactory ();
 		EntityManager em = emf.createEntityManager ();
 		EntityTransaction ts = em.getTransaction ();
 		ts.begin ();
-		em.persist ( new LoadingDiagnosticEntry ( sampleTabPath, ex, parsingMsec, persistenceMsec, nitemsCount ));
+		em.persist ( new LoadingDiagnosticEntry ( msiAcc, sampleTabPath, ex, parsingMsec, persistenceMsec, nitemsCount ));
 		ts.commit ();
 		em.close ();
 	}
