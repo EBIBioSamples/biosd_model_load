@@ -22,7 +22,16 @@ SUBMISSIONIDENTIFIER=`grep 'Submission Identifier' $FILENAME | sed 's|Submission
 echo "SUBMISSIONIDENTIFIER = "$SUBMISSIONIDENTIFIER
 
 time ./unload.sh $SUBMISSIONIDENTIFIER
-echo "unload exit code = "$?
+UNLOADEXIT = $?
+echo "unload exit code = "$UNLOADEXIT
 
 time ./load.sh $FILENAME
-echo "load exit code = "$?
+LOADEXIT = $?
+echo "load exit code = "$LOADEXIT
+
+if [ $UNLOADEXIT -gt $LOADEXIT ];
+then
+	exit $UNLOADEXIT 
+else
+	exit $LOADEXIT
+fi
