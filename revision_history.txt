@@ -1,5 +1,6 @@
 1.0
   First Release
 
-1.1
+1.1.1
   Database Links simplified (https://www.ebi.ac.uk/panda/jira/browse/BSD-83)
+  (we needed to skip 1.1, due to problems with Maven/GitHub)
