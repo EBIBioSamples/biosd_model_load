@@ -1,6 +1,6 @@
 #!/bin/sh
 # 
-# Runs multiple loader (load.sh) instances in parallel through the EBI's LSF cluster.
+# Runs multiple loader (load.sh) instances in parallel through an LSF cluster (we use the EBI one).
 # TODO: documentation
 # 
 
