@@ -4,7 +4,7 @@
 # 
 
 # These are passed to the JVM. they're appended, so that you can predefine it from the shell
-OPTS="$OPTS -Xms2G -Xmx4G -XX:PermSize=128m -XX:MaxPermSize=256m"
+OPTS="$OPTS -Xms2G -Xmx4G -XX:PermSize=128m -XX:MaxPermSize=256m -XX:+UseConcMarkSweepGC"
 
 # We always work with universal text encoding.
 OPTS="$OPTS -Dfile.encoding=UTF-8"
