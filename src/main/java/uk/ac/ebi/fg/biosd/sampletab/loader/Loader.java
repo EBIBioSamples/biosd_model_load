@@ -157,7 +157,7 @@ public class Loader {
                 bg.setInReferenceLayer(true);
             }
             
-            for(Node p : g.getParentNodes()) {
+            for (Node p : g.getParentNodes()) {
                 //check this is a sample;
                 SampleNode s = (SampleNode) p;
                 
