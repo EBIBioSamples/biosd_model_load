@@ -104,6 +104,7 @@ public class LoaderCmd
 					
 					// Now persist it
 					//
+					//TODO only persist if there is something worth persisting
 					time0 = System.currentTimeMillis ();
 					new Persister ().persist ( msi );
 				
@@ -113,7 +114,6 @@ public class LoaderCmd
 						"\nSubmission persisted in " + formatTimeDuration ( persistenceTime ) + ". Total time " +
 						formatTimeDuration ( parsingTime + persistenceTime ) 
 					);
-					
 					break;
 				}
 				catch ( RuntimeException aex ) 
