@@ -104,16 +104,18 @@ public class LoaderCmd
 					
 					// Now persist it
 					//
-					//TODO only persist if there is something worth persisting
-					time0 = System.currentTimeMillis ();
-					new Persister ().persist ( msi );
-				
-					persistenceTime = System.currentTimeMillis () - time0;
-										
-					out.println ( 
-						"\nSubmission persisted in " + formatTimeDuration ( persistenceTime ) + ". Total time " +
-						formatTimeDuration ( parsingTime + persistenceTime ) 
-					);
+					// only persist if there is something worth persisting
+                    if (msi.getSamples().size() + msi.getSampleGroups().size() > 0) {
+    					time0 = System.currentTimeMillis ();
+    					new Persister ().persist ( msi );
+    				
+    					persistenceTime = System.currentTimeMillis () - time0;
+    										
+    					out.println ( 
+    						"\nSubmission persisted in " + formatTimeDuration ( persistenceTime ) + ". Total time " +
+    						formatTimeDuration ( parsingTime + persistenceTime ) 
+    					);
+                    }
 					break;
 				}
 				catch ( RuntimeException aex ) 
