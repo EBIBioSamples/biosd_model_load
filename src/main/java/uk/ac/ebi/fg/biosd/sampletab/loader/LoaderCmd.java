@@ -70,14 +70,14 @@ public class LoaderCmd
 			out.println ( "\n\n >>> Loading '" + path + "'" );
 
 			// Sometimes, when loadings occur in parallel (and in a cluster), some of them fail cause one saves something before
-			// the other can learn an entity already exist in the database. Unfortunately, putting the normaliser inside a transaction
-			// causes horrible Hibernate complaints, since it starts flushing updated before the normalisation has completed.
+			// the other can learn an entity already exists in the database. Unfortunately, putting the normaliser inside a transaction
+			// causes horrible Hibernate complaints, since it starts flushing updates before the normalisation has completed.
 			// 
 			// So, our brutal solution is to re-attempt the loading from scratch. We have already tried to re-persist the 
-			// MSI in memory, so avoiding the re-load. Unfortunately, you face Hibernate problems this way as well, since it 
-			// has objects coming from the DB in the MSI you try to re-persist and it believes you're attempting to re-create 
-			// them. Maybe there is a smarter way to sort this out, but I have enough of struggling with it and it's not 
-			// something that happens so often anyway.
+			// MSI in memory, to avoid the re-load step. Unfortunately, this causes other Hibernate problems, since it 
+			// gets objects coming from the DB, linked to the MSI you try to re-persist and that makes Hibernate to believe 
+			// you're attempting to re-create such objects. Maybe there is a smarter way to sort this out, but I have enough 
+			// of struggling with it and it's not something that happens so often anyway.
 			//
 			for ( int attempts = 5; ; )
 			{
@@ -125,7 +125,9 @@ public class LoaderCmd
 					if ( !( aex1 instanceof BatchUpdateException && StringUtils.contains ( aex1.getMessage (), "unique constraint" ) ) )
 						throw new RuntimeException ( "Error while saving '" + path + "': " + aex.getMessage (), aex );
 					
-					log.warn ( "SQL exception: {} is likely due to concurrency, will retry {} more times", aex.getMessage (), attempts );
+					log.warn ( "SQL exception: {}, this is likely due to concurrency, will retry {} more times", 
+						aex.getMessage (), attempts 
+					);
 					
 					// Have a random pause, minimises the likelihood to clash again 
 					try {
