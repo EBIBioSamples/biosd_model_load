@@ -1,6 +1,11 @@
+1.1.2-SNAPSHOT
+- Improvements in how special cases are dealt with (e.g., empty submissions or sample groups)
+- Minor changes and fixes
+- Source change: introdution of a common parent POM for all BioSD-related projects 
+
 1.1.1
-  Database links simplified (https://www.ebi.ac.uk/panda/jira/browse/BSD-83)
-  (we needed to skip 1.1, due to problems with Maven/GitHub)
+- Database links simplified (https://www.ebi.ac.uk/panda/jira/browse/BSD-83)
+(we needed to skip 1.1, due to problems with Maven/GitHub)
 
 1.0
-  First Release
+- First Release
