@@ -182,7 +182,8 @@ public class Exporter {
     
     public SampleData fromMSI(MSI msi) throws ParseException{
         
-        if (msi.getSamples().size()+msi.getSampleGroups().size() == 0) {
+        if (msi.getSamples() == null || msi.getSampleGroups() == null || 
+                msi.getSamples().size()+msi.getSampleGroups().size() == 0) {
             throw new RuntimeException("No samples or groups");
         }
         

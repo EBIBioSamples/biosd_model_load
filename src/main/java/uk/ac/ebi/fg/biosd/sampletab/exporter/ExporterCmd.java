@@ -52,6 +52,13 @@ public class ExporterCmd
 			AccessibleDAO<MSI> msiDao = new AccessibleDAO<MSI> ( MSI.class, em );
 			MSI msi = msiDao.find ( accession ); // Or ID
 
+			
+			if (msi == null) {
+	            out.println ( 
+	                    "\nSubmission not in database"
+	                );
+			}
+			
 			Exporter exporter = new Exporter();
 			SampleData xdata = exporter.fromMSI ( msi );
 			
@@ -64,6 +71,7 @@ public class ExporterCmd
 				"\nSubmission exported in " + formatTimeDuration ( persistenceTime ) + ". Total time " +
 				formatTimeDuration ( parsingTime + persistenceTime ) 
 			);
+			
 		} 
 		catch ( Throwable ex ) 
 		{

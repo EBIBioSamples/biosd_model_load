@@ -170,16 +170,8 @@ public class Loader {
             }
         }
         
-        if (msi.getSamples().size()+msi.getSampleGroups().size() == 0) {
-            throw new RuntimeException("No samples or groups");
-        }
-        
         // Merge equivalent objects together
         new MSINormalizer ( new MemoryStore () ).normalize ( msi );
-
-        if (msi.getSamples().size()+msi.getSampleGroups().size() == 0) {
-            throw new RuntimeException("No samples or groups");
-        }
         
         return msi;
     }
