@@ -169,7 +169,7 @@ public class LoaderCmd
 		out.println ( "\nLoads a SampleTAB submission into the relational database" );
 		
 		out.println ( "\nSyntax:" );
-		out.println ( "\n\tload.sh [options] <submission accession>" );		
+		out.println ( "\n\tload.sh [options] <submission path>" );		
 		
 		out.println ( "\nOptions:" );
 		HelpFormatter helpFormatter = new HelpFormatter ();
