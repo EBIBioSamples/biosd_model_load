@@ -62,9 +62,9 @@ public class Exporter {
                 OntologyEntry oe = u.getSingleOntologyTerm();
                 if (oe != null) {
                     ReferenceSource source = oe.getSource();
+                    String name = source.getName();
                     String url = source.getUrl();
                     String version = source.getVersion();
-                    String name = source.getName();
                     TermSource ts = new TermSource(name, url, version);
                     
                     a.unit.setTermSourceREF(sd.msi.getOrAddTermSource(ts));
@@ -75,9 +75,9 @@ public class Exporter {
             OntologyEntry oe = v.getSingleOntologyTerm();
             if (oe != null) {
                 ReferenceSource source = oe.getSource();
+                String name = source.getName();
                 String url = source.getUrl();
                 String version = source.getVersion();
-                String name = source.getName();
                 TermSource ts = new TermSource(name, url, version);
                 a.setTermSourceREF(sd.msi.getOrAddTermSource(ts));
                 a.setTermSourceID(oe.getAcc());
@@ -95,9 +95,9 @@ public class Exporter {
                 OntologyEntry oe = u.getSingleOntologyTerm();
                 if (oe != null) {
                     ReferenceSource source = oe.getSource();
+                    String name = source.getName();
                     String url = source.getUrl();
                     String version = source.getVersion();
-                    String name = source.getName();
                     TermSource ts = new TermSource(name, url, version);
                     
                     a.unit.setTermSourceREF(sd.msi.getOrAddTermSource(ts));
@@ -108,9 +108,9 @@ public class Exporter {
             OntologyEntry oe = v.getSingleOntologyTerm();
             if (oe != null) {
                 ReferenceSource source = oe.getSource();
+                String name = source.getName();
                 String url = source.getUrl();
                 String version = source.getVersion();
-                String name = source.getName();
                 TermSource ts = new TermSource(name, url, version);
                 a.setTermSourceREF(sd.msi.getOrAddTermSource(ts));
                 a.setTermSourceID(oe.getAcc());
@@ -124,9 +124,9 @@ public class Exporter {
             OntologyEntry oe = v.getSingleOntologyTerm();
             if (oe != null) {
                 ReferenceSource source = oe.getSource();
+                String name = source.getName();
                 String url = source.getUrl();
                 String version = source.getVersion();
-                String name = source.getName();
                 TermSource ts = new TermSource(name, url, version);
                 a.setTermSourceREF(sd.msi.getOrAddTermSource(ts));
                 a.setTermSourceID(oe.getAcc());
@@ -139,9 +139,9 @@ public class Exporter {
             OntologyEntry oe = v.getSingleOntologyTerm();
             if (oe != null) {
                 ReferenceSource source = oe.getSource();
+                String name = source.getName();
                 String url = source.getUrl();
                 String version = source.getVersion();
-                String name = source.getName();
                 TermSource ts = new TermSource(name, url, version);
                 a.setTermSourceREF(sd.msi.getOrAddTermSource(ts));
                 a.setTermSourceID(oe.getAcc());
@@ -154,9 +154,9 @@ public class Exporter {
             OntologyEntry oe = v.getSingleOntologyTerm();
             if (oe != null) {
                 ReferenceSource source = oe.getSource();
+                String name = source.getName();
                 String url = source.getUrl();
                 String version = source.getVersion();
-                String name = source.getName();
                 TermSource ts = new TermSource(name, url, version);
                 a.setTermSourceREF(sd.msi.getOrAddTermSource(ts));
                 a.setTermSourceID(oe.getAcc());
@@ -246,6 +246,7 @@ public class Exporter {
             sd.msi.databases.add(d2);            
         }
         
+        /*
         for ( ReferenceSource r  : msi.getReferenceSources()){
             String name = r.getName();
             String uri = r.getUrl();
@@ -253,6 +254,7 @@ public class Exporter {
             uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.TermSource p2 = new uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.TermSource(name, uri, version);
             sd.msi.termSources.add(p2);
         }
+        */
         
         //SCD section
         
