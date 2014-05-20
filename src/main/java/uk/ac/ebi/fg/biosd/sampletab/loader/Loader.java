@@ -90,9 +90,11 @@ public class Loader {
             convertPublication(pub, msi);
         }
         
+        /*
         for (uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.TermSource ts : st.msi.termSources) {
             convertTermSource(ts, msi);
         }
+        */
 
         for (uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Database db : st.msi.databases) {
             convertDatabase(db, msi);
@@ -344,12 +346,14 @@ public class Loader {
         msi.addPublication(p);
     }
     
+    /*
     public void convertTermSource(uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.TermSource termsource, MSI msi) {
         uk.ac.ebi.fg.core_model.xref.ReferenceSource r = new uk.ac.ebi.fg.core_model.xref.ReferenceSource(termsource.getName(), termsource.getVersion());
         r.setName(termsource.getName());
         r.setUrl(termsource.getURI());
         msi.addReferenceSource(r);
     }
+    */
     
     public void convertDatabase(uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Database database, MSI msi) {
       	DatabaseRecordRef d = new DatabaseRecordRef( database.getName (), database.getID(), null, database.getURI (), null );
