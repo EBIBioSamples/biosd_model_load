@@ -4,7 +4,6 @@ import static java.lang.System.err;
 import static java.lang.System.out;
 
 import java.io.File;
-import java.io.IOError;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.BatchUpdateException;
