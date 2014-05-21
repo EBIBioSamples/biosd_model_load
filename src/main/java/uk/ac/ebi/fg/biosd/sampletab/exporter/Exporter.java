@@ -350,7 +350,12 @@ public class Exporter {
                 }
                                 
                 for (DatabaseRecordRef db : s.getDatabaseRecordRefs () ) {
-                    DatabaseAttribute dba = new DatabaseAttribute(db.getDbName (), db.getAcc(), db.getUrl());
+                    //sanity check
+                    if (db == null) continue;
+                    String dbName = db.getDbName();
+                    String dbAcc = db.getAcc();
+                    String dbUrl = db.getUrl();
+                    DatabaseAttribute dba = new DatabaseAttribute(dbName, dbAcc, dbUrl);
                     sn.addAttribute(dba);
                 }                
                 
