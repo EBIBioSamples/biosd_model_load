@@ -355,8 +355,11 @@ public class Exporter {
                     String dbName = db.getDbName();
                     String dbAcc = db.getAcc();
                     String dbUrl = db.getUrl();
-                    DatabaseAttribute dba = new DatabaseAttribute(dbName, dbAcc, dbUrl);
-                    sn.addAttribute(dba);
+                    //sanity check
+                    if (dbName != null && dbAcc != null && dbUrl != null) {
+                        DatabaseAttribute dba = new DatabaseAttribute(dbName, dbAcc, dbUrl);
+                        sn.addAttribute(dba);
+                    }
                 }                
                 
                 sd.scd.addNode(sn);
