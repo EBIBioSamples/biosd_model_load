@@ -34,7 +34,7 @@ public class XRefNormalizer extends Normalizer<XRef>
 		ReferenceSource src = xref.getSource ();
 		if ( src == null ) return true; // This is actually an error and will pop-up later.
 		
-		ReferenceSource srcS = store.find ( src, src.getAcc (), src.getVersion () );
+		ReferenceSource srcS = store.find ( src, src.getAcc (), src.getVersion (), src.getUrl () );
 		if ( srcS == null || src == srcS ) return true;
 		
 		Exception theEx = null;

@@ -39,7 +39,7 @@ public class FreeTextTermNormalizer<FT extends FreeTextTerm> extends Normalizer<
 		{
 			ReferenceSource src = oe.getSource ();
 			if ( src == null ) continue; // This is actually an error and will pop-up later.
-			OntologyEntry oeS = store.find ( oe, oe.getAcc (), src.getAcc (), src.getVersion () );
+			OntologyEntry oeS = store.find ( oe, oe.getAcc (), src.getAcc (), src.getVersion (), src.getUrl () );
 			
 			if ( oeS == null ) {
 				oeNormalizer.normalize ( oe );

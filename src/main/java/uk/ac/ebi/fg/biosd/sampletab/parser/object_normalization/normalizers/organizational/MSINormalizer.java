@@ -110,7 +110,7 @@ public class MSINormalizer extends AnnotatableNormalizer<MSI>
   	{
   		if ( source.getId () != null ) continue;
   		
-  		ReferenceSource srcS = store.find ( source, source.getAcc (), source.getVersion () );
+  		ReferenceSource srcS = store.find ( source, source.getAcc (), source.getVersion (), source.getUrl () );
   		if ( srcS == null || source == srcS ) continue;
  
   		delSrcs.add ( source ); addSrcs.add ( srcS );

@@ -83,7 +83,7 @@ public class NormalizationTest
 		assertNotNull ( "cntRole1 not found in the store!", store.find ( m.cntRole1b, m.cntRole1b.getName () ) );
 		
 		assertNotNull ( "oe1 not found in the store!", 
-			store.find ( m.oe1b, m.oe1b.getAcc (), m.oe1b.getSource ().getAcc (), m.oe1b.getSource ().getVersion () ) );
+			store.find ( m.oe1b, m.oe1b.getAcc (), m.oe1b.getSource ().getAcc (), m.oe1b.getSource ().getVersion (), m.oe1b.getSource ().getUrl () ) );
 
 		assertTrue ( "Contact Role Normalisation failed!", 
 			m.cnt.getContactRoles ().iterator ().next () == m.cnt1.getContactRoles ().iterator ().next () );

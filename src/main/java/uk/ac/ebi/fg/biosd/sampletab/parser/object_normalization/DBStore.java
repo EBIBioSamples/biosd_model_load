@@ -60,13 +60,13 @@ public class DBStore implements Store
 			return (T) findCVTerm ( targetIds [ 0 ], (CVTerm) newObject );
 
 		if ( newObject instanceof ReferenceSource ) 
-			return (T) findRefSrc ( targetIds [ 0 ], targetIds [ 1 ] );
+			return (T) findRefSrc ( targetIds [ 0 ], targetIds [ 1 ], targetIds [ 2 ] );
 
 		if ( newObject instanceof DatabaseRecordRef ) 
 			return (T) findDbRefSrc ( targetIds [ 0 ], targetIds [ 1 ], targetIds [ 2 ] );
 		
 		if ( newObject instanceof OntologyEntry ) 
-			return (T) findOE ( targetIds [ 0 ], targetIds [ 1 ], targetIds [ 2 ] );
+			return (T) findOE ( targetIds [ 0 ], targetIds [ 1 ], targetIds [ 2 ], targetIds [ 3 ] );
 
 		throw new IllegalArgumentException ( 
 			"Internal Error with BioSD persistence layer, don't know how to handle an object of type " 
@@ -84,16 +84,16 @@ public class DBStore implements Store
 		return (CV) cvTermDao.find ( label, newObject.getClass () );
 	}
 	
-	private ReferenceSource findRefSrc ( String accession, String version ) {
-		return refSrcDao.find ( accession, version );
+	private ReferenceSource findRefSrc ( String accession, String version, String url ) {
+		return refSrcDao.find ( accession, version, url );
 	}
 
 	private DatabaseRecordRef findDbRefSrc ( String dbName, String accession, String version ) {
 		return dbRecDao.find ( dbName, accession, version );
 	}
 
-	private OntologyEntry findOE ( String acc, String srcAcc, String srcVer ) {
-		return oeDao.find ( acc, srcAcc, srcVer );
+	private OntologyEntry findOE ( String acc, String srcAcc, String srcVer, String srcUrl ) {
+		return oeDao.find ( acc, srcAcc, srcVer, srcUrl );
 	}
 
 	public EntityManager getEntityManager () {
