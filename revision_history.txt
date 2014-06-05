@@ -1,7 +1,8 @@
 1.1.2-SNAPSHOT
+- MSI->ReferenceSource link removed, managed by tracing it back from property values
 - Improvements in how special cases are dealt with (e.g., empty submissions or sample groups)
 - Minor changes and fixes
-- Source change: introdution of a common parent POM for all BioSD-related projects 
+- Source change: addition of a common parent POM for all BioSD-related projects 
 
 1.1.1
 - Database links simplified (https://www.ebi.ac.uk/panda/jira/browse/BSD-83)
