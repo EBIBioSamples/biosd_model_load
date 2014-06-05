@@ -1,0 +1,60 @@
+#1401814863115 | took -1ms | debug | connection -1|
+com.p6spy.engine.common.P6SpyOptions reloading properties;
+#1401814863117 | took -1ms | info | connection -1|
+Using properties file: /Users/brandizi/Documents/Work/ebi/esd/git/biosd_model_load/target/test-classes/spy.properties;
+#1401814863117 | took -1ms | info | connection -1|
+No value in environment for: getStackTrace, using: false;
+#1401814863117 | took -1ms | info | connection -1|
+No value in environment for: getAppender, using: com.p6spy.engine.logging.appender.FileLogger;
+#1401814863117 | took -1ms | info | connection -1|
+No value in environment for: getExecutionThreshold, using: 0;
+#1401814863117 | took -1ms | info | connection -1|
+No value in environment for: getUsePrefix, using: false;
+#1401814863117 | took -1ms | info | connection -1|
+No value in environment for: getAutoflush, using: true;
+#1401814863117 | took -1ms | info | connection -1|
+No value in environment for: getExclude, using: ;
+#1401814863117 | took -1ms | info | connection -1|
+No value in environment for: getExcludecategories, using: null;
+#1401814863117 | took -1ms | info | connection -1|
+No value in environment for: getInclude, using: ;
+#1401814863117 | took -1ms | info | connection -1|
+No value in environment for: getIncludecategories, using: error, info, batch, debug, statement, commit, rollback;
+#1401814863117 | took -1ms | info | connection -1|
+No value in environment for: getLogfile, using: /Users/brandizi/Documents/Work/ebi/esd/git/biosd_model_load/target/spy.log;
+#1401814863117 | took -1ms | info | connection -1|
+No value in environment for: getDriverlist, using: null;
+#1401814863117 | took -1ms | info | connection -1|
+No value in environment for: getAppend, using: true;
+#1401814863117 | took -1ms | info | connection -1|
+No value in environment for: getSpydriver, using: com.p6spy.engine.spy.P6SpyDriver;
+#1401814863117 | took -1ms | info | connection -1|
+No value in environment for: getDateformat, using: ;
+#1401814863117 | took -1ms | info | connection -1|
+No value in environment for: getDateformatter, using: null;
+#1401814863117 | took -1ms | info | connection -1|
+No value in environment for: getStackTraceClass, using: ;
+#1401814863117 | took -1ms | info | connection -1|
+No value in environment for: getSQLExpression, using: null;
+#1401814863117 | took -1ms | info | connection -1|
+No value in environment for: getReloadProperties, using: false;
+#1401814863117 | took -1ms | info | connection -1|
+No value in environment for: getReloadPropertiesInterval, using: 60;
+#1401814863117 | took -1ms | info | connection -1|
+No value in environment for: getJNDIContextFactory, using: null;
+#1401814863117 | took -1ms | info | connection -1|
+No value in environment for: getJNDIContextProviderURL, using: null;
+#1401814863117 | took -1ms | info | connection -1|
+No value in environment for: getJNDIContextCustom, using: null;
+#1401814863117 | took -1ms | info | connection -1|
+No value in environment for: getRealDataSource, using: null;
+#1401814863117 | took -1ms | info | connection -1|
+No value in environment for: getRealDataSourceClass, using: null;
+#1401814863117 | took -1ms | info | connection -1|
+No value in environment for: getRealDataSourceProperties, using: null;
+#1401814863117 | took -1ms | info | connection -1|
+No value in environment for: getDatabaseDialectDateFormat, using: dd-MMM-yy;
+#1401814863117 | took -1ms | info | connection -1|
+No value in environment for: getLogMessageFormatter, using: null;
+#1401814863117 | took -1ms | info | connection -1|
+No value in environment for: getFilter, using: false;

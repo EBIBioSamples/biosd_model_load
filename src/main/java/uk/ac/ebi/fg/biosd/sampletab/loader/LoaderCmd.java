@@ -120,7 +120,7 @@ public class LoaderCmd
 				catch ( RuntimeException aex ) 
 				{
 					if ( --attempts == 0 )
-						throw new RuntimeException ( "Error while saving '" + path + "': " + aex.getMessage (), ex );
+						throw new RuntimeException ( "Error while saving '" + path + "': " + aex.getMessage (), aex );
 
 					Throwable aex1 = ExceptionUtils.getRootCause ( aex );
 					if ( !( aex1 instanceof BatchUpdateException && StringUtils.contains ( aex1.getMessage (), "unique constraint" ) ) )
