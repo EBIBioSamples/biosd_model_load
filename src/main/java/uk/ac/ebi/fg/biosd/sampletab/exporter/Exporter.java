@@ -62,7 +62,7 @@ public class Exporter {
                 OntologyEntry oe = u.getSingleOntologyTerm();
                 if (oe != null) {
                     ReferenceSource source = oe.getSource();
-                    String name = source.getName();
+                    String name = source.getAcc();
                     String url = source.getUrl();
                     String version = source.getVersion();
                     TermSource ts = new TermSource(name, url, version);
@@ -75,7 +75,7 @@ public class Exporter {
             OntologyEntry oe = v.getSingleOntologyTerm();
             if (oe != null) {
                 ReferenceSource source = oe.getSource();
-                String name = source.getName();
+                String name = source.getAcc();
                 String url = source.getUrl();
                 String version = source.getVersion();
                 TermSource ts = new TermSource(name, url, version);
@@ -95,7 +95,7 @@ public class Exporter {
                 OntologyEntry oe = u.getSingleOntologyTerm();
                 if (oe != null) {
                     ReferenceSource source = oe.getSource();
-                    String name = source.getName();
+                    String name = source.getAcc();
                     String url = source.getUrl();
                     String version = source.getVersion();
                     TermSource ts = new TermSource(name, url, version);
@@ -108,7 +108,7 @@ public class Exporter {
             OntologyEntry oe = v.getSingleOntologyTerm();
             if (oe != null) {
                 ReferenceSource source = oe.getSource();
-                String name = source.getName();
+                String name = source.getAcc();
                 String url = source.getUrl();
                 String version = source.getVersion();
                 TermSource ts = new TermSource(name, url, version);
@@ -124,7 +124,7 @@ public class Exporter {
             OntologyEntry oe = v.getSingleOntologyTerm();
             if (oe != null) {
                 ReferenceSource source = oe.getSource();
-                String name = source.getName();
+                String name = source.getAcc();
                 String url = source.getUrl();
                 String version = source.getVersion();
                 TermSource ts = new TermSource(name, url, version);
@@ -139,7 +139,7 @@ public class Exporter {
             OntologyEntry oe = v.getSingleOntologyTerm();
             if (oe != null) {
                 ReferenceSource source = oe.getSource();
-                String name = source.getName();
+                String name = source.getAcc();
                 String url = source.getUrl();
                 String version = source.getVersion();
                 TermSource ts = new TermSource(name, url, version);
@@ -154,7 +154,7 @@ public class Exporter {
             OntologyEntry oe = v.getSingleOntologyTerm();
             if (oe != null) {
                 ReferenceSource source = oe.getSource();
-                String name = source.getName();
+                String name = source.getAcc();
                 String url = source.getUrl();
                 String version = source.getVersion();
                 TermSource ts = new TermSource(name, url, version);
