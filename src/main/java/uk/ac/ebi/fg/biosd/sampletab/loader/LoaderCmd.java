@@ -146,7 +146,7 @@ public class LoaderCmd
 		catch ( Throwable ex1 ) 
 		{
 			ex = ex1;
-			log.error ( "Execution failed with the error: {}", ex.getMessage (), ex  );
+			log.error ( "Execution failed with the error: " + ex.getMessage (), ex  );
 			exCode = 1;
 		}
 		finally 

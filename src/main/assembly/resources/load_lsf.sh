@@ -58,7 +58,7 @@ done
 echo 'All the jobs submitted, now waiting for their termination, please be patient.'
 while [ "$(bjobs -g /$BIOSD_LSF_GROUP 2>&1)" != 'No unfinished job found' ]
 do
-  sleep 5m
+  sleep 1m
 done
 
 echo

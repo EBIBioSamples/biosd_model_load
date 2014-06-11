@@ -88,7 +88,7 @@ public class UnloaderCmd
 		} 
 		catch ( Throwable ex ) 
 		{
-			log.error ( "Execution failed with the error: {}", ex.getMessage (), ex  );
+			log.error ( "Execution failed with the error: " + ex.getMessage (), ex  );
 			if ( exCode != 0 ) exCode = 3;
 		}
 		finally 
