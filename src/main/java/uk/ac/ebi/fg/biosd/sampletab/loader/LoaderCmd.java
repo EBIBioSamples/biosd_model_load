@@ -1,6 +1,5 @@
 package uk.ac.ebi.fg.biosd.sampletab.loader;
 
-import static java.lang.System.err;
 import static java.lang.System.out;
 
 import java.io.File;
@@ -66,7 +65,7 @@ public class LoaderCmd
 		{
 			// Parse the submission sampletab file.
 			//
-			out.println ( "\n\n >>> Loading '" + path + "'" );
+			log.info ( " >>> Loading '" + path + "'" );
 
 			// Sometimes, when loadings occur in parallel (and in a cluster), some of them fail cause one saves something before
 			// the other can learn an entity already exists in the database. Unfortunately, putting the normaliser inside a transaction
@@ -90,31 +89,33 @@ public class LoaderCmd
 					
 					parsingTime = System.currentTimeMillis () - time0;
 					nitems = msi.getSamples ().size () + msi.getSampleGroups ().size ();
-					out.println ( 
-						"\n" + nitems + " samples+groups loaded in " + formatTimeDuration ( parsingTime ) + ". Now persisting it in the DB" );
+					log.info ( 
+						"" + nitems + " samples+groups loaded in " + formatTimeDuration ( parsingTime ) + ". Now persisting it in the DB" 
+					);
 
 					// First remove it if that's required
 					if ( attempts == 5 && cli.hasOption ( 'u' ) ) 
 					{
-						out.print ( "\nUnloading previous version of " + msiAcc + " (if any)..." );
+						log.info ( "Unloading previous version of " + msiAcc + " (if any)" );
 						new Unloader().setDoPurge ( cli.hasOption ( 'g' ) ).unload ( msi );
-						out.println ( " done." );
+						log.info ( "done." );
 					}
 					
 					// Now persist it
 					//
 					// only persist if there is something worth persisting
-                    if (msi.getSamples().size() + msi.getSampleGroups().size() > 0) {
-    					time0 = System.currentTimeMillis ();
-    					new Persister ().persist ( msi );
-    				
-    					persistenceTime = System.currentTimeMillis () - time0;
-    										
-    					out.println ( 
-    						"\nSubmission persisted in " + formatTimeDuration ( persistenceTime ) + ". Total time " +
-    						formatTimeDuration ( parsingTime + persistenceTime ) 
-    					);
-                    }
+          if (msi.getSamples().size() + msi.getSampleGroups().size() > 0) 
+          {
+						time0 = System.currentTimeMillis ();
+						new Persister ().persist ( msi );
+					
+						persistenceTime = System.currentTimeMillis () - time0;
+											
+						log.info ( 
+							"Submission persisted in " + formatTimeDuration ( persistenceTime ) + ". Total time " +
+							formatTimeDuration ( parsingTime + persistenceTime ) 
+						);
+          }
 					break;
 				}
 				catch ( RuntimeException aex ) 
@@ -145,8 +146,7 @@ public class LoaderCmd
 		catch ( Throwable ex1 ) 
 		{
 			ex = ex1;
-			ex1.printStackTrace( System.err );
-			log.error ( "Loader Command Error: {}", ex.getMessage (), ex  );
+			log.error ( "Execution failed with the error: {}", ex.getMessage (), ex  );
 			exCode = 1;
 		}
 		finally 
@@ -173,10 +173,10 @@ public class LoaderCmd
 		
 		out.println ( "\nOptions:" );
 		HelpFormatter helpFormatter = new HelpFormatter ();
-		PrintWriter pw = new PrintWriter ( err, true );
+		PrintWriter pw = new PrintWriter ( out, true );
 		helpFormatter.printOptions ( pw, 100, getOptions (), 2, 4 );
 		
-		err.println ( "\nSee also hibernate.properites for the configuration of the target database.\n\n" );
+		out.println ( "\nSee also hibernate.properites for the configuration of the target database.\n\n" );
 		
 		System.exit ( 1 ); // TODO: proper exit codes.
 		

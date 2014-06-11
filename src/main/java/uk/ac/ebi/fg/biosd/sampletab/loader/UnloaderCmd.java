@@ -1,6 +1,3 @@
-/*
- * 
- */
 package uk.ac.ebi.fg.biosd.sampletab.loader;
 
 import static java.lang.System.err;
@@ -17,6 +14,8 @@ import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
 import uk.ac.ebi.fg.biosd.sampletab.persistence.Unloader;
@@ -33,6 +32,7 @@ import uk.ac.ebi.fg.core_model.resources.Resources;
  */
 public class UnloaderCmd
 {
+	protected static Logger log = LoggerFactory.getLogger ( LoaderCmd.class );
 
 	public static void main ( String[] args ) throws Throwable
 	{
@@ -63,7 +63,7 @@ public class UnloaderCmd
 			
 			if ( msiAcc !=null )
 			{
-				out.println ( "\n\n >>> Unloading '" + msiAcc + "'" );
+				log.info ( " >>> Unloading '" + msiAcc + "'" );
 
 				AccessibleDAO<MSI> msiDao = new AccessibleDAO<MSI> ( MSI.class, em );
 				msi = msiDao.find ( msiAcc );
@@ -73,10 +73,10 @@ public class UnloaderCmd
 				}
 			
 				nitems = msi.getSamples ().size () + msi.getSampleGroups ().size ();
-				out.println ( "\nUnloading " + nitems + " samples+groups" );
+				log.info ( "Unloading " + nitems + " samples+groups" );
 			}
 			else
-				out.println ( "\n\n>>> Purging the database" );
+				log.info ( " >>> Purging the database" );
 			
 			// Do it
 			//
@@ -84,11 +84,11 @@ public class UnloaderCmd
 			new Unloader().setDoPurge ( cli.hasOption ( 'g' ) ).unload ( msi );
 			
 			persistenceTime = System.currentTimeMillis () - time0;
-			out.println ( "\nUnloading/Purging done in " + LoaderCmd.formatTimeDuration ( persistenceTime ) + "." );
+			log.info ( "Unloading/Purging done in " + LoaderCmd.formatTimeDuration ( persistenceTime ) + "." );
 		} 
 		catch ( Throwable ex ) 
 		{
-			ex.printStackTrace( System.err );
+			log.error ( "Execution failed with the error: {}", ex.getMessage (), ex  );
 			if ( exCode != 0 ) exCode = 3;
 		}
 		finally 
