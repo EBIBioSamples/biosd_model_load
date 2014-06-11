@@ -224,6 +224,7 @@ public class Loader {
                 if (t != null) {
                     ReferenceSource rs = new ReferenceSource(ao.getTermSourceREF(), t.getVersion());
                     rs.setUrl(t.getURI());
+                    rs.setName(ao.getTermSourceREF());
                     v.addOntologyTerm ( 
                         new OntologyEntry( ao.getTermSourceID(), rs ));
                     
@@ -255,6 +256,7 @@ public class Loader {
                     if (t != null && t.getURI() != null && t.getVersion() != null) {
                         ReferenceSource rs = new ReferenceSource(aou.getTermSourceREF(), t.getVersion());
                         rs.setUrl(t.getURI());
+                        rs.setName(aou.getTermSourceREF());
                         OntologyEntry oe = new OntologyEntry( aou.getTermSourceID(), rs );
                         v.addOntologyTerm ( oe );
                     }
