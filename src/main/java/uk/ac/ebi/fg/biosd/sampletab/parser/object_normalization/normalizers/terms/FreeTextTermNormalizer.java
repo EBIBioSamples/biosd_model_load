@@ -51,7 +51,9 @@ public class FreeTextTermNormalizer<FT extends FreeTextTerm> extends Annotatable
 			
 			delOes.add ( oe ); addOes.add ( oeS );
 		}
-		return oes.removeAll ( delOes ) | oes.addAll ( addOes );
+		oes.removeAll ( delOes );
+		oes.addAll ( addOes );
+		return true;
 	}
 
 }
