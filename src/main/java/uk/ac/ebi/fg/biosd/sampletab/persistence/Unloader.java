@@ -53,9 +53,11 @@ public class Unloader
 		
 		MSIUnloadingListener unloadListener = new MSIUnloadingListener ( em ).setDoPurge ( this.isDoPurge () );
 		
-		long result = unloadListener.preRemove ( msi );
+		long result = unloadListener.preRemoveGlobally (); 
+		result += unloadListener.preRemove ( msi );
 		if ( msi != null ) result += dao.delete ( msi ) ? 1 : 0;
 		result += unloadListener.postRemove ( msi );
+		result += unloadListener.postRemoveGlobally ();
 		ts.commit ();
 		
 		// Just to be sure, we've noted some timeouts on Oracle side

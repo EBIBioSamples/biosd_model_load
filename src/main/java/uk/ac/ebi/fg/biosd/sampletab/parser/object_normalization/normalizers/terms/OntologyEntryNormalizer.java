@@ -8,6 +8,7 @@ import java.lang.reflect.Method;
 
 import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.Normalizer;
 import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.Store;
+import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.toplevel.AnnotatableNormalizer;
 import uk.ac.ebi.fg.core_model.terms.OntologyEntry;
 import uk.ac.ebi.fg.core_model.xref.ReferenceSource;
 
@@ -18,7 +19,7 @@ import uk.ac.ebi.fg.core_model.xref.ReferenceSource;
  * @author Marco Brandizi
  *
  */
-public class OntologyEntryNormalizer extends Normalizer<OntologyEntry>
+public class OntologyEntryNormalizer extends AnnotatableNormalizer<OntologyEntry>
 {
 
 	public OntologyEntryNormalizer ( Store store ) {
@@ -30,6 +31,7 @@ public class OntologyEntryNormalizer extends Normalizer<OntologyEntry>
 	public boolean normalize ( OntologyEntry oe )
 	{
 		if ( oe == null || oe.getId () != null ) return false;
+		if ( !super.normalize ( oe ) ) return false;
 		
 		ReferenceSource src = oe.getSource ();
 		if ( src == null ) return true; // This is actually an error and will pop-up later.

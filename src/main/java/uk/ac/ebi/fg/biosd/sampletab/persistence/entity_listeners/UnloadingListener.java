@@ -29,13 +29,22 @@ public abstract class UnloadingListener<T extends Identifiable>
 	}
 	
 	/**
+	 * This can be called for operations regarding the T type, which are not related to a particular instance T.
+	 */
+	public long preRemoveGlobally () {
+		return 0;
+	}
+	
+	/**
 	 * Persisters can decide to call this before the corresponding JPA persist operation, i.e., what to do before
 	 * committing an undeletion operation. Bear in mind that the undeletion of an entity set (e.g., a submission)
 	 * is a unique transaction.
 	 *  
 	 * @return the number of entities that were changed.
 	 */
-	public abstract long preRemove ( T entity );
+	public long preRemove ( T entity ) {
+		return 0;
+	}
 
 	/**
 	 * Persisters can decide to call this after the corresponding JPA persist operation. Bear in mind that the undeletion 
@@ -43,5 +52,15 @@ public abstract class UnloadingListener<T extends Identifiable>
 	 *  
 	 * @return the number of entities that are changed.
 	 */
-	public abstract long postRemove ( T entity );
+	public long postRemove ( T entity ) {
+		return 0;
+	}
+
+	/**
+	 * This can be called for operations regarding the T type, which are not related to a particular instance T.
+	 */
+	public long postRemoveGlobally () {
+		return 0;
+	}
+	
 }

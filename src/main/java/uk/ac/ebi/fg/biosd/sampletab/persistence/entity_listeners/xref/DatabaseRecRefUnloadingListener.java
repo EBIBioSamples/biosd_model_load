@@ -22,17 +22,12 @@ public class DatabaseRecRefUnloadingListener extends UnloadingListener<DatabaseR
 		super ( entityManager );
 	}
 
-	@Override
-	public long preRemove ( DatabaseRecordRef entity )
-	{
-		return 0;
-	}
 
 	/**
 	 * Removes all dangling {@link ReferenceSource} records.
 	 */
 	@Override
-	public long postRemove ( DatabaseRecordRef entity )
+	public long postRemoveGlobally ()
 	{
 		// We previosuly used HQL, however this seems to have bad performance, due to temporary tables 
 		// (http://in.relation.to/Bloggers/MultitableBulkOperations)

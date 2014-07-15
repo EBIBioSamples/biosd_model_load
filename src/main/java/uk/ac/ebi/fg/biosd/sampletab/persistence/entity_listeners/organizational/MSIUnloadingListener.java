@@ -12,11 +12,12 @@ import uk.ac.ebi.fg.biosd.model.organizational.MSI;
 import uk.ac.ebi.fg.biosd.model.persistence.hibernate.application_mgmt.JobRegisterDAO;
 import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.UnloadingListener;
 import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.expgraph.BioSampleUnloadingListener;
+import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.expgraph.properties.dataitems.DataItemUnloadingUnlistener;
 import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.terms.CVTermUnloadingListener;
 import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.terms.OntologyEntryUnloadingListener;
+import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.toplevel.AnnotationUnloaderListener;
 import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.xref.DatabaseRecRefUnloadingListener;
 import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.xref.ReferenceSourceUnloadingListener;
-import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.xref.XRefUnloadingListener;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.toplevel.AccessibleDAO;
 
 /**
@@ -35,8 +36,6 @@ public class MSIUnloadingListener extends UnloadingListener<MSI>
 	}
 
 	/**
-	 * TODO: re-comment me! 
-	 * 
 	 * Uses {@link JobRegisterDAO#delete(int)} to flush older entries (TODO: the constant parameter of 90 days to be moved
 	 * to a configuration property).
 	 * Removes the sample groups that are linked only to this submission.
@@ -49,7 +48,8 @@ public class MSIUnloadingListener extends UnloadingListener<MSI>
 		JobRegisterDAO jrDao = new JobRegisterDAO ( entityManager );
 
 		// Flush old entries in the unload log.
-		result += jrDao.clean ( 90 ); 
+		if ( isDoPurge () )
+			result += jrDao.clean ( 90 ); 
 
 		if ( msi == null ) return result;
 		
@@ -73,25 +73,22 @@ public class MSIUnloadingListener extends UnloadingListener<MSI>
 	@Override
 	public long postRemove ( MSI msi )
 	{
-		long result = new BioSampleUnloadingListener ( entityManager ).postRemove ( null );
+		long result = new BioSampleUnloadingListener ( entityManager ).postRemoveGlobally ();
 
 		boolean doPurge = isDoPurge () && ( msi != null || hasOldSubmissionsToBePurged () );
 		if ( doPurge ) 
 		{
-			result += new OntologyEntryUnloadingListener ( entityManager ).postRemove ( null );
-			result += new XRefUnloadingListener ( entityManager ).postRemove ( null );
-			result += new ReferenceSourceUnloadingListener ( entityManager ).postRemove ( null );
-			result += new DatabaseRecRefUnloadingListener ( entityManager ).postRemove ( null );
-			result += new CVTermUnloadingListener ( entityManager ).postRemove ( null );
+			result += new AnnotationUnloaderListener ( entityManager ).postRemoveGlobally ();
+			result += new OntologyEntryUnloadingListener ( entityManager ).postRemoveGlobally ();
+			result += new ReferenceSourceUnloadingListener ( entityManager ).postRemoveGlobally ();
+			result += new DatabaseRecRefUnloadingListener ( entityManager ).postRemoveGlobally ();
+			result += new CVTermUnloadingListener ( entityManager ).postRemoveGlobally ();
+			result += new DataItemUnloadingUnlistener ( entityManager ).postRemoveGlobally ();
 		}
 
 		JobRegisterDAO jrDao = new JobRegisterDAO ( entityManager );
-
-		if ( msi != null )
-			jrDao.create ( msi, Operation.DELETE );
-
-		if ( doPurge )
-			jrDao.create ( null, Operation.DB_PURGE );
+		if ( msi != null ) jrDao.create ( msi, Operation.DELETE );
+		if ( doPurge ) jrDao.create ( null, Operation.DB_PURGE );
 
 		return result;
 	}

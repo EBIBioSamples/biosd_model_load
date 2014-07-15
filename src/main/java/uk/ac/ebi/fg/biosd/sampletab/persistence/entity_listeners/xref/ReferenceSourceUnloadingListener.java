@@ -31,14 +31,14 @@ public class ReferenceSourceUnloadingListener extends UnloadingListener<Referenc
 	 * Removes all dangling {@link ReferenceSource} records.
 	 */
 	@Override
-	public long postRemove ( ReferenceSource entity )
+	public long postRemoveGlobally ()
 	{
 		// We previosuly used HQL, however this seems to have bad performance, due to temporary tables 
 		// (http://in.relation.to/Bloggers/MultitableBulkOperations)
 		
 		String sql = "DELETE FROM reference_source\n" +
 			"WHERE id NOT IN ( SELECT source_id FROM onto_entry )\n" + 
-			"AND id NOT IN ( SELECT source_id FROM xref )\n" + 
+			"AND id NOT IN ( SELECT xref_source_id FROM annotation )\n" + 
 			"AND id NOT IN ( SELECT referencesources_id FROM msi_reference_source )";
 
 		long result = entityManager.createNativeQuery ( sql ).executeUpdate (); 

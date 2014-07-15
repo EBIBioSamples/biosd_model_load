@@ -92,6 +92,7 @@ public class MSINormalizer extends AnnotatableNormalizer<MSI>
 			
 			for ( BioSample sample: msi.getSamples () ) 
 				if ( sample.getId () == null ) jrDao.create ( sample, Operation.ADD, sample.getUpdateDate () );
+			
 			for ( BioSampleGroup sg: msi.getSampleGroups () )  
 				if ( sg.getId () == null ) jrDao.create ( sg, Operation.ADD, sg.getUpdateDate () );
 		}

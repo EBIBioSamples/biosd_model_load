@@ -1,5 +1,7 @@
 package uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization;
 
+import uk.ac.ebi.fg.core_model.toplevel.Annotation;
+
 import com.google.common.collect.ForwardingTable;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
@@ -13,12 +15,13 @@ import com.google.common.collect.Table;
  *
  */
 @SuppressWarnings ( "rawtypes" )
-public class MemoryStore extends ForwardingTable<Class, String, Object> implements Store
+public class MemoryStore extends ForwardingTable<Class, Object, Object> implements Store
 {
+	
 	/**
 	 * The backing two-level key map.
 	 */
-	private Table<Class, String, Object> base = HashBasedTable.create ();
+	private Table<Class, Object, Object> base = HashBasedTable.create ();
 	
 	public MemoryStore () {
 		super ();
@@ -28,7 +31,7 @@ public class MemoryStore extends ForwardingTable<Class, String, Object> implemen
 	 * @return {@link #base}.
 	 */
 	@Override
-	protected Table<Class, String, Object> delegate () {
+	protected Table<Class, Object, Object> delegate () {
 		return base;
 	}
 
@@ -36,7 +39,7 @@ public class MemoryStore extends ForwardingTable<Class, String, Object> implemen
 	 * A wrapper that search for this class and this identifier, casting the result to an instance of the targetClass. 
 	 */
 	@SuppressWarnings ( "unchecked" )
-	private <T> T get ( Class<? extends T> targetClass, String targetId ) {
+	private <T> T getFromClass ( Class<? extends T> targetClass, Object targetId ) {
 		return (T) super.get ( targetClass, targetId );
 	} 
 
@@ -44,28 +47,17 @@ public class MemoryStore extends ForwardingTable<Class, String, Object> implemen
 	 * Wraps {@link #get(Class, String)} with target.getClass().
 	 */
 	@SuppressWarnings ( "unchecked" )
-	private <T> T get ( String targetId, T target ) {
-		return (T) get ( target.getClass (), targetId );
+	private <T> T getFromObjectClass ( Object targetId, T target ) {
+		return (T) getFromClass ( target.getClass (), targetId );
 	} 
 
-// TODO: remove
-//	/**
-//	 * Invokes {@link #get(Class, String)} and, if the target object is not in the table, saves newObject (returning null). 
-//	 */
-//	private <T> T getOrPut ( Class<? extends T> targetClass, String targetId, T newObject ) 
-//	{
-//		T result = get ( targetClass, targetId );
-//		if ( result == null )
-//			put ( targetClass, targetId, newObject );
-//		return result;
-//	}
 	
 	/**
 	 * A wrapper of {@link #getOrPut(Class, String, Object)} that uses newObject.getClass(). 
 	 */
-	private <T> T getOrPut ( String targetId, T newObject ) 
+	private <T> T getOrPut ( Object targetId, T newObject ) 
 	{
-		T result = get ( targetId, newObject );
+		T result = getFromObjectClass ( targetId, newObject );
 		if ( result == null ) this.put ( targetId, newObject );
 		return result;
 	}
@@ -76,6 +68,9 @@ public class MemoryStore extends ForwardingTable<Class, String, Object> implemen
 	@Override
 	public <T> T find ( T newObject, String... targetIds  ) 
 	{
+		if ( newObject instanceof Annotation )
+			return getOrPut ( newObject, newObject );
+		
 		StringBuilder encodedId = new StringBuilder ();
 		for ( String id: targetIds ) {
 			if ( encodedId.length () > 0 ) encodedId.append ( ':' );
@@ -89,7 +84,7 @@ public class MemoryStore extends ForwardingTable<Class, String, Object> implemen
 	 * Wraps {@link Table#put(Object, Object, Object)} with target.getClass(). 
 	 */
 	@SuppressWarnings ( "unchecked" )
-	private <T> T put ( String targetId, T target ) {
+	private <T> T put ( Object targetId, T target ) {
 		return (T) super.put ( target.getClass (), targetId, target );
 	}
 }

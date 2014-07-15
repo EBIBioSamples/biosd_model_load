@@ -12,6 +12,7 @@ import java.util.Date;
 import javax.persistence.EntityManager;
 
 import org.apache.commons.io.output.WriterOutputStream;
+import org.joda.time.DateTime;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -28,10 +29,14 @@ import uk.ac.ebi.fg.core_model.expgraph.properties.BioCharacteristicType;
 import uk.ac.ebi.fg.core_model.expgraph.properties.BioCharacteristicValue;
 import uk.ac.ebi.fg.core_model.expgraph.properties.Unit;
 import uk.ac.ebi.fg.core_model.expgraph.properties.UnitDimension;
+import uk.ac.ebi.fg.core_model.expgraph.properties.dataitems.DataItem;
+import uk.ac.ebi.fg.core_model.expgraph.properties.dataitems.DateRangeItem;
+import uk.ac.ebi.fg.core_model.expgraph.properties.dataitems.NumberItem;
 import uk.ac.ebi.fg.core_model.organizational.Contact;
 import uk.ac.ebi.fg.core_model.organizational.ContactRole;
 import uk.ac.ebi.fg.core_model.organizational.Publication;
 import uk.ac.ebi.fg.core_model.organizational.PublicationStatus;
+import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.expgraph.properties.dataitems.DataItemDAO;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.terms.CVTermDAO;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.terms.OntologyEntryDAO;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.toplevel.AccessibleDAO;
@@ -148,10 +153,10 @@ public class LoadExistingEntitiesTest
 			sg1 = new BioSampleGroup ( prefix + "sg1" );
 			sg2 = new BioSampleGroup ( existingPrefix + "sg2" );
 			
-			// Again don't share property values among different owners, you risk integrity-constraint errors and the like.
+			// Again don't share property values between different owners, you risk integrity-constraint errors and the like.
 			// sg2.addPropertyValue ( cv5 );
 			cv5b = new BioCharacteristicValue ( "2%", ch3 );
-			cv5.setUnit ( percent );
+			cv5b.setUnit ( percent );
 			sg2.addPropertyValue ( cv5b );
 			
 			cv6b = new BioCharacteristicValue ( "homo-sapiens", ch1 );
@@ -207,9 +212,21 @@ public class LoadExistingEntitiesTest
 		
 		ReferenceSource xsrc = new ReferenceSource ( "test2.456", "1.0" );
 		XRef xr = new XRef ( "test2.789", xsrc );
-		pub.addReference ( xr );
+		pub.addAnnotation ( xr );
 		
 		m2.msi.addPublication ( pub );
+		
+		// Testing Data items too
+		DataItem 
+			dataItem1 = new NumberItem ( 10d ), 
+			dataItem2 = new DateRangeItem ( 
+				new DateTime ( 2013, 1, 1, 0, 0 ).toDate (), 
+				new DateTime ( 2014, 12, 31, 0, 0 ).toDate () 
+			);
+		
+		m2.cv6.addDataItem ( dataItem1 );
+		m2.cv6b.addDataItem ( dataItem1 );
+		m2.cv6b.addDataItem ( dataItem2 );
 		
 		new MSINormalizer ( new MemoryStore () ).normalize ( m1.msi );
 		Persister persister = new Persister ();
@@ -218,14 +235,25 @@ public class LoadExistingEntitiesTest
 		// Verify update dates
 		Date sg2Date = m1.sg2.getUpdateDate ();
 		assertNotNull ( "sg2.updateDate not set!", sg2Date );
+
 		
+		// ---- Now the second submission -----
 		new MSINormalizer ( new MemoryStore () ).normalize ( m2.msi );
 		persister.persist ( m2.msi );
 
 		EntityManager em = emProvider.getEntityManager ();
 		ProcessBasedTestModel.verifyTestModel ( em, m1, true );
 		ProcessBasedTestModel.verifyTestModel ( em, m2, true );
-		// TODO: check non-graph objects too. 
+
+		Long dataItem1Id = dataItem1.getId (), dataItem2Id = dataItem2.getId ();
+		assertNotNull ( "dataItem1 not created!", dataItem1Id );
+		assertNotNull ( "dataItem2 not created!", dataItem2Id );
+		
+		DataItemDAO dataItemDao = new DataItemDAO ( DataItem.class, em );
+		assertTrue ( "dataItem1 not found after saving!", dataItemDao.contains ( dataItem1Id, dataItem1.getClass () ) );
+		assertTrue ( "dataItem2 not found after saving!", dataItemDao.contains ( dataItem2Id, dataItem2.getClass () ) );
+		
+		// TODO: check other non-graph objects too. 
 		
 		AccessibleDAO<MSI> dao = new AccessibleDAO<MSI> ( MSI.class, em );
 		MSI msi2DB = dao.find ( m2.msi.getAcc () );
@@ -286,7 +314,7 @@ public class LoadExistingEntitiesTest
 		
 		Publication pubDB = msi2DB.getPublications ().iterator ().next ();
 		PublicationStatus pubStatDB = pubDB.getStatus ();
-		XRef xrDB = pubDB.getReferences ().iterator ().next ();
+		XRef xrDB = (XRef) pubDB.getAnnotations ().iterator ().next ();
 		ReferenceSource srcDB = xrDB.getSource ();
 
 		long pubId = pubDB.getId (), xrId = xrDB.getId (), srcId = srcDB.getId ();
@@ -330,6 +358,13 @@ public class LoadExistingEntitiesTest
 		assertFalse ( "Test Pub Status not deleted!", 
 			new CVTermDAO<PublicationStatus> ( PublicationStatus.class, em ).contains ( pubStat.getName () ) );
 		
+
+		// Verifies data items
+		dataItemDao = new DataItemDAO ( DataItem.class, em );
+		assertTrue ( "dataItem1 shouldn't be removed!", dataItemDao.contains ( dataItem1Id, dataItem1.getClass () ) );
+		assertFalse ( "dataItem2 not removed!", dataItemDao.contains ( dataItem2Id, dataItem2.getClass () ) );
+		
+		
 		// Verifies unloading log
 		// 
 		em = emProvider.newEntityManager ();
@@ -342,6 +377,5 @@ public class LoadExistingEntitiesTest
 		int szAll = jr.find ( 1 ).size ();
 		assertTrue ( "JobRegisterDAO.find() doesn't work!", szAll >= 3 );
 		assertTrue ( "JobRegisterDAO.find() doesn't work!", jr.find ( 1, Operation.DELETE ).size () < szAll );
-
 	}
 }
