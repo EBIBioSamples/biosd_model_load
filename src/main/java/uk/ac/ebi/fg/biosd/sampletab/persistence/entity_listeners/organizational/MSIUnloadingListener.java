@@ -12,6 +12,10 @@ import uk.ac.ebi.fg.biosd.model.organizational.MSI;
 import uk.ac.ebi.fg.biosd.model.persistence.hibernate.application_mgmt.JobRegisterDAO;
 import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.UnloadingListener;
 import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.expgraph.BioSampleUnloadingListener;
+import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.expgraph.properties.ExpPropTypeUnloadingListener;
+import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.expgraph.properties.ExpPropValUnloadingListener;
+import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.expgraph.properties.UnitDimUnloadingListener;
+import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.expgraph.properties.UnitUnloadingListener;
 import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.terms.CVTermUnloadingListener;
 import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.terms.OntologyEntryUnloadingListener;
 import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.xref.DatabaseRecRefUnloadingListener;
@@ -28,7 +32,7 @@ import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.toplevel.AccessibleDAO;
  */
 public class MSIUnloadingListener extends UnloadingListener<MSI>
 {
-	private boolean doPurge = false;
+	private boolean doPurge = false, doForcedPurge = false;
 
 	public MSIUnloadingListener ( EntityManager entityManager ) {
 		super ( entityManager );
@@ -49,7 +53,8 @@ public class MSIUnloadingListener extends UnloadingListener<MSI>
 		JobRegisterDAO jrDao = new JobRegisterDAO ( entityManager );
 
 		// Flush old entries in the unload log.
-		result += jrDao.clean ( 90 ); 
+		if ( isDoPurge () )
+			result += jrDao.clean ( 90 ); 
 
 		if ( msi == null ) return result;
 		
@@ -67,34 +72,36 @@ public class MSIUnloadingListener extends UnloadingListener<MSI>
 	}
 
 	/**
-	 * Removes linked objects, if {@link #isDoPurge()} and {@link #hasOldSubmissionsToBePurged()}.
+	 * Removes linked objects, if {@link #isDoForcedPurge()} or {@link #isDoPurge()} and {@link #hasOldSubmissionsToBePurged()}.
 	 * Tracks the operation using {@link JobRegisterEntry}. 
 	 */
 	@Override
 	public long postRemove ( MSI msi )
 	{
-		long result = new BioSampleUnloadingListener ( entityManager ).postRemove ( null );
+		long result = new BioSampleUnloadingListener ( entityManager ).postRemoveGlobally ();
 
-		boolean doPurge = isDoPurge () && ( msi != null || hasOldSubmissionsToBePurged () );
+		boolean doPurge = isDoForcedPurge () || isDoPurge () && ( msi != null || hasOldSubmissionsToBePurged () );
 		if ( doPurge ) 
 		{
-			result += new OntologyEntryUnloadingListener ( entityManager ).postRemove ( null );
-			result += new XRefUnloadingListener ( entityManager ).postRemove ( null );
-			result += new ReferenceSourceUnloadingListener ( entityManager ).postRemove ( null );
-			result += new DatabaseRecRefUnloadingListener ( entityManager ).postRemove ( null );
-			result += new CVTermUnloadingListener ( entityManager ).postRemove ( null );
+			result += new ExpPropValUnloadingListener ( entityManager ).postRemoveGlobally ();
+			result += new ExpPropTypeUnloadingListener ( entityManager ).postRemoveGlobally ();
+			result += new UnitUnloadingListener ( entityManager ).postRemoveGlobally ();
+			result += new UnitDimUnloadingListener ( entityManager ).postRemoveGlobally ();
+			result += new OntologyEntryUnloadingListener ( entityManager ).postRemoveGlobally ();
+			result += new XRefUnloadingListener ( entityManager ).postRemoveGlobally ();
+			result += new ReferenceSourceUnloadingListener ( entityManager ).postRemoveGlobally ();
+			result += new DatabaseRecRefUnloadingListener ( entityManager ).postRemoveGlobally ();
+			result += new CVTermUnloadingListener ( entityManager ).postRemoveGlobally ();
 		}
 
 		JobRegisterDAO jrDao = new JobRegisterDAO ( entityManager );
 
-		if ( msi != null )
-			jrDao.create ( msi, Operation.DELETE );
-
-		if ( doPurge )
-			jrDao.create ( null, Operation.DB_PURGE );
+		if ( msi != null ) jrDao.create ( msi, Operation.DELETE );
+		if ( doPurge ) jrDao.create ( null, Operation.DB_PURGE );
 
 		return result;
 	}
+
 	
 	public boolean isDoPurge ()
 	{
@@ -106,6 +113,22 @@ public class MSIUnloadingListener extends UnloadingListener<MSI>
 		this.doPurge = doPurge;
 		return this;
 	}
+	
+	
+	
+	
+	public boolean isDoForcedPurge ()
+	{
+		return doForcedPurge;
+	}
+
+	public MSIUnloadingListener setDoForcedPurge ( boolean doForcedPurge )
+	{
+		this.doForcedPurge = doForcedPurge;
+		return this;
+	}
+
+	
 	
 	private boolean hasOldSubmissionsToBePurged ()
 	{

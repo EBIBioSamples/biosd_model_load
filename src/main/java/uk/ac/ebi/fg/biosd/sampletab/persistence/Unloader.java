@@ -27,6 +27,7 @@ public class Unloader
 	protected final Logger log = LoggerFactory.getLogger ( this.getClass () );
 	
 	private boolean doPurge = false;
+	private boolean doForcedPurge = false;
 
 	public long unload ( MSI msi ) {
 		return unload ( msi == null ? null : msi.getAcc () );
@@ -51,7 +52,9 @@ public class Unloader
 			}
 		}
 		
-		MSIUnloadingListener unloadListener = new MSIUnloadingListener ( em ).setDoPurge ( this.isDoPurge () );
+		MSIUnloadingListener unloadListener = new MSIUnloadingListener ( em )
+			.setDoForcedPurge ( this.isDoForcedPurge () )
+			.setDoPurge ( this.isDoPurge () );
 		
 		long result = unloadListener.preRemove ( msi );
 		if ( msi != null ) result += dao.delete ( msi ) ? 1 : 0;
@@ -73,6 +76,17 @@ public class Unloader
 	public Unloader setDoPurge ( boolean doPurge )
 	{
 		this.doPurge = doPurge;
+		return this;
+	}
+
+	public boolean isDoForcedPurge ()
+	{
+		return doForcedPurge;
+	}
+
+	public Unloader setDoForcedPurge ( boolean doForcedPurge )
+	{
+		this.doForcedPurge = doForcedPurge;
 		return this;
 	}
 	

@@ -28,11 +28,6 @@ public class BioSampleUnloadingListener extends UnloadingListener<BioSample>
 		super ( entityManager );
 	}
 
-	/**
-	 * Does nothing.
-	 */
-	@Override
-	public long preRemove ( BioSample entity ) { return 0; }
 	
 	/**
 	 * Deletes samples not linked to any sample group or {@link MSI submission}.
@@ -40,7 +35,7 @@ public class BioSampleUnloadingListener extends UnloadingListener<BioSample>
 	 */
 	@Override
 	@SuppressWarnings ( "unchecked" )
-	public long postRemove ( BioSample foo )
+	public long postRemoveGlobally ()
 	{
 		long result = 0;
 		

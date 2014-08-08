@@ -22,16 +22,12 @@ public class CVTermUnloadingListener extends UnloadingListener<CVTerm>
 		super ( entityManager );
 	}
 
-	@Override
-	public long preRemove ( CVTerm entity ) {
-		return 0;
-	}
 
 	/**
 	 * Removes all dangling {@link CVTerm} records.
 	 */
 	@Override
-	public long postRemove ( CVTerm entity )
+	public long postRemoveGlobally ()
 	{
 		// do not add oe.id or remove oeX.id. While this would be a more proper syntax, this not-so-correct syntax is the
 		// only way I can make Hibernate to translate correctly the query into SQL

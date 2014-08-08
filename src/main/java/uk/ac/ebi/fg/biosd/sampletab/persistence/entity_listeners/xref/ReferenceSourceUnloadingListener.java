@@ -31,7 +31,7 @@ public class ReferenceSourceUnloadingListener extends UnloadingListener<Referenc
 	 * Removes all dangling {@link ReferenceSource} records.
 	 */
 	@Override
-	public long postRemove ( ReferenceSource entity )
+	public long postRemoveGlobally ()
 	{
 		// We previosuly used HQL, however this seems to have bad performance, due to temporary tables 
 		// (http://in.relation.to/Bloggers/MultitableBulkOperations)

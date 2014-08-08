@@ -26,6 +26,8 @@ import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.MemoryStore;
 import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.organizational.MSINormalizer;
 import uk.ac.ebi.fg.core_model.expgraph.properties.BioCharacteristicType;
 import uk.ac.ebi.fg.core_model.expgraph.properties.BioCharacteristicValue;
+import uk.ac.ebi.fg.core_model.expgraph.properties.ExperimentalPropertyType;
+import uk.ac.ebi.fg.core_model.expgraph.properties.ExperimentalPropertyValue;
 import uk.ac.ebi.fg.core_model.expgraph.properties.Unit;
 import uk.ac.ebi.fg.core_model.expgraph.properties.UnitDimension;
 import uk.ac.ebi.fg.core_model.organizational.Contact;
@@ -154,9 +156,12 @@ public class LoadExistingEntitiesTest
 			cv5.setUnit ( percent );
 			sg2.addPropertyValue ( cv5b );
 			
-			cv6b = new BioCharacteristicValue ( "homo-sapiens", ch1 );
+			cv6b = new BioCharacteristicValue ( "homo-sapiens", new BioCharacteristicType ( "specie" ) );
       	cv6b.addOntologyTerm ( new OntologyEntry ( existingPrefix + "123", new ReferenceSource ( "EFO", null ) ) );
       	cv6b.addOntologyTerm ( oe3 = new OntologyEntry ( prefix + "789", new ReferenceSource ( "MA", null ) ) );
+      	Unit u6b = new Unit ( "foo unit", new UnitDimension ( "foo unit type" ) );
+      	cv6b.setUnit ( u6b );
+      	
 			smp7.addPropertyValue ( cv6b );
 			
 			
@@ -309,7 +314,7 @@ public class LoadExistingEntitiesTest
 		// ------------------------------ Unloading Test --------------------------------------
 		// 
 		
-		Unloader unloader = new Unloader ().setDoPurge ( true );
+		Unloader unloader = new Unloader ().setDoForcedPurge ( true );
 		unloader.unload ( msi2DB );
 		
 		em = emProvider.newEntityManager ();
@@ -329,6 +334,27 @@ public class LoadExistingEntitiesTest
 		assertFalse ( "Test Ref Source not deleted!", idDao.contains ( srcId, ReferenceSource.class ) );
 		assertFalse ( "Test Pub Status not deleted!", 
 			new CVTermDAO<PublicationStatus> ( PublicationStatus.class, em ).contains ( pubStat.getName () ) );
+
+		
+		// Verifies property deletion
+		IdentifiableDAO<ExperimentalPropertyValue> pvDao = new IdentifiableDAO<ExperimentalPropertyValue> ( 
+			ExperimentalPropertyValue.class, em 
+		); 
+		assertFalse ( "cv6b not deleted!", pvDao.contains ( m2.cv6b.getId () ) );
+
+		
+		IdentifiableDAO<ExperimentalPropertyType> ptDao = new IdentifiableDAO<ExperimentalPropertyType> (
+			ExperimentalPropertyType.class, em
+		); 
+		assertFalse ( "cv6b.type not deleted!", ptDao.contains ( m2.cv6b.getType ().getId () ) );
+
+		
+		IdentifiableDAO<Unit> unitDao = new IdentifiableDAO<Unit> ( Unit.class, em );
+		assertFalse ( "scv6b.unit not deleted!", unitDao.contains ( m2.cv6b.getUnit ().getId () ) );
+		
+		IdentifiableDAO<UnitDimension> unitDimDao = new IdentifiableDAO<UnitDimension> ( UnitDimension.class, em );
+		assertFalse ( "scv6b.unit.dimension not deleted!", unitDimDao.contains ( m2.cv6b.getUnit ().getDimension ().getId () ) );
+		
 		
 		// Verifies unloading log
 		// 

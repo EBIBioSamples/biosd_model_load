@@ -28,7 +28,7 @@ public class OntologyEntryUnloadingListener extends UnloadingListener<OntologyEn
 	 * Removes all dangling {@link OntologyEntry} records.
 	 */
 	@Override
-	public long postRemove ( OntologyEntry foo )
+	public long postRemoveGlobally ()
 	{
 		// do not add oe.id or remove oeX.id. While this would be a more proper syntax, this not-so-correct syntax is the
 		// only way I can make Hibernate to translate correctly the query into SQL
