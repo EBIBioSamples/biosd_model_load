@@ -15,12 +15,12 @@ import uk.ac.ebi.fg.core_model.toplevel.Annotation;
  */
 public class AnnotationUnloaderListener extends UnloadingListener<Annotation>
 {
-	AnnotationDAO dao;
+	AnnotationDAO<Annotation> dao;
 	
 	public AnnotationUnloaderListener ( EntityManager entityManager )
 	{
 		super ( entityManager );
-		dao = new AnnotationDAO ( Annotation.class, this.entityManager );
+		dao = new AnnotationDAO<Annotation> ( Annotation.class, this.entityManager );
 	}
 
 
