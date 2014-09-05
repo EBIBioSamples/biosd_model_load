@@ -1,9 +1,15 @@
 package uk.ac.ebi.fg.biosd.sampletab.loader;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +52,11 @@ import uk.ac.ebi.fg.core_model.xref.ReferenceSource;
  * @author Adam Falcounbridge
  *
  */
-public class Loader {
+public class Loader 
+{
+	
+		private boolean skipSCD = false;
+
     private Logger log = LoggerFactory.getLogger(getClass());
     
     public MSI fromSampleData(String filename) throws ParseException {
@@ -62,11 +72,24 @@ public class Loader {
         }
     }
     
-    public MSI fromSampleData(URL url) throws ParseException {
-        SampleTabSaferParser parser = new SampleTabSaferParser();
-        SampleData sampledata;
-        sampledata = parser.parse(url);
-        return fromSampleData(sampledata);
+    public MSI fromSampleData(URL url) throws ParseException 
+    {
+        try
+				{
+					SampleTabSaferParser parser = new SampleTabSaferParser();
+					SampleData sampledata;
+					sampledata = this.skipSCD 
+						// TODO: not sure UTF-8 is a safe assumption
+						? parser.parse ( new ByteArrayInputStream ( 
+								this.readMSISection ( url.openStream () ).toString ().getBytes ( "UTF-8" ) ) 
+							) 
+					  : parser.parse ( url );
+					return fromSampleData(sampledata);
+				} 
+        catch ( IOException ex )
+				{
+  				throw new ParseException ( "Error while reading the input SampleTab: " + ex.getMessage (), ex );
+				}
     }
     
     public synchronized MSI fromSampleData(SampleData st) {
@@ -359,4 +382,34 @@ public class Loader {
       	DatabaseRecordRef d = new DatabaseRecordRef( database.getName (), database.getID(), null, database.getURI (), null );
         msi.addDatabaseRecordRef ( d );
     }
-}
+
+
+		public boolean isSkipSCD ()
+		{
+			return skipSCD;
+		}
+
+		public void setSkipSCD ( boolean skipSCD )
+		{
+			this.skipSCD = skipSCD;
+		}
+		
+		private StringBuilder readMSISection ( InputStream in ) throws IOException
+		{
+			StringBuilder sb = new StringBuilder ();
+			BufferedReader reader = new BufferedReader ( new InputStreamReader ( in ) );
+			
+			for ( String line = null; (line = reader.readLine ()) != null; )
+			{
+				sb.append ( line ).append ( "\n" );
+				if ( StringUtils.startsWithIgnoreCase ( line.trim (), "[SCD]" ) )
+					break;
+			}
+			
+			// The parser accept 0-samples, but not the lack of this headers
+			sb.append ( "[SCD]\n" );
+			sb.append ( "Sample Accession\n" );
+			
+			return sb;
+		}
+ }
