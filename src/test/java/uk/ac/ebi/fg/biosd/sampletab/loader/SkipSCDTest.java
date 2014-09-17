@@ -1,12 +1,12 @@
 package uk.ac.ebi.fg.biosd.sampletab.loader;
 
 import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.assertEquals;
 
 import java.net.URL;
 
 import org.junit.Test;
 
-import junit.framework.Assert;
 import uk.ac.ebi.arrayexpress2.magetab.exception.ParseException;
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
 
@@ -23,11 +23,12 @@ public class SkipSCDTest
 	public void testSkipSCD () throws ParseException
 	{
 		Loader loader = new Loader ();
-		loader.setSkipSCD ( false );
+		loader.setSkipSCD ( true );
 		
     URL url = this.getClass().getClassLoader ().getResource( "GAE-MTAB-27/sampletab.txt" );
 		MSI msi = loader.fromSampleData ( url );
 		
+		assertEquals ( "MSI not loaded!", "GAE-MTAB-27", msi.getAcc () );
 		assertTrue ( "We got samples anyway!", msi.getSamples ().isEmpty () );
 		assertTrue ( "We got sample groups anyway!", msi.getSampleGroups ().isEmpty () );
 	}

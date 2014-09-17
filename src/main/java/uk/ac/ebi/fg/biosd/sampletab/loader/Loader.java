@@ -1,14 +1,18 @@
 package uk.ac.ebi.fg.biosd.sampletab.loader;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.apache.commons.io.input.ReaderInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,10 +69,10 @@ public class Loader
     
     public MSI fromSampleData(File file) throws ParseException {
         try {
-            return fromSampleData(file.toURI().toURL());
+            return fromSampleData( new BufferedInputStream ( new FileInputStream ( file ) ) );
         }
-        catch (MalformedURLException e) {
-            throw new ParseException("File '" + file.getAbsolutePath() + " could not be resolved to a valid URL", e);
+        catch (FileNotFoundException e) {
+            throw new ParseException("File '" + file.getAbsolutePath() + " not found", e);
         }
     }
     
@@ -76,21 +80,40 @@ public class Loader
     {
         try
 				{
-					SampleTabSaferParser parser = new SampleTabSaferParser();
-					SampleData sampledata;
-					sampledata = this.skipSCD 
-						// TODO: not sure UTF-8 is a safe assumption
-						? parser.parse ( new ByteArrayInputStream ( 
-								this.readMSISection ( url.openStream () ).toString ().getBytes ( "UTF-8" ) ) 
-							) 
-					  : parser.parse ( url );
-					return fromSampleData(sampledata);
+        	return fromSampleData ( url.openStream () );
 				} 
         catch ( IOException ex )
 				{
-  				throw new ParseException ( "Error while reading the input SampleTab: " + ex.getMessage (), ex );
+  				throw new ParseException ( "Error while reading the URL '" + url + "': " + ex.getMessage (), ex );
 				}
     }
+    
+    
+    public MSI fromSampleData ( InputStream in ) throws ParseException 
+    {
+      try
+			{
+				SampleTabSaferParser parser = new SampleTabSaferParser();
+				SampleData sampledata;
+				sampledata = this.skipSCD 
+					// If we are in header-only mode, get the truncated file. 
+				  //
+					// TODO: not sure UTF-8 is a safe assumption
+				  // BufferedInputStream support mark(), which is required by Limpopo
+					? parser.parse ( new BufferedInputStream ( new ReaderInputStream ( 
+							new StringReader ( this.readMSISection ( in ).toString () ), 
+							"UTF-8"
+						)))
+				  : parser.parse ( in );
+				return fromSampleData(sampledata);
+			} 
+      catch ( IOException ex )
+			{
+				throw new ParseException ( "Error while reading the input SampleTab: " + ex.getMessage (), ex );
+			}    	
+    }
+    
+    
     
     public synchronized MSI fromSampleData(SampleData st) {
         MSI msi = new MSI(st.msi.submissionIdentifier);
@@ -384,6 +407,11 @@ public class Loader
     }
 
 
+    /**
+     * If true, allows you to read the MSI section only and get general information about the submission, skipping the 
+     * potentially large body content.
+     * 
+     */
 		public boolean isSkipSCD ()
 		{
 			return skipSCD;
@@ -394,6 +422,10 @@ public class Loader
 			this.skipSCD = skipSCD;
 		}
 		
+		/**
+		 * Returns a {@link StringBuilder} having the MSI section and the begin of the SCD section, without the contents
+		 * This is passed to the parser when {@link #isSkipSCD()}. The SCD heading must be there, Limpopo complains otherwise.
+		 */
 		private StringBuilder readMSISection ( InputStream in ) throws IOException
 		{
 			StringBuilder sb = new StringBuilder ();

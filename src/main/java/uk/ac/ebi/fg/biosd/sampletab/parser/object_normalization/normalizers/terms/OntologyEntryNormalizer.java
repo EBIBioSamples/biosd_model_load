@@ -34,7 +34,7 @@ public class OntologyEntryNormalizer extends AnnotatableNormalizer<OntologyEntry
 		if ( !super.normalize ( oe ) ) return false;
 		
 		ReferenceSource src = oe.getSource ();
-		if ( src == null ) return true; // This is actually an error and will pop-up later.
+		if ( src == null ) return true;
 		
 		ReferenceSource srcS = store.find ( src, src.getAcc (), src.getVersion (), src.getUrl () );
 		if ( srcS == null || src == srcS ) return true;
