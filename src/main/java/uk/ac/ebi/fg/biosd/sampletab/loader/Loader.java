@@ -358,7 +358,15 @@ public class Loader {
     */
     
     public void convertDatabase(uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Database database, MSI msi) {
-      	DatabaseRecordRef d = new DatabaseRecordRef( database.getName (), database.getID(), null, database.getURI (), null );
-        msi.addDatabaseRecordRef ( d );
+        //do not store some sources as they should be in myEquivalents instead
+        if (database.getName().equals("ENA SRA")
+                || database.getName().equals("ArrayExpress")
+                || database.getName().equals("COSMIC")
+                || database.getName().equals("PRIDE")) {
+            log.trace("Skipping storage of "+database.getName ()+" database reference");
+        } else {
+          	DatabaseRecordRef d = new DatabaseRecordRef( database.getName (), database.getID(), null, database.getURI (), null );
+            msi.addDatabaseRecordRef ( d );
+        }
     }
 }
