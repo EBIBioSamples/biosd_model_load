@@ -253,7 +253,7 @@ public class Loader {
                 //unit ontology term
                 if (aou.getTermSourceID() != null && aou.getTermSourceREF() != null) {
                     TermSource t = st.msi.getTermSource(aou.getTermSourceREF());
-                    if (t != null && t.getURI() != null && t.getVersion() != null) {
+                    if (t != null) {
                         ReferenceSource rs = new ReferenceSource(aou.getTermSourceREF(), t.getVersion());
                         rs.setUrl(t.getURI());
                         rs.setName(aou.getTermSourceREF());
