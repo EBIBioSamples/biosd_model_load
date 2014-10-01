@@ -219,18 +219,18 @@ public class Loader {
             AbstractNodeAttributeOntology ao = (AbstractNodeAttributeOntology) a;
             
             //ontology
-            if (ao.getTermSourceID() != null && ao.getTermSourceREF() != null) {
-                TermSource t = st.msi.getTermSource(ao.getTermSourceREF());
-                if (t != null) {
+            if (ao.getTermSourceID() != null) {
+                //has ref + id
+                if (ao.getTermSourceREF() != null && ao.getTermSourceID() != null) {
+                    TermSource t = st.msi.getTermSource(ao.getTermSourceREF());
                     ReferenceSource rs = new ReferenceSource(ao.getTermSourceREF(), t.getVersion());
                     rs.setUrl(t.getURI());
                     rs.setName(ao.getTermSourceREF());
                     v.addOntologyTerm ( 
                         new OntologyEntry( ao.getTermSourceID(), rs ));
-                    
-                    log.trace ("Added ontology term");
-                } else {
-                    log.warn("Unable to find Term Source "+ao.getTermSourceREF());
+                //is just a uri
+                } else if (ao.getTermSourceREF() == null && ao.getTermSourceID() != null) {
+                    v.addOntologyTerm(new OntologyEntry(ao.getTermSourceID(), null));
                 }
             }
             
@@ -251,14 +251,19 @@ public class Loader {
                 AbstractNodeAttributeOntology aou = (AbstractNodeAttributeOntology) unit;
                 
                 //unit ontology term
-                if (aou.getTermSourceID() != null && aou.getTermSourceREF() != null) {
-                    TermSource t = st.msi.getTermSource(aou.getTermSourceREF());
-                    if (t != null) {
+                if (aou.getTermSourceID() != null) {
+
+                    //has ref + id
+                    if (aou.getTermSourceREF() != null && aou.getTermSourceID() != null) {
+                        TermSource t = st.msi.getTermSource(aou.getTermSourceREF());
                         ReferenceSource rs = new ReferenceSource(aou.getTermSourceREF(), t.getVersion());
                         rs.setUrl(t.getURI());
                         rs.setName(aou.getTermSourceREF());
-                        OntologyEntry oe = new OntologyEntry( aou.getTermSourceID(), rs );
-                        v.addOntologyTerm ( oe );
+                        u.addOntologyTerm ( 
+                            new OntologyEntry( aou.getTermSourceID(), rs ));
+                    //is just a uri
+                    } else if (aou.getTermSourceREF() == null && aou.getTermSourceID() != null) {
+                        u.addOntologyTerm(new OntologyEntry(aou.getTermSourceID(), null));
                     }
                 }
             }
