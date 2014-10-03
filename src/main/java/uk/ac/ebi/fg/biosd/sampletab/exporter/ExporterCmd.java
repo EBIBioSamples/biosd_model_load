@@ -54,6 +54,7 @@ public class ExporterCmd
 
 			
 			if (msi == null) {
+				// TODO: Should this be an exception!?
 	            out.println ( 
 	                    "\nSubmission not in database"
 	                );
