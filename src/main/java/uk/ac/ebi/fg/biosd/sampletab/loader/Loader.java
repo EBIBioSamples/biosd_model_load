@@ -2,6 +2,8 @@ package uk.ac.ebi.fg.biosd.sampletab.loader;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import org.slf4j.Logger;
@@ -230,7 +232,14 @@ public class Loader {
                         new OntologyEntry( ao.getTermSourceID(), rs ));
                 //is just a uri
                 } else if (ao.getTermSourceREF() == null && ao.getTermSourceID() != null) {
-                    v.addOntologyTerm(new OntologyEntry(ao.getTermSourceID(), null));
+                    //check that it is a valid formatted URL
+                    URI uri = null;
+                    try {
+                        uri = new URI(ao.getTermSourceID());
+                        v.addOntologyTerm(new OntologyEntry(uri.toASCIIString(), null));
+                    } catch (URISyntaxException e) {
+                        log.warn("Term Source ID not a valid URI, skipping ("+ao.getTermSourceID()+")");
+                    }
                 }
             }
             
@@ -263,7 +272,14 @@ public class Loader {
                             new OntologyEntry( aou.getTermSourceID(), rs ));
                     //is just a uri
                     } else if (aou.getTermSourceREF() == null && aou.getTermSourceID() != null) {
-                        u.addOntologyTerm(new OntologyEntry(aou.getTermSourceID(), null));
+                        //check that it is a valid formatted URL
+                        URI uri = null;
+                        try {
+                            uri = new URI(aou.getTermSourceID());
+                            u.addOntologyTerm(new OntologyEntry(uri.toASCIIString(), null));
+                        } catch (URISyntaxException e) {
+                            log.warn("Term Source ID not a valid URI, skipping ("+aou.getTermSourceID()+")");
+                        }
                     }
                 }
             }
@@ -301,8 +317,18 @@ public class Loader {
             }
             if (isDatabaseAttribute) {
                 DatabaseAttribute da = (DatabaseAttribute) a;
-                DatabaseRecordRef dbref = new DatabaseRecordRef ( da.getAttributeValue (), da.databaseID, null, da.databaseURI, null );
-                bs.addDatabaseRecordRef ( dbref );
+                //do not store some sources as they should be in myEquivalents instead
+                if (da.getAttributeValue().equals("ENA SRA")
+                        || da.getAttributeValue().equals("ArrayExpress")
+                        || da.getAttributeValue().equals("COSMIC")
+                        || da.getAttributeValue().equals("PRIDE")) {
+                    log.trace("Skipping storage of "+da.getAttributeValue()+" database reference");
+                } else {
+                    DatabaseRecordRef dbref = new DatabaseRecordRef ( da.getAttributeValue(), da.databaseID, null, da.databaseURI, null );
+                    bs.addDatabaseRecordRef ( dbref );
+                }
+                
+                
             } else {
                 bs.addPropertyValue(convertAtttribute(a, st));
             }
