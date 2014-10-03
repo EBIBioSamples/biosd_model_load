@@ -1,16 +1,20 @@
-1.2.1-SNAPSHOT
-- Just started
+1.3.1-SNAPSHOT
+  - Just started
+
+1.3
+  - Changes in ontology term management (units and terms using a URI as identifier)
+  - BSD-155 fixed (purge left dangling experimental property types)
 
 1.2
-- MSI->ReferenceSource link removed, managed by tracing it back from property values and BSD-118 problems fixed.
-- Unload multiple submissions via LSF (BSD-130)
-- Improvements in how special cases are dealt with (e.g., empty submissions or sample groups)
-- Minor changes and fixes
-- Source change: addition of a common parent POM for all BioSD-related projects 
+  - MSI->ReferenceSource link removed, managed by tracing it back from property values and BSD-118 problems fixed.
+  - Unload multiple submissions via LSF (BSD-130)
+  - Improvements in how special cases are dealt with (e.g., empty submissions or sample groups)
+  - Minor changes and fixes
+  - Source change: addition of a common parent POM for all BioSD-related projects 
 
 1.1.1
-- Database links simplified (https://www.ebi.ac.uk/panda/jira/browse/BSD-83)
-(we needed to skip 1.1, due to problems with Maven/GitHub)
+  - Database links simplified (https://www.ebi.ac.uk/panda/jira/browse/BSD-83)
+  (we needed to skip 1.1, due to problems with Maven/GitHub)
 
 1.0
-- First Release
+  - First Release
