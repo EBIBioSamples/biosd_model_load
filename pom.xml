@@ -211,11 +211,12 @@
 			<name>Banana Cache on coconut</name>
 			<url>http://coconut.ebi.ac.uk:8081/artifactory/hasbanana</url>
 		</repository>
-		<snapshotRepository>
+		<repository>
 			<id>banana-cache-snapshots</id>
 			<name>Banana Cache on coconut (Snapshots)</name>
 			<url>http://coconut.ebi.ac.uk:8081/artifactory/hasbanana</url>
-		</snapshotRepository>
+			<snapshots><enabled>true</enabled></snapshots>
+		</repository>
 
 	</repositories>
 
