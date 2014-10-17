@@ -204,6 +204,13 @@
 			  <enabled>true</enabled>
 			</snapshots>
 		</repository>
+
+		<!-- Needed by Fluxion -->
+		<repository>
+			<id>coconut.ebi.ac.uk</id>
+			<name>coconut.ebi.ac.uk-releases</name>
+			<url>http://coconut.ebi.ac.uk:8081/artifactory/hasbanana</url>
+		</repository>
 				
 	</repositories>
 
