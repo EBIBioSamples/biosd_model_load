@@ -207,11 +207,16 @@
 
 		<!-- Needed by Fluxion -->
 		<repository>
-			<id>coconut.ebi.ac.uk</id>
-			<name>coconut.ebi.ac.uk-releases</name>
+			<id>banana-cache</id>
+			<name>Banana Cache on coconut</name>
 			<url>http://coconut.ebi.ac.uk:8081/artifactory/hasbanana</url>
 		</repository>
-				
+		<snapshotRepository>
+			<id>banana-cache-snapshots</id>
+			<name>Banana Cache on coconut (Snapshots)</name>
+			<url>http://coconut.ebi.ac.uk:8081/artifactory/hasbanana</url>
+		</snapshotRepository>
+
 	</repositories>
 
 </project>
