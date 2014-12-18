@@ -46,7 +46,7 @@ public class CVTermUnloadingListener extends UnloadingListener<CVTerm>
 			result += entityManager.createQuery ( hql ).executeUpdate ();
 
 		// TODO: AOP
-		log.trace ( String.format ( "%s.postRemove( null ): returning %d", Publication.class.getSimpleName (), result ));
+		log.trace ( String.format ( "%s.postRemoveGlobally(): returning %d", this.getClass().getSimpleName (), result ));
 		return result;
 	}
 

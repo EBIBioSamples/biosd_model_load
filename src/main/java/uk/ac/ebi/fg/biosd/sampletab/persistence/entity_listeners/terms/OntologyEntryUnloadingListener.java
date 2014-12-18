@@ -21,8 +21,6 @@ public class OntologyEntryUnloadingListener extends UnloadingListener<OntologyEn
 		super ( entityManager );
 	}
 
-	@Override
-	public long preRemove ( OntologyEntry oe ) { return 0; }
 
 	/**
 	 * Removes all dangling {@link OntologyEntry} records.
@@ -43,7 +41,7 @@ public class OntologyEntryUnloadingListener extends UnloadingListener<OntologyEn
 		long result = entityManager.createQuery ( hql ).executeUpdate ();
 
 		// TODO: AOP
-		log.trace ( String.format ( "%s.postRemove( null ): returning %d", OntologyEntry.class.getSimpleName (), result ));
+		log.trace ( String.format ( "%s.postRemoveGlobally(): returning %d", this.getClass ().getSimpleName (), result ));
 		return result;
 	}
 

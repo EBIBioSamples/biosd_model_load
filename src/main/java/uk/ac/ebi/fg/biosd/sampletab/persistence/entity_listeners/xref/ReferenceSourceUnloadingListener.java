@@ -44,7 +44,7 @@ public class ReferenceSourceUnloadingListener extends UnloadingListener<Referenc
 		long result = entityManager.createNativeQuery ( sql ).executeUpdate (); 
 
 		// TODO: AOP
-		log.trace ( String.format ( "%s.postRemove( null ): returning %d", ReferenceSource.class.getSimpleName (), result ));
+		log.trace ( String.format ( "%s.postRemoveGlobally(): returning %d", this.getClass().getSimpleName (), result ));
 		return result;
 	}
 

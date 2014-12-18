@@ -40,7 +40,7 @@ public class DatabaseRecRefUnloadingListener extends UnloadingListener<DatabaseR
 		long result = entityManager.createNativeQuery ( sql ).executeUpdate (); 
 
 		// TODO: AOP
-		log.trace ( String.format ( "%s.postRemove( null ): returning %d", DatabaseRecordRef.class.getSimpleName (), result ));
+		log.trace ( String.format ( "%s.postRemoveGlobally(): returning %d", this.getClass().getSimpleName (), result ));
 		return result;
 	}
 
