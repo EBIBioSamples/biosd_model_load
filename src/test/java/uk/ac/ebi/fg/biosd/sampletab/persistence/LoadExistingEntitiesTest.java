@@ -185,7 +185,7 @@ public class LoadExistingEntitiesTest
 			msi.addSample ( smp1 );
 			msi.addSample ( smp2 );
 			msi.addSample ( smp3 );
-			msi.addSample ( smp4 );
+			msi.addSampleRef ( smp4 );
 			msi.addSample ( smp5 );
 			msi.addSample ( smp6 );
 			msi.addSample ( smp7 );
@@ -251,7 +251,7 @@ public class LoadExistingEntitiesTest
 		 */
 		assertTrue ( "Reloaded m2 doesn't contain smp1->msi!", msi2DB.getSamples ().contains ( m1.smp1 ) );
 		assertTrue ( "Reloaded m2 doesn't contain smp2->msi!", msi2DB.getSamples ().contains ( m1.smp2 ) );
-		assertTrue ( "Reloaded m2 doesn't contain smp4->msi!", msi2DB.getSamples ().contains ( m1.smp4 ) );
+		assertTrue ( "Reloaded m2 doesn't contain smp4->msi (ref)!", msi2DB.getSampleRefs ().contains ( m1.smp4 ) );
 
 		assertTrue ( "Reloaded m2 doesn't contain sg1->msi!", msi2DB.getSampleGroups ().contains ( m2.sg1 ) );
 		assertTrue ( "Reloaded m2 doesn't contain sg2->msi!", msi2DB.getSampleGroups ().contains ( m2.sg2 ) );
@@ -262,9 +262,11 @@ public class LoadExistingEntitiesTest
 			if ( "test2.smp3".equals ( smp.getAcc () ) ) smp3 = smp;
 			else if ( "test1.smp4".equals ( smp.getAcc () ) ) smp4 = smp;
 			else if ( "test2.smp7".equals ( smp.getAcc () ) ) smp7 = smp;
+		for ( BioSample smp: msi2DB.getSampleRefs () )
+			if ( "test1.smp4".equals ( smp.getAcc () ) ) smp4 = smp;
 		
 		assertNotNull ( "test2.smp3 not found in reloaded model!", smp3 );
-		assertNotNull ( "test1.smp4 not found in reloaded model!", smp4 );
+		assertNotNull ( "test1.smp4 ref not found in reloaded model!", smp4 );
 		
 		assertTrue ( "Wrong derived-to relation in reloaded m2: smp1 -> smp3!", smp3.getDerivedFrom ().contains ( m1.smp1 ) );
 		assertTrue ( "Wrong derived-to relation in reloaded m2: smp4 -> smp6!", smp4.getDerivedInto ().contains ( m2.smp6 ) );
