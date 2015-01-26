@@ -1,6 +1,3 @@
-/*
- * 
- */
 package uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.expgraph;
 
 import java.util.List;

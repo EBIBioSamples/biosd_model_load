@@ -80,8 +80,10 @@ public class MSINormalizer extends AnnotatableNormalizer<MSI>
 		for ( BioSample sample: msi.getSamples () ) sampleNormalizer.normalize ( sample );
 		for ( BioSampleGroup sg: msi.getSampleGroups () ) sgNormalizer.normalize ( sg );
 
-		linkExistingSamples ( msi );
-		linkExistingSampleGroups ( msi );	
+		linkExistingSamples ( msi.getSamples () );
+		linkExistingSamples ( msi.getSampleRefs () );
+		linkExistingSampleGroups ( msi.getSampleGroups () );	
+		linkExistingSampleGroups ( msi.getSampleGroupRefs () );	
 
 		// mark the time the object creation occurs 
 		if ( store instanceof DBStore ) 
@@ -144,32 +146,31 @@ public class MSINormalizer extends AnnotatableNormalizer<MSI>
 	
 	/**
 	 * Replace those MSI's samples that have an equivalent in the DB with such equivalent. Uses {@link ProductComparator}
-	 * for deciding such equivalence.
+	 * for deciding such equivalence. This is used either with {@link MSI#getSamples()}, or {@link MSI#getSampleRefs()}.
 	 * 
 	 */
-	private void linkExistingSamples( MSI msi )
+	private void linkExistingSamples( Set<BioSample> target )
 	{
 		Set<BioSample> addSmps = new HashSet<BioSample> (), delSmps = new HashSet<BioSample> ();
-		Set<BioSample> msiSamples = msi.getSamples ();
-		for ( BioSample sample: msiSamples ) 
+		
+		for ( BioSample sample: target ) 
 		{
 			if ( sample == null || sample.getId () != null ) continue;
 			BioSample smpS = store.find ( sample, sample.getAcc () );
 			if ( smpS == null || sample == smpS || smpCmp.compare ( smpS, sample ) != 0 ) continue;
 			addSmps.add ( smpS ); delSmps.add ( sample );
 		}
-		msiSamples.removeAll ( delSmps );
-		msiSamples.addAll ( addSmps );
+		target.removeAll ( delSmps );
+		target.addAll ( addSmps );
 	}
 	
 	/**
 	 * Does the same as {@link #linkExistingSamples(MSI)} for {@link BioSampleGroup}s
 	 */
-	private void linkExistingSampleGroups ( MSI msi )
+	private void linkExistingSampleGroups ( Set<BioSampleGroup> target )
 	{
 		Set<BioSampleGroup> addSGs = new HashSet<BioSampleGroup> (), delSGs = new HashSet<BioSampleGroup> ();
-		Set<BioSampleGroup> msiSGs = msi.getSampleGroups ();
-		for ( BioSampleGroup sg: msiSGs ) 
+		for ( BioSampleGroup sg: target ) 
 		{
 			if ( sg == null || sg.getId () != null ) continue;
 			BioSampleGroup sgS = store.find ( sg, sg.getAcc () );
@@ -180,8 +181,8 @@ public class MSINormalizer extends AnnotatableNormalizer<MSI>
 
 			addSGs.add ( sgS ); delSGs.add ( sg );
 		}
-		msiSGs.removeAll ( delSGs );
-		msiSGs.addAll ( addSGs );
+		target.removeAll ( delSGs );
+		target.addAll ( addSGs );
 	}
 
 }

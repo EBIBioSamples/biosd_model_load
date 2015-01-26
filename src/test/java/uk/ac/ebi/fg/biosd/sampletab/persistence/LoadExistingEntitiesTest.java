@@ -27,6 +27,8 @@ import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.MemoryStore;
 import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.organizational.MSINormalizer;
 import uk.ac.ebi.fg.core_model.expgraph.properties.BioCharacteristicType;
 import uk.ac.ebi.fg.core_model.expgraph.properties.BioCharacteristicValue;
+import uk.ac.ebi.fg.core_model.expgraph.properties.ExperimentalPropertyType;
+import uk.ac.ebi.fg.core_model.expgraph.properties.ExperimentalPropertyValue;
 import uk.ac.ebi.fg.core_model.expgraph.properties.Unit;
 import uk.ac.ebi.fg.core_model.expgraph.properties.UnitDimension;
 import uk.ac.ebi.fg.core_model.expgraph.properties.dataitems.DataItem;
@@ -159,9 +161,11 @@ public class LoadExistingEntitiesTest
 			cv5b.setUnit ( percent );
 			sg2.addPropertyValue ( cv5b );
 			
-			cv6b = new BioCharacteristicValue ( "homo-sapiens", ch1 );
+			cv6b = new BioCharacteristicValue ( "homo-sapiens", new BioCharacteristicType ( "specie" ) );
       	cv6b.addOntologyTerm ( new OntologyEntry ( existingPrefix + "123", new ReferenceSource ( "EFO", null ) ) );
       	cv6b.addOntologyTerm ( oe3 = new OntologyEntry ( prefix + "789", new ReferenceSource ( "MA", null ) ) );
+      	Unit u6b = new Unit ( "foo unit", new UnitDimension ( "foo unit type" ) );
+      	cv6b.setUnit ( u6b );
 			smp7.addPropertyValue ( cv6b );
 			
 			
@@ -185,7 +189,7 @@ public class LoadExistingEntitiesTest
 			msi.addSample ( smp1 );
 			msi.addSample ( smp2 );
 			msi.addSample ( smp3 );
-			msi.addSample ( smp4 );
+			msi.addSampleRef ( smp4 );
 			msi.addSample ( smp5 );
 			msi.addSample ( smp6 );
 			msi.addSample ( smp7 );
@@ -274,7 +278,7 @@ public class LoadExistingEntitiesTest
 		 */
 		assertTrue ( "Reloaded m2 doesn't contain smp1->msi!", msi2DB.getSamples ().contains ( m1.smp1 ) );
 		assertTrue ( "Reloaded m2 doesn't contain smp2->msi!", msi2DB.getSamples ().contains ( m1.smp2 ) );
-		assertTrue ( "Reloaded m2 doesn't contain smp4->msi!", msi2DB.getSamples ().contains ( m1.smp4 ) );
+		assertTrue ( "Reloaded m2 doesn't contain smp4->msi (ref)!", msi2DB.getSampleRefs ().contains ( m1.smp4 ) );
 
 		assertTrue ( "Reloaded m2 doesn't contain sg1->msi!", msi2DB.getSampleGroups ().contains ( m2.sg1 ) );
 		assertTrue ( "Reloaded m2 doesn't contain sg2->msi!", msi2DB.getSampleGroups ().contains ( m2.sg2 ) );
@@ -285,9 +289,11 @@ public class LoadExistingEntitiesTest
 			if ( "test2.smp3".equals ( smp.getAcc () ) ) smp3 = smp;
 			else if ( "test1.smp4".equals ( smp.getAcc () ) ) smp4 = smp;
 			else if ( "test2.smp7".equals ( smp.getAcc () ) ) smp7 = smp;
-		
+		for ( BioSample smp: msi2DB.getSampleRefs () )
+			if ( "test1.smp4".equals ( smp.getAcc () ) ) smp4 = smp;
+
 		assertNotNull ( "test2.smp3 not found in reloaded model!", smp3 );
-		assertNotNull ( "test1.smp4 not found in reloaded model!", smp4 );
+		assertNotNull ( "test1.smp4 ref not found in reloaded model!", smp4 );
 		
 		assertTrue ( "Wrong derived-to relation in reloaded m2: smp1 -> smp3!", smp3.getDerivedFrom ().contains ( m1.smp1 ) );
 		assertTrue ( "Wrong derived-to relation in reloaded m2: smp4 -> smp6!", smp4.getDerivedInto ().contains ( m2.smp6 ) );
@@ -337,7 +343,7 @@ public class LoadExistingEntitiesTest
 		// ------------------------------ Unloading Test --------------------------------------
 		// 
 		
-		Unloader unloader = new Unloader ().setDoPurge ( true );
+		Unloader unloader = new Unloader ().setDoForcedPurge ( true );
 		unloader.unload ( msi2DB );
 		
 		em = emProvider.newEntityManager ();
@@ -357,6 +363,27 @@ public class LoadExistingEntitiesTest
 		assertFalse ( "Test Ref Source not deleted!", idDao.contains ( srcId, ReferenceSource.class ) );
 		assertFalse ( "Test Pub Status not deleted!", 
 			new CVTermDAO<PublicationStatus> ( PublicationStatus.class, em ).contains ( pubStat.getName () ) );
+		
+
+		
+		// Verifies property deletion
+		IdentifiableDAO<ExperimentalPropertyValue> pvDao = new IdentifiableDAO<ExperimentalPropertyValue> ( 
+			ExperimentalPropertyValue.class, em 
+		); 
+		assertFalse ( "cv6b not deleted!", pvDao.contains ( m2.cv6b.getId () ) );
+
+		
+		IdentifiableDAO<ExperimentalPropertyType> ptDao = new IdentifiableDAO<ExperimentalPropertyType> (
+			ExperimentalPropertyType.class, em
+		); 
+		assertFalse ( "cv6b.type not deleted!", ptDao.contains ( m2.cv6b.getType ().getId () ) );
+
+		
+		IdentifiableDAO<Unit> unitDao = new IdentifiableDAO<Unit> ( Unit.class, em );
+		assertFalse ( "cv6b.unit not deleted!", unitDao.contains ( m2.cv6b.getUnit ().getId () ) );
+		
+		IdentifiableDAO<UnitDimension> unitDimDao = new IdentifiableDAO<UnitDimension> ( UnitDimension.class, em );
+		assertFalse ( "scv6b.unit.dimension not deleted!", unitDimDao.contains ( m2.cv6b.getUnit ().getDimension ().getId () ) );
 		
 
 		// Verifies data items

@@ -97,7 +97,10 @@ public class LoaderCmd
 					if ( attempts == 5 && cli.hasOption ( 'u' ) ) 
 					{
 						log.info ( "Unloading previous version of " + msiAcc + " (if any)" );
-						new Unloader().setDoPurge ( cli.hasOption ( 'g' ) ).unload ( msi );
+						new Unloader()
+							.setDoForcedPurge ( cli.hasOption ( 'f' ) )
+							.setDoPurge ( cli.hasOption ( 'g' ) )
+							.unload ( msi );
 						log.info ( "done." );
 					}
 					
@@ -247,7 +250,13 @@ public class LoaderCmd
 			.withLongOpt ( "purge" )
 			.create ( 'g' )
 		);
-
+		
+		opts.addOption ( OptionBuilder
+			.withDescription ( "Do the purge operation, even when last purge in the job register is recent" )
+			.withLongOpt ( "force-purge" )
+			.create ( 'f' )
+		);
+		
 		opts.addOption ( OptionBuilder
 			.withDescription ( "Prints out this message" )
 			.withLongOpt ( "help" )

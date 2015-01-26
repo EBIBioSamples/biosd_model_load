@@ -38,7 +38,7 @@
   <!-- logger name="uk.ac.ebi.fg.biosd.sampletab.persistence" level="DEBUG"/ -->
   <!-- logger name = "org.hibernate.type" level = "DEBUG" / -->
 
-  <!-- logger name="org.hibernate.SQL" level = "TRACE" />
+  <!--  logger name="org.hibernate.SQL" level = "TRACE" />
   <logger name="org.hibernate.hql" level = "TRACE" / -->
   
 </configuration>

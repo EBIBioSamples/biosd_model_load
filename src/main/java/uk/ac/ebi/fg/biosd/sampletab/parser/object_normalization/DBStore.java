@@ -14,7 +14,6 @@ import uk.ac.ebi.fg.core_model.terms.OntologyEntry;
 import uk.ac.ebi.fg.core_model.toplevel.Accessible;
 import uk.ac.ebi.fg.core_model.toplevel.Annotation;
 import uk.ac.ebi.fg.core_model.xref.ReferenceSource;
-import uk.ac.ebi.fg.core_model.xref.XRef;
 
 /**
  * A Store implementation that check for object existence against the BioSD relational database (via Hibernate). 

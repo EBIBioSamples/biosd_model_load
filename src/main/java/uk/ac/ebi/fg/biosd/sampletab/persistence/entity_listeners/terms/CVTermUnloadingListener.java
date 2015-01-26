@@ -6,7 +6,6 @@ package uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.terms;
 import javax.persistence.EntityManager;
 
 import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.UnloadingListener;
-import uk.ac.ebi.fg.core_model.organizational.Publication;
 import uk.ac.ebi.fg.core_model.terms.CVTerm;
 
 /**

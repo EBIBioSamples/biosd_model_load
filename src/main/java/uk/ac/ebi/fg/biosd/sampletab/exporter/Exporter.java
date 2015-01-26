@@ -31,6 +31,7 @@ import uk.ac.ebi.fg.core_model.expgraph.properties.ExperimentalPropertyValue;
 import uk.ac.ebi.fg.core_model.expgraph.properties.Unit;
 import uk.ac.ebi.fg.core_model.organizational.ContactRole;
 import uk.ac.ebi.fg.core_model.terms.OntologyEntry;
+import uk.ac.ebi.fg.core_model.toplevel.Annotation;
 import uk.ac.ebi.fg.core_model.xref.ReferenceSource;
 
 public class Exporter {
@@ -60,26 +61,29 @@ public class Exporter {
                 a.unit.setAttributeValue(u.getTermText());
                 OntologyEntry oe = u.getSingleOntologyTerm();
                 if (oe != null) {
-                    ReferenceSource source = oe.getSource();
-                    String name = source.getAcc();
-                    String url = source.getUrl();
-                    String version = source.getVersion();
-                    TermSource ts = new TermSource(name, url, version);
-                    
-                    a.unit.setTermSourceREF(sd.msi.getOrAddTermSource(ts));
                     a.unit.setTermSourceID(oe.getAcc());
+                    ReferenceSource source = oe.getSource();
+                    if (source != null) {
+                        String name = source.getAcc();
+                        String url = source.getUrl();
+                        String version = source.getVersion();
+                        TermSource ts = new TermSource(name, url, version);
+                        a.unit.setTermSourceREF(sd.msi.getOrAddTermSource(ts));
+                    }
                 }
             }
             
             OntologyEntry oe = v.getSingleOntologyTerm();
             if (oe != null) {
-                ReferenceSource source = oe.getSource();
-                String name = source.getAcc();
-                String url = source.getUrl();
-                String version = source.getVersion();
-                TermSource ts = new TermSource(name, url, version);
-                a.setTermSourceREF(sd.msi.getOrAddTermSource(ts));
                 a.setTermSourceID(oe.getAcc());
+                ReferenceSource source = oe.getSource();
+                if (source != null) {
+                    String name = source.getAcc();
+                    String url = source.getUrl();
+                    String version = source.getVersion();
+                    TermSource ts = new TermSource(name, url, version);
+                    a.setTermSourceREF(sd.msi.getOrAddTermSource(ts));
+                }
             }
             
             attr = a;
@@ -93,26 +97,29 @@ public class Exporter {
                 a.unit.setAttributeValue(u.getTermText());
                 OntologyEntry oe = u.getSingleOntologyTerm();
                 if (oe != null) {
-                    ReferenceSource source = oe.getSource();
-                    String name = source.getAcc();
-                    String url = source.getUrl();
-                    String version = source.getVersion();
-                    TermSource ts = new TermSource(name, url, version);
-                    
-                    a.unit.setTermSourceREF(sd.msi.getOrAddTermSource(ts));
                     a.unit.setTermSourceID(oe.getAcc());
+                    ReferenceSource source = oe.getSource();
+                    if (source != null) {
+                        String name = source.getAcc();
+                        String url = source.getUrl();
+                        String version = source.getVersion();
+                        TermSource ts = new TermSource(name, url, version);
+                        a.unit.setTermSourceREF(sd.msi.getOrAddTermSource(ts));
+                    }
                 }
             }
             
             OntologyEntry oe = v.getSingleOntologyTerm();
             if (oe != null) {
-                ReferenceSource source = oe.getSource();
-                String name = source.getAcc();
-                String url = source.getUrl();
-                String version = source.getVersion();
-                TermSource ts = new TermSource(name, url, version);
-                a.setTermSourceREF(sd.msi.getOrAddTermSource(ts));
                 a.setTermSourceID(oe.getAcc());
+                ReferenceSource source = oe.getSource();
+                if (source != null) {
+                    String name = source.getAcc();
+                    String url = source.getUrl();
+                    String version = source.getVersion();
+                    TermSource ts = new TermSource(name, url, version);
+                    a.setTermSourceREF(sd.msi.getOrAddTermSource(ts));
+                }
             }
             
             attr = a;
@@ -122,13 +129,15 @@ public class Exporter {
             
             OntologyEntry oe = v.getSingleOntologyTerm();
             if (oe != null) {
-                ReferenceSource source = oe.getSource();
-                String name = source.getAcc();
-                String url = source.getUrl();
-                String version = source.getVersion();
-                TermSource ts = new TermSource(name, url, version);
-                a.setTermSourceREF(sd.msi.getOrAddTermSource(ts));
                 a.setTermSourceID(oe.getAcc());
+                ReferenceSource source = oe.getSource();
+                if (source != null) {
+                    String name = source.getAcc();
+                    String url = source.getUrl();
+                    String version = source.getVersion();
+                    TermSource ts = new TermSource(name, url, version);
+                    a.setTermSourceREF(sd.msi.getOrAddTermSource(ts));
+                }
             }
             attr = a;
             
@@ -137,13 +146,15 @@ public class Exporter {
             
             OntologyEntry oe = v.getSingleOntologyTerm();
             if (oe != null) {
-                ReferenceSource source = oe.getSource();
-                String name = source.getAcc();
-                String url = source.getUrl();
-                String version = source.getVersion();
-                TermSource ts = new TermSource(name, url, version);
-                a.setTermSourceREF(sd.msi.getOrAddTermSource(ts));
                 a.setTermSourceID(oe.getAcc());
+                ReferenceSource source = oe.getSource();
+                if (source != null) {
+                    String name = source.getAcc();
+                    String url = source.getUrl();
+                    String version = source.getVersion();
+                    TermSource ts = new TermSource(name, url, version);
+                    a.setTermSourceREF(sd.msi.getOrAddTermSource(ts));
+                }
             }
             attr = a;
             
@@ -152,13 +163,15 @@ public class Exporter {
             
             OntologyEntry oe = v.getSingleOntologyTerm();
             if (oe != null) {
-                ReferenceSource source = oe.getSource();
-                String name = source.getAcc();
-                String url = source.getUrl();
-                String version = source.getVersion();
-                TermSource ts = new TermSource(name, url, version);
-                a.setTermSourceREF(sd.msi.getOrAddTermSource(ts));
                 a.setTermSourceID(oe.getAcc());
+                ReferenceSource source = oe.getSource();
+                if (source != null) {
+                    String name = source.getAcc();
+                    String url = source.getUrl();
+                    String version = source.getVersion();
+                    TermSource ts = new TermSource(name, url, version);
+                    a.setTermSourceREF(sd.msi.getOrAddTermSource(ts));
+                }
             }
             attr = a;
         } else if (t.getTermText().toLowerCase().equals("same as")) {
@@ -333,14 +346,15 @@ public class Exporter {
                             //this can have an ontology, check for it
                             OntologyEntry oe = v.getSingleOntologyTerm();
                             if (oe != null) {
-                                ReferenceSource source = oe.getSource();
-                                String url = source.getUrl();
-                                String version = source.getVersion();
-                                String name = source.getName();
-                                TermSource ts = new TermSource(name, url, version);
-                                
-                                attrOnt.setTermSourceREF(sd.msi.getOrAddTermSource(ts));
                                 attrOnt.setTermSourceID(oe.getAcc());
+                                ReferenceSource source = oe.getSource();
+                                if (source != null) {
+                                    String url = source.getUrl();
+                                    String version = source.getVersion();
+                                    String name = source.getName();
+                                    TermSource ts = new TermSource(name, url, version);
+                                    attrOnt.setTermSourceREF(sd.msi.getOrAddTermSource(ts));
+                                }
                             }
                         }
                         

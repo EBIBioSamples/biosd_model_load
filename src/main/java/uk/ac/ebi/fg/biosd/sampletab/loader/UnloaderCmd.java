@@ -44,7 +44,7 @@ public class UnloaderCmd
 		String msiAcc = null;
 		
 		if ( (args = cli.getArgs ()) == null || args.length == 0 ) {
-			if ( !cli.hasOption ( 'g' ) ) printUsage ();
+			if ( ! ( cli.hasOption ( 'g' ) || cli.hasOption ( 'f' ) ) ) printUsage ();
 		}
 		else
 			msiAcc = args [ 0 ];
@@ -81,7 +81,10 @@ public class UnloaderCmd
 			// Do it
 			//
 			long time0 = System.currentTimeMillis ();
-			new Unloader().setDoPurge ( cli.hasOption ( 'g' ) ).unload ( msi );
+			new Unloader()
+			.setDoForcedPurge ( cli.hasOption ( 'f' ) )
+			.setDoPurge ( cli.hasOption ( 'g' ) )
+			.unload ( msi );
 			
 			persistenceTime = System.currentTimeMillis () - time0;
 			log.info ( "Unloading/Purging done in " + LoaderCmd.formatTimeDuration ( persistenceTime ) + "." );
@@ -109,7 +112,7 @@ public class UnloaderCmd
 		out.println ( "\nUnloads a SampleTAB submission from the relational database" );
 		
 		out.println ( "\nSyntax:" );
-		out.println ( "\n\tunload.sh <submission accession> | <--purge|-g> [submission accession]" );		
+		out.println ( "\n\tunload.sh <submission accession> | <--purge|-g|--force-purge|-f> [submission accession]" );		
 		
 		out.println ( "\nOptions:" );
 		HelpFormatter helpFormatter = new HelpFormatter ();
@@ -135,6 +138,12 @@ public class UnloaderCmd
 			.create ( 'g' )
 		);
 
+		opts.addOption ( OptionBuilder
+			.withDescription ( "Do the purge operation, even when last purge in the job register is recent" )
+			.withLongOpt ( "force-purge" )
+			.create ( 'f' )
+		);
+		
 		opts.addOption ( OptionBuilder
 			.withDescription ( "Prints out this message" )
 			.withLongOpt ( "help" )
