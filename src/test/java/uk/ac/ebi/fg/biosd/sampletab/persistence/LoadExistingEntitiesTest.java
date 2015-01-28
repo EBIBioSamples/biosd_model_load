@@ -352,7 +352,7 @@ public class LoadExistingEntitiesTest
 
 		
 		IdentifiableDAO<Unit> unitDao = new IdentifiableDAO<Unit> ( Unit.class, em );
-		assertFalse ( "scv6b.unit not deleted!", unitDao.contains ( m2.cv6b.getUnit ().getId () ) );
+		assertFalse ( "cv6b.unit not deleted!", unitDao.contains ( m2.cv6b.getUnit ().getId () ) );
 		
 		IdentifiableDAO<UnitDimension> unitDimDao = new IdentifiableDAO<UnitDimension> ( UnitDimension.class, em );
 		assertFalse ( "scv6b.unit.dimension not deleted!", unitDimDao.contains ( m2.cv6b.getUnit ().getDimension ().getId () ) );
