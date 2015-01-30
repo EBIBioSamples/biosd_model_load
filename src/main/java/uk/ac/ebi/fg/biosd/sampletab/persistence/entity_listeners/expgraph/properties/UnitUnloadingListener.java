@@ -3,40 +3,41 @@ package uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.expgraph.prope
 import javax.persistence.EntityManager;
 
 import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.UnloadingListener;
-import uk.ac.ebi.fg.core_model.expgraph.properties.ExperimentalPropertyValue;
 import uk.ac.ebi.fg.core_model.expgraph.properties.Unit;
+import uk.ac.ebi.fg.persistence.hibernate.utils.HibernateUtils;
 
 /**
- * TODO: comment me!
+ * TODO: Comment me!
  *
- * @author brandizi
- * <dl><dt>Date:</dt><dd>18 Dec 2014</dd>
+ * <dl><dt>date</dt><dd>7 Aug 2014</dd></dl>
+ * @author Marco Brandizi
  *
  */
 public class UnitUnloadingListener extends UnloadingListener<Unit>
 {
+	/**
+	 * @param entityManager
+	 */
 	public UnitUnloadingListener ( EntityManager entityManager )
 	{
 		super ( entityManager );
 	}
 
-	
 	/**
 	 * Removes dangling units
-	 */	
+	 */
 	@Override
 	public long postRemoveGlobally ()
 	{
-		//String sql = "DELETE FROM unit WHERE id not in ( select unit_id from exp_prop_val )";
-		//long result = entityManager.createNativeQuery ( sql ).executeUpdate ();
-
-		String hql = "DELETE FROM " + Unit.class.getName () + " uv\n"
-			+ "WHERE uv NOT IN ( SELECT DISTINCT pv.unit.id FROM " + ExperimentalPropertyValue.class.getName () + " pv WHERE pv.unit IS NOT NULL)\n";
+		String hqlWhere = "uv NOT IN ( SELECT DISTINCT pv.unit.id FROM ExperimentalPropertyValue pv WHERE pv.unit IS NOT NULL)\n";
+		String sqlSel = HibernateUtils.hql2sql ( "SELECT id FROM Unit uv WHERE " + hqlWhere, true, this.entityManager ); 
 		
-		long result = this.entityManager.createQuery ( hql ).executeUpdate ();
+		long result = this.entityManager
+			.createNativeQuery ( "DELETE FROM unit_onto_entry WHERE owner_id IN ( " + sqlSel + ")" )
+			.executeUpdate ();
 		
-		// TODO: AOP
-		log.trace ( String.format ( "%s.postRemoveGlobally(): returning %d", this.getClass().getSimpleName (), result ));
+		result += this.entityManager.createQuery ( "DELETE FROM Unit uv WHERE " + hqlWhere ).executeUpdate ();
+		
 		return result;
 	}
 }

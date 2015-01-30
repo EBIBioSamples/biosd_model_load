@@ -2,12 +2,10 @@ package uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.expgraph.prope
 
 import javax.persistence.EntityManager;
 
-import uk.ac.ebi.fg.biosd.model.organizational.BioSampleGroup;
 import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.UnloadingListener;
-import uk.ac.ebi.fg.core_model.expgraph.Product;
-import uk.ac.ebi.fg.core_model.expgraph.ProtocolApplication;
 import uk.ac.ebi.fg.core_model.expgraph.properties.ExperimentalPropertyType;
 import uk.ac.ebi.fg.core_model.expgraph.properties.ExperimentalPropertyValue;
+import uk.ac.ebi.fg.persistence.hibernate.utils.HibernateUtils;
 
 /**
  * TODO: Comment me!
@@ -32,11 +30,23 @@ public class ExpPropValUnloadingListener extends UnloadingListener<ExperimentalP
 	@Override
 	public long postRemoveGlobally ()
 	{
-		String hql = "DELETE FROM " + ExperimentalPropertyValue.class.getName () + " pv WHERE\n"
-			+ " pv NOT IN ( SELECT DISTINCT pv1.id FROM " + Product.class.getName () + " prod JOIN prod.propertyValues pv1 )\n"
-			+ " AND pv NOT IN ( SELECT DISTINCT pv1.id FROM " + BioSampleGroup.class.getName () + " sg JOIN sg.propertyValues pv1 )\n"
-			+ " AND pv NOT IN ( SELECT DISTINCT pv1.id FROM " + ProtocolApplication.class.getName () + " papp JOIN papp.parameterValues pv1 )";
+		String hqlWhere = 
+			" pv NOT IN ( SELECT DISTINCT pv1.id FROM Product prod JOIN prod.propertyValues pv1 )\n"
+			+ " AND pv NOT IN ( SELECT DISTINCT pv1.id FROM BioSampleGroup sg JOIN sg.propertyValues pv1 )\n"
+			+ " AND pv NOT IN ( SELECT DISTINCT pv1.id FROM ProtocolApplication papp JOIN papp.parameterValues pv1 )";
+
+		String sqlSel = HibernateUtils.hql2sql (
+			"SELECT id FROM ExperimentalPropertyValue pv WHERE " + hqlWhere, true, this.entityManager 
+		);
 		
-		return this.entityManager.createQuery ( hql ).executeUpdate ();
+		long result = this.entityManager
+			.createNativeQuery ( "DELETE FROM exp_prop_val_onto_entry WHERE owner_id IN (" + sqlSel + ")" )
+			.executeUpdate ();
+		
+		result += this.entityManager
+			.createQuery ( "DELETE FROM ExperimentalPropertyValue pv WHERE " + hqlWhere )
+			.executeUpdate ();
+		
+		return result;
 	}
 }

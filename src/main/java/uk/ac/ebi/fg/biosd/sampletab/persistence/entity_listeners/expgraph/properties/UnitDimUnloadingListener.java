@@ -3,9 +3,8 @@ package uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.expgraph.prope
 import javax.persistence.EntityManager;
 
 import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.UnloadingListener;
-import uk.ac.ebi.fg.core_model.expgraph.properties.ExperimentalPropertyType;
-import uk.ac.ebi.fg.core_model.expgraph.properties.Unit;
 import uk.ac.ebi.fg.core_model.expgraph.properties.UnitDimension;
+import uk.ac.ebi.fg.persistence.hibernate.utils.HibernateUtils;
 
 /**
  * TODO: Comment me!
@@ -30,9 +29,17 @@ public class UnitDimUnloadingListener extends UnloadingListener<UnitDimension>
 	@Override
 	public long postRemoveGlobally ()
 	{
-		String hql = "DELETE FROM " + UnitDimension.class.getName () + " u\n"
-				+ "WHERE u NOT IN ( SELECT DISTINCT u.dimension.id FROM " + Unit.class.getName () + " u WHERE u.dimension IS NOT NULL )\n";
+		String hqlWhere = 
+			"u NOT IN ( SELECT DISTINCT u.dimension.id FROM Unit u WHERE u.dimension IS NOT NULL )";
 		
-		return this.entityManager.createQuery ( hql ).executeUpdate ();
+		String sqlSel = HibernateUtils.hql2sql ( "SELECT id FROM UnitDimension u WHERE " + hqlWhere, true, entityManager );
+		
+		long result = this.entityManager
+			.createNativeQuery ( "DELETE FROM unit_dim_onto_entry WHERE owner_id IN ( " + sqlSel + ")" )
+			.executeUpdate ();
+
+		result += this.entityManager.createQuery ( "DELETE FROM UnitDimension u WHERE " + hqlWhere ).executeUpdate ();
+		
+		return result;
 	}
 }
