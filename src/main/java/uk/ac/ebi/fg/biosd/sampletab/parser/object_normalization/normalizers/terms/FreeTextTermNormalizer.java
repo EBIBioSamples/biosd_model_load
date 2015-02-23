@@ -5,6 +5,7 @@ import java.util.Set;
 
 import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.Normalizer;
 import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.Store;
+import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.toplevel.AnnotatableNormalizer;
 import uk.ac.ebi.fg.core_model.terms.FreeTextTerm;
 import uk.ac.ebi.fg.core_model.terms.OntologyEntry;
 import uk.ac.ebi.fg.core_model.xref.ReferenceSource;
@@ -18,7 +19,7 @@ import uk.ac.ebi.fg.core_model.xref.ReferenceSource;
  *
  * @param <FT>
  */
-public class FreeTextTermNormalizer<FT extends FreeTextTerm> extends Normalizer<FT>
+public class FreeTextTermNormalizer<FT extends FreeTextTerm> extends AnnotatableNormalizer<FT>
 {
 	private final OntologyEntryNormalizer oeNormalizer;
 	
@@ -32,7 +33,8 @@ public class FreeTextTermNormalizer<FT extends FreeTextTerm> extends Normalizer<
 	public boolean normalize ( FT term )
 	{
 		if ( term == null || term.getId () != null ) return false;
-		
+		if ( !super.normalize ( term ) ) return false;
+
 		Set<OntologyEntry> delOes = new HashSet<OntologyEntry> (), addOes = new HashSet<OntologyEntry> ();
 		Set<OntologyEntry> oes = term.getOntologyTerms ();
 		for ( OntologyEntry oe: oes )
@@ -49,7 +51,8 @@ public class FreeTextTermNormalizer<FT extends FreeTextTerm> extends Normalizer<
 			
 			delOes.add ( oe ); addOes.add ( oeS );
 		}
-		oes.removeAll ( delOes ); oes.addAll ( addOes );
+		oes.removeAll ( delOes );
+		oes.addAll ( addOes );
 		return true;
 	}
 

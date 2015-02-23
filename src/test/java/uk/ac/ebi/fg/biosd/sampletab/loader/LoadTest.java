@@ -1,4 +1,4 @@
-package uk.ac.ebi.fg.biosd.sampletab;
+package uk.ac.ebi.fg.biosd.sampletab.loader;
 
 import static org.junit.Assert.fail;
 

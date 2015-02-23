@@ -82,9 +82,9 @@ public class UnloaderCmd
 			//
 			long time0 = System.currentTimeMillis ();
 			new Unloader()
-				.setDoForcedPurge ( cli.hasOption ( 'f' ) )
-				.setDoPurge ( cli.hasOption ( 'g' ) )
-				.unload ( msi );
+			.setDoForcedPurge ( cli.hasOption ( 'f' ) )
+			.setDoPurge ( cli.hasOption ( 'g' ) )
+			.unload ( msi );
 			
 			persistenceTime = System.currentTimeMillis () - time0;
 			log.info ( "Unloading/Purging done in " + LoaderCmd.formatTimeDuration ( persistenceTime ) + "." );
@@ -143,13 +143,13 @@ public class UnloaderCmd
 			.withLongOpt ( "force-purge" )
 			.create ( 'f' )
 		);
-
+		
 		opts.addOption ( OptionBuilder
 			.withDescription ( "Prints out this message" )
 			.withLongOpt ( "help" )
 			.create ( 'h' )
 		);
-
+		
 		return opts;		
 	}
 }

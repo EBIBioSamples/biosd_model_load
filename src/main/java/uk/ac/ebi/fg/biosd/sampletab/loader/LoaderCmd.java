@@ -257,7 +257,6 @@ public class LoaderCmd
 			.create ( 'f' )
 		);
 		
-
 		opts.addOption ( OptionBuilder
 			.withDescription ( "Prints out this message" )
 			.withLongOpt ( "help" )

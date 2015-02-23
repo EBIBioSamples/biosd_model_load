@@ -12,6 +12,7 @@ import uk.ac.ebi.fg.core_model.resources.Resources;
 import uk.ac.ebi.fg.core_model.terms.CVTerm;
 import uk.ac.ebi.fg.core_model.terms.OntologyEntry;
 import uk.ac.ebi.fg.core_model.toplevel.Accessible;
+import uk.ac.ebi.fg.core_model.toplevel.Annotation;
 import uk.ac.ebi.fg.core_model.xref.ReferenceSource;
 
 /**
@@ -68,6 +69,10 @@ public class DBStore implements Store
 		if ( newObject instanceof OntologyEntry ) 
 			return (T) findOE ( targetIds [ 0 ], targetIds [ 1 ], targetIds [ 2 ], targetIds [ 3 ] );
 
+		if ( newObject instanceof Annotation )
+			// TODO: For the moment we don't recycle any annotation
+			return null;
+		
 		throw new IllegalArgumentException ( 
 			"Internal Error with BioSD persistence layer, don't know how to handle an object of type " 
 			+ newObject.getClass () + ": " + newObject 

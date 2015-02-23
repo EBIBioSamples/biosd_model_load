@@ -1,6 +1,3 @@
-/*
- * 
- */
 package uk.ac.ebi.fg.biosd.sampletab.persistence;
 
 import javax.persistence.EntityManager;
@@ -56,9 +53,11 @@ public class Unloader
 			.setDoForcedPurge ( this.isDoForcedPurge () )
 			.setDoPurge ( this.isDoPurge () );
 		
-		long result = unloadListener.preRemove ( msi );
+		long result = unloadListener.preRemoveGlobally (); 
+		result += unloadListener.preRemove ( msi );
 		if ( msi != null ) result += dao.delete ( msi ) ? 1 : 0;
 		result += unloadListener.postRemove ( msi );
+		result += unloadListener.postRemoveGlobally ();
 		ts.commit ();
 		
 		// Just to be sure, we've noted some timeouts on Oracle side
@@ -78,7 +77,7 @@ public class Unloader
 		this.doPurge = doPurge;
 		return this;
 	}
-
+	
 	public boolean isDoForcedPurge ()
 	{
 		return doForcedPurge;
@@ -89,5 +88,4 @@ public class Unloader
 		this.doForcedPurge = doForcedPurge;
 		return this;
 	}
-	
 }

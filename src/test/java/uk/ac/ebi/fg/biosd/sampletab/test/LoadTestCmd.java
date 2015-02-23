@@ -19,7 +19,7 @@ import uk.ac.ebi.fg.core_model.resources.Resources;
 import uk.ac.ebi.utils.exceptions.ExceptionUtils;
 
 /**
- * Uses to perform loading tests, one submission at a time. See load_test.sh for details.
+ * Used to perform loading tests, one submission at a time. See load_test.sh for details.
  *
  * <dl><dt>date</dt><dd>Sep 17, 2012</dd></dl>
  * @author Marco Brandizi

@@ -5,7 +5,6 @@ import org.apache.commons.lang.StringUtils;
 import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.Store;
 import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.FilterNormalizer;
 import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.toplevel.AnnotatableNormalizer;
-import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.xrefs.ReferrerNormalizer;
 import uk.ac.ebi.fg.core_model.organizational.Publication;
 import uk.ac.ebi.fg.core_model.organizational.PublicationStatus;
 import uk.ac.ebi.fg.core_model.toplevel.Annotation;
@@ -19,7 +18,7 @@ import uk.ac.ebi.fg.core_model.xref.XRef;
  * @author Marco Brandizi
  *
  */
-public class PublicationNormalizer extends FilterNormalizer<Publication>
+public class PublicationNormalizer extends AnnotatableNormalizer<Publication>
 {
 	/**
 	 * Populates {@link FilterNormalizer} with {@link AnnotatableNormalizer} and {@link ReferrerNormalizer}.
@@ -28,14 +27,11 @@ public class PublicationNormalizer extends FilterNormalizer<Publication>
 	public PublicationNormalizer ( Store store ) 
 	{
 		super ( store );
-
-		normalizers.add ( new AnnotatableNormalizer<Publication> ( store ) );
-		normalizers.add ( new ReferrerNormalizer<Publication> ( store ) );
 	}
 
 	/**
-	 * As said above, check for publication status and uses {@link AnnotatableNormalizer}, {@link ReferrerNormalizer}, 
-	 * which were put into {@link FilterNormalizer} by the constructor.
+	 * As said above, check for publication status and also uses {@link AnnotatableNormalizer},
+	 * which is put into {@link FilterNormalizer} by the constructor.
 	 * 
 	 */
 	@Override

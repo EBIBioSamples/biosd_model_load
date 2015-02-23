@@ -22,6 +22,7 @@
     <encoder>
       <pattern>%d{dd MMM yyyy HH:mm:ss.SSS} [%-6t] [%-5p] \(%C{1},%L\): %m%n</pattern>
     </encoder>
+    
     <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
       <level>ALL</level>
     </filter>
@@ -37,7 +38,7 @@
   <!-- logger name="uk.ac.ebi.fg.biosd.sampletab.persistence" level="DEBUG"/ -->
   <!-- logger name = "org.hibernate.type" level = "DEBUG" / -->
 
-  <logger name="org.hibernate.SQL" level = "TRACE" />
-  <logger name="org.hibernate.hql" level = "TRACE" />
+  <!--  logger name="org.hibernate.SQL" level = "TRACE" />
+  <logger name="org.hibernate.hql" level = "TRACE" / -->
   
 </configuration>

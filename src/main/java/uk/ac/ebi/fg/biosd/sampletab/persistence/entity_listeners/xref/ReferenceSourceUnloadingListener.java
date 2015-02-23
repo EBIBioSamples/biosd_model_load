@@ -1,6 +1,3 @@
-/*
- * 
- */
 package uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.xref;
 
 import javax.persistence.EntityManager;
@@ -38,13 +35,13 @@ public class ReferenceSourceUnloadingListener extends UnloadingListener<Referenc
 		
 		String sql = "DELETE FROM reference_source\n" +
 			"WHERE id NOT IN ( SELECT source_id FROM onto_entry )\n" + 
-			"AND id NOT IN ( SELECT source_id FROM xref )\n" + 
+			"AND id NOT IN ( SELECT xref_source_id FROM annotation )\n" + 
 			"AND id NOT IN ( SELECT referencesources_id FROM msi_reference_source )";
 
 		long result = entityManager.createNativeQuery ( sql ).executeUpdate (); 
 
 		// TODO: AOP
-		log.trace ( String.format ( "%s.postRemove( null ): returning %d", ReferenceSource.class.getSimpleName (), result ));
+		log.trace ( String.format ( "%s.postRemoveGlobally(): returning %d", this.getClass().getSimpleName (), result ));
 		return result;
 	}
 

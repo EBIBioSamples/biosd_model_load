@@ -16,11 +16,12 @@ import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.expgraph.proper
 import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.expgraph.properties.ExpPropValUnloadingListener;
 import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.expgraph.properties.UnitDimUnloadingListener;
 import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.expgraph.properties.UnitUnloadingListener;
+import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.expgraph.properties.dataitems.DataItemUnloadingUnlistener;
 import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.terms.CVTermUnloadingListener;
 import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.terms.OntologyEntryUnloadingListener;
+import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.toplevel.AnnotationUnloaderListener;
 import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.xref.DatabaseRecRefUnloadingListener;
 import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.xref.ReferenceSourceUnloadingListener;
-import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.xref.XRefUnloadingListener;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.toplevel.AccessibleDAO;
 
 /**
@@ -88,10 +89,12 @@ public class MSIUnloadingListener extends UnloadingListener<MSI>
 			result += new UnitUnloadingListener ( entityManager ).postRemoveGlobally ();
 			result += new UnitDimUnloadingListener ( entityManager ).postRemoveGlobally ();
 			result += new OntologyEntryUnloadingListener ( entityManager ).postRemoveGlobally ();
-			result += new XRefUnloadingListener ( entityManager ).postRemoveGlobally ();
-			result += new ReferenceSourceUnloadingListener ( entityManager ).postRemoveGlobally ();
 			result += new DatabaseRecRefUnloadingListener ( entityManager ).postRemoveGlobally ();
 			result += new CVTermUnloadingListener ( entityManager ).postRemoveGlobally ();
+			result += new DataItemUnloadingUnlistener ( entityManager ).postRemoveGlobally ();
+			result += new AnnotationUnloaderListener ( entityManager ).postRemoveGlobally ();
+			result += new ReferenceSourceUnloadingListener ( entityManager ).postRemoveGlobally ();
+			// Again for ref source's annotations?!
 		}
 
 		JobRegisterDAO jrDao = new JobRegisterDAO ( entityManager );

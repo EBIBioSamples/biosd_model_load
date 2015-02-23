@@ -6,7 +6,6 @@ package uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.terms;
 import javax.persistence.EntityManager;
 
 import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.UnloadingListener;
-import uk.ac.ebi.fg.core_model.organizational.Publication;
 import uk.ac.ebi.fg.core_model.terms.CVTerm;
 
 /**
@@ -46,7 +45,7 @@ public class CVTermUnloadingListener extends UnloadingListener<CVTerm>
 			result += entityManager.createQuery ( hql ).executeUpdate ();
 
 		// TODO: AOP
-		log.trace ( String.format ( "%s.postRemove( null ): returning %d", Publication.class.getSimpleName (), result ));
+		log.trace ( String.format ( "%s.postRemoveGlobally(): returning %d", this.getClass().getSimpleName (), result ));
 		return result;
 	}
 

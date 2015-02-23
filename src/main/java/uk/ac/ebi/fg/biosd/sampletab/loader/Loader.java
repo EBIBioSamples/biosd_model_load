@@ -1,11 +1,20 @@
 package uk.ac.ebi.fg.biosd.sampletab.loader;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.File;
-import java.net.MalformedURLException;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+import org.apache.commons.io.input.ReaderInputStream;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +57,11 @@ import uk.ac.ebi.fg.core_model.xref.ReferenceSource;
  * @author Adam Falcounbridge
  *
  */
-public class Loader {
+public class Loader 
+{
+	
+		private boolean skipSCD = false;
+
     private Logger log = LoggerFactory.getLogger(getClass());
     
     public MSI fromSampleData(String filename) throws ParseException {
@@ -57,19 +70,51 @@ public class Loader {
     
     public MSI fromSampleData(File file) throws ParseException {
         try {
-            return fromSampleData(file.toURI().toURL());
+            return fromSampleData( new BufferedInputStream ( new FileInputStream ( file ) ) );
         }
-        catch (MalformedURLException e) {
-            throw new ParseException("File '" + file.getAbsolutePath() + " could not be resolved to a valid URL", e);
+        catch (FileNotFoundException e) {
+            throw new ParseException("File '" + file.getAbsolutePath() + " not found", e);
         }
     }
     
-    public MSI fromSampleData(URL url) throws ParseException {
-        SampleTabSaferParser parser = new SampleTabSaferParser();
-        SampleData sampledata;
-        sampledata = parser.parse(url);
-        return fromSampleData(sampledata);
+    public MSI fromSampleData(URL url) throws ParseException 
+    {
+        try
+				{
+        	return fromSampleData ( url.openStream () );
+				} 
+        catch ( IOException ex )
+				{
+  				throw new ParseException ( "Error while reading the URL '" + url + "': " + ex.getMessage (), ex );
+				}
     }
+    
+    
+    public MSI fromSampleData ( InputStream in ) throws ParseException 
+    {
+      try
+			{
+				SampleTabSaferParser parser = new SampleTabSaferParser();
+				SampleData sampledata;
+				sampledata = this.skipSCD 
+					// If we are in header-only mode, get the truncated file. 
+				  //
+					// TODO: not sure UTF-8 is a safe assumption
+				  // BufferedInputStream support mark(), which is required by Limpopo
+					? parser.parse ( new BufferedInputStream ( new ReaderInputStream ( 
+							new StringReader ( this.readMSISection ( in ).toString () ), 
+							"UTF-8"
+						)))
+				  : parser.parse ( in );
+				return fromSampleData(sampledata);
+			} 
+      catch ( IOException ex )
+			{
+				throw new ParseException ( "Error while reading the input SampleTab: " + ex.getMessage (), ex );
+			}    	
+    }
+    
+    
     
     public synchronized MSI fromSampleData(SampleData st) {
         MSI msi = new MSI(st.msi.submissionIdentifier);
@@ -181,173 +226,174 @@ public class Loader {
     }
     
     private ExperimentalPropertyValue convertAtttribute(SCDNodeAttribute a, SampleData st) {
-        
-        ExperimentalPropertyValue v = null;
-        
-        boolean isRelationshipAttribute = false;
-        synchronized (AbstractRelationshipAttribute.class) {
-            isRelationshipAttribute = AbstractRelationshipAttribute.class.isInstance(a);
-        }
-        boolean isCommentAttribute = false;
-        synchronized (CommentAttribute.class) {
-            isCommentAttribute = CommentAttribute.class.isInstance(a);
-        }
-        boolean isCharacteristicAttribute = false;
-        synchronized (CharacteristicAttribute.class) {
-            isCharacteristicAttribute = CharacteristicAttribute.class.isInstance(a);
-        }
-        boolean isNamedAttribute = false;
-        synchronized (AbstractNamedAttribute.class) {
-            isNamedAttribute = AbstractNamedAttribute.class.isInstance(a);
-        }
+      
+      ExperimentalPropertyValue v = null;
+      
+      boolean isRelationshipAttribute = false;
+      synchronized (AbstractRelationshipAttribute.class) {
+          isRelationshipAttribute = AbstractRelationshipAttribute.class.isInstance(a);
+      }
+      boolean isCommentAttribute = false;
+      synchronized (CommentAttribute.class) {
+          isCommentAttribute = CommentAttribute.class.isInstance(a);
+      }
+      boolean isCharacteristicAttribute = false;
+      synchronized (CharacteristicAttribute.class) {
+          isCharacteristicAttribute = CharacteristicAttribute.class.isInstance(a);
+      }
+      boolean isNamedAttribute = false;
+      synchronized (AbstractNamedAttribute.class) {
+          isNamedAttribute = AbstractNamedAttribute.class.isInstance(a);
+      }
 
-        if (isCommentAttribute) {
-            CommentAttribute ca = (CommentAttribute) a;
-            v = new SampleCommentValue( a.getAttributeValue(), new SampleCommentType( ca.type ));
-        } else if (isCharacteristicAttribute) {
-            CharacteristicAttribute ca = (CharacteristicAttribute) a;
-            v = new BioCharacteristicValue( a.getAttributeValue(), new BioCharacteristicType( ca.type ));
-        } else if (isRelationshipAttribute || isNamedAttribute) {
-            v = new ExperimentalPropertyValue<ExperimentalPropertyType>( a.getAttributeValue(), new ExperimentalPropertyType( a.getAttributeType() ));
-        } else {
-            throw new RuntimeException("Unrecognized attribute "+a.getAttributeType());
-        }
-        
-        boolean isOntologyAttribute = false;
-        synchronized (AbstractNodeAttributeOntology.class) {
-            isOntologyAttribute = AbstractNodeAttributeOntology.class.isInstance(a);
-        }
-        if (isOntologyAttribute) {
-            AbstractNodeAttributeOntology ao = (AbstractNodeAttributeOntology) a;
-            
-            //ontology
-            if (ao.getTermSourceID() != null) {
-                //has ref + id
-                if (ao.getTermSourceREF() != null && ao.getTermSourceID() != null) {
-                    TermSource t = st.msi.getTermSource(ao.getTermSourceREF());
-                    ReferenceSource rs = new ReferenceSource(ao.getTermSourceREF(), t.getVersion());
-                    rs.setUrl(t.getURI());
-                    rs.setName(ao.getTermSourceREF());
-                    v.addOntologyTerm ( 
-                        new OntologyEntry( ao.getTermSourceID(), rs ));
-                //is just a uri
-                } else if (ao.getTermSourceREF() == null && ao.getTermSourceID() != null) {
-                    //check that it is a valid formatted URL
-                    URI uri = null;
-                    try {
-                        uri = new URI(ao.getTermSourceID());
-                        v.addOntologyTerm(new OntologyEntry(uri.toASCIIString(), null));
-                    } catch (URISyntaxException e) {
-                        log.warn("Term Source ID not a valid URI, skipping ("+ao.getTermSourceID()+")");
-                    }
-                }
-            }
-            
-            //unit
-            UnitAttribute unit = null;
-            if (CommentAttribute.class.isInstance(a) ) {
-                CommentAttribute co = (CommentAttribute) a;
-                unit = co.unit;
-            }
-            if (CharacteristicAttribute.class.isInstance(a) ) {
-                CharacteristicAttribute co = (CharacteristicAttribute) a;
-                unit = co.unit;
-            }
-            if (unit != null) {
-                Unit u = new Unit();
-                u.setTermText(unit.getAttributeValue());
-                v.setUnit(u);
-                AbstractNodeAttributeOntology aou = (AbstractNodeAttributeOntology) unit;
-                
-                //unit ontology term
-                if (aou.getTermSourceID() != null) {
+      if (isCommentAttribute) {
+          CommentAttribute ca = (CommentAttribute) a;
+          v = new SampleCommentValue( a.getAttributeValue(), new SampleCommentType( ca.type ));
+      } else if (isCharacteristicAttribute) {
+          CharacteristicAttribute ca = (CharacteristicAttribute) a;
+          v = new BioCharacteristicValue( a.getAttributeValue(), new BioCharacteristicType( ca.type ));
+      } else if (isRelationshipAttribute || isNamedAttribute) {
+          v = new ExperimentalPropertyValue<ExperimentalPropertyType>( a.getAttributeValue(), new ExperimentalPropertyType( a.getAttributeType() ));
+      } else {
+          throw new RuntimeException("Unrecognized attribute "+a.getAttributeType());
+      }
+      
+      boolean isOntologyAttribute = false;
+      synchronized (AbstractNodeAttributeOntology.class) {
+          isOntologyAttribute = AbstractNodeAttributeOntology.class.isInstance(a);
+      }
+      if (isOntologyAttribute) {
+          AbstractNodeAttributeOntology ao = (AbstractNodeAttributeOntology) a;
+          
+          //ontology
+          if (ao.getTermSourceID() != null) {
+              //has ref + id
+              if (ao.getTermSourceREF() != null && ao.getTermSourceID() != null) {
+                  TermSource t = st.msi.getTermSource(ao.getTermSourceREF());
+                  ReferenceSource rs = new ReferenceSource(ao.getTermSourceREF(), t.getVersion());
+                  rs.setUrl(t.getURI());
+                  rs.setName(ao.getTermSourceREF());
+                  v.addOntologyTerm ( 
+                      new OntologyEntry( ao.getTermSourceID(), rs ));
+              //is just a uri
+              } else if (ao.getTermSourceREF() == null && ao.getTermSourceID() != null) {
+                  //check that it is a valid formatted URL
+                  URI uri = null;
+                  try {
+                      uri = new URI(ao.getTermSourceID());
+                      v.addOntologyTerm(new OntologyEntry(uri.toASCIIString(), null));
+                  } catch (URISyntaxException e) {
+                      log.warn("Term Source ID not a valid URI, skipping ("+ao.getTermSourceID()+")");
+                  }
+              }
+          }
+          
+          //unit
+          UnitAttribute unit = null;
+          if (CommentAttribute.class.isInstance(a) ) {
+              CommentAttribute co = (CommentAttribute) a;
+              unit = co.unit;
+          }
+          if (CharacteristicAttribute.class.isInstance(a) ) {
+              CharacteristicAttribute co = (CharacteristicAttribute) a;
+              unit = co.unit;
+          }
+          if (unit != null) {
+              Unit u = new Unit();
+              u.setTermText(unit.getAttributeValue());
+              v.setUnit(u);
+              AbstractNodeAttributeOntology aou = (AbstractNodeAttributeOntology) unit;
+              
+              //unit ontology term
+              if (aou.getTermSourceID() != null) {
 
-                    //has ref + id
-                    if (aou.getTermSourceREF() != null && aou.getTermSourceID() != null) {
-                        TermSource t = st.msi.getTermSource(aou.getTermSourceREF());
-                        ReferenceSource rs = new ReferenceSource(aou.getTermSourceREF(), t.getVersion());
-                        rs.setUrl(t.getURI());
-                        rs.setName(aou.getTermSourceREF());
-                        u.addOntologyTerm ( 
-                            new OntologyEntry( aou.getTermSourceID(), rs ));
-                    //is just a uri
-                    } else if (aou.getTermSourceREF() == null && aou.getTermSourceID() != null) {
-                        //check that it is a valid formatted URL
-                        URI uri = null;
-                        try {
-                            uri = new URI(aou.getTermSourceID());
-                            u.addOntologyTerm(new OntologyEntry(uri.toASCIIString(), null));
-                        } catch (URISyntaxException e) {
-                            log.warn("Term Source ID not a valid URI, skipping ("+aou.getTermSourceID()+")");
-                        }
-                    }
-                }
-            }
-            
-        }
-        
-        
-        
-        //Database Attributes are processed elsewhere
-        
-        return v;
+                  //has ref + id
+                  if (aou.getTermSourceREF() != null && aou.getTermSourceID() != null) {
+                      TermSource t = st.msi.getTermSource(aou.getTermSourceREF());
+                      ReferenceSource rs = new ReferenceSource(aou.getTermSourceREF(), t.getVersion());
+                      rs.setUrl(t.getURI());
+                      rs.setName(aou.getTermSourceREF());
+                      u.addOntologyTerm ( 
+                          new OntologyEntry( aou.getTermSourceID(), rs ));
+                  //is just a uri
+                  } else if (aou.getTermSourceREF() == null && aou.getTermSourceID() != null) {
+                      //check that it is a valid formatted URL
+                      URI uri = null;
+                      try {
+                          uri = new URI(aou.getTermSourceID());
+                          u.addOntologyTerm(new OntologyEntry(uri.toASCIIString(), null));
+                      } catch (URISyntaxException e) {
+                          log.warn("Term Source ID not a valid URI, skipping ("+aou.getTermSourceID()+")");
+                      }
+                  }
+              }
+          }
+          
+      }
+      
+      
+      
+      //Database Attributes are processed elsewhere
+      
+      return v;
     }
 
+
     private BioSample convertSampleNode(SampleData st, MSI msi, SampleNode s) {
-        if (s.getSampleAccession() == null || s.getSampleAccession().length() == 0){
-            throw new IllegalArgumentException("SampleNode must be accessioned");
-        }
-        
-        BioSample bs = new BioSample(s.getSampleAccession());
-        
-        bs.addPropertyValue(
-                new BioCharacteristicValue(s.getNodeName(), 
-                        new BioCharacteristicType("Sample Name")));
-        
-        if (s.getSampleDescription() != null) {
-            bs.addPropertyValue(
-                    new BioCharacteristicValue(s.getSampleDescription(), 
-                            new BioCharacteristicType("Sample Description")));
-        }
-        
-        for(SCDNodeAttribute a: s.attributes) {
-            boolean isDatabaseAttribute = false;
-            synchronized (DatabaseAttribute.class) {
-                isDatabaseAttribute = DatabaseAttribute.class.isInstance(a);
-            }
-            if (isDatabaseAttribute) {
-                DatabaseAttribute da = (DatabaseAttribute) a;
-                //do not store some sources as they should be in myEquivalents instead
-                if (da.getAttributeValue().equals("ENA SRA")
-                        || da.getAttributeValue().equals("ArrayExpress")
-                        || da.getAttributeValue().equals("COSMIC")
-                        || da.getAttributeValue().equals("PRIDE")) {
-                    log.trace("Skipping storage of "+da.getAttributeValue()+" database reference");
-                } else {
-                    DatabaseRecordRef dbref = new DatabaseRecordRef ( da.getAttributeValue(), da.databaseID, null, da.databaseURI, null );
-                    bs.addDatabaseRecordRef ( dbref );
-                }
-                
-                
-            } else {
-                bs.addPropertyValue(convertAtttribute(a, st));
-            }
-        }
-        
-        //handle child nodes
-        //NB these are currently (Jul 13) removed in toload step
-        for (Node n : s.getChildNodes()) {
-            if (SampleNode.class.isInstance(n)) {
-                SampleNode sn = (SampleNode) n;
-                BioSample derivedInto = convertSampleNode(st, msi, sn);
-                bs.addDerivedInto(derivedInto);
-            }
-        }
-        
-        msi.addSample(bs);
-        
-        return bs;
-        
+      if (s.getSampleAccession() == null || s.getSampleAccession().length() == 0){
+          throw new IllegalArgumentException("SampleNode must be accessioned");
+      }
+      
+      BioSample bs = new BioSample(s.getSampleAccession());
+      
+      bs.addPropertyValue(
+              new BioCharacteristicValue(s.getNodeName(), 
+                      new BioCharacteristicType("Sample Name")));
+      
+      if (s.getSampleDescription() != null) {
+          bs.addPropertyValue(
+                  new BioCharacteristicValue(s.getSampleDescription(), 
+                          new BioCharacteristicType("Sample Description")));
+      }
+      
+      for(SCDNodeAttribute a: s.attributes) {
+          boolean isDatabaseAttribute = false;
+          synchronized (DatabaseAttribute.class) {
+              isDatabaseAttribute = DatabaseAttribute.class.isInstance(a);
+          }
+          if (isDatabaseAttribute) {
+              DatabaseAttribute da = (DatabaseAttribute) a;
+              //do not store some sources as they should be in myEquivalents instead
+              if (da.getAttributeValue().equals("ENA SRA")
+                      || da.getAttributeValue().equals("ArrayExpress")
+                      || da.getAttributeValue().equals("COSMIC")
+                      || da.getAttributeValue().equals("PRIDE")) {
+                  log.trace("Skipping storage of "+da.getAttributeValue()+" database reference");
+              } else {
+                  DatabaseRecordRef dbref = new DatabaseRecordRef ( da.getAttributeValue(), da.databaseID, null, da.databaseURI, null );
+                  bs.addDatabaseRecordRef ( dbref );
+              }
+              
+              
+          } else {
+              bs.addPropertyValue(convertAtttribute(a, st));
+          }
+      }
+      
+      //handle child nodes
+      //NB these are currently (Jul 13) removed in toload step
+      for (Node n : s.getChildNodes()) {
+          if (SampleNode.class.isInstance(n)) {
+              SampleNode sn = (SampleNode) n;
+              BioSample derivedInto = convertSampleNode(st, msi, sn);
+              bs.addDerivedInto(derivedInto);
+          }
+      }
+      
+      msi.addSample(bs);
+      
+      return bs;
+      
     }
     
     public void convertOrganization(uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Organization org, MSI msi) {
@@ -389,15 +435,54 @@ public class Loader {
     */
     
     public void convertDatabase(uk.ac.ebi.arrayexpress2.sampletab.datamodel.msi.Database database, MSI msi) {
-        //do not store some sources as they should be in myEquivalents instead
-        if (database.getName().equals("ENA SRA")
-                || database.getName().equals("ArrayExpress")
-                || database.getName().equals("COSMIC")
-                || database.getName().equals("PRIDE")) {
-            log.trace("Skipping storage of "+database.getName ()+" database reference");
-        } else {
-          	DatabaseRecordRef d = new DatabaseRecordRef( database.getName (), database.getID(), null, database.getURI (), null );
-            msi.addDatabaseRecordRef ( d );
-        }
+      //do not store some sources as they should be in myEquivalents instead
+      if (database.getName().equals("ENA SRA")
+              || database.getName().equals("ArrayExpress")
+              || database.getName().equals("COSMIC")
+              || database.getName().equals("PRIDE")) {
+          log.trace("Skipping storage of "+database.getName ()+" database reference");
+      } else {
+        	DatabaseRecordRef d = new DatabaseRecordRef( database.getName (), database.getID(), null, database.getURI (), null );
+          msi.addDatabaseRecordRef ( d );
+      }
     }
-}
+
+
+    /**
+     * If true, allows you to read the MSI section only and get general information about the submission, skipping the 
+     * potentially large body content.
+     * 
+     */
+		public boolean isSkipSCD ()
+		{
+			return skipSCD;
+		}
+
+		public void setSkipSCD ( boolean skipSCD )
+		{
+			this.skipSCD = skipSCD;
+		}
+		
+		/**
+		 * Returns a {@link StringBuilder} having the MSI section and the begin of the SCD section, without the contents
+		 * This is passed to the parser when {@link #isSkipSCD()}. The SCD heading must be there, Limpopo complains otherwise.
+		 */
+		private StringBuilder readMSISection ( InputStream in ) throws IOException
+		{
+			StringBuilder sb = new StringBuilder ();
+			BufferedReader reader = new BufferedReader ( new InputStreamReader ( in ) );
+			
+			for ( String line = null; (line = reader.readLine ()) != null; )
+			{
+				sb.append ( line ).append ( "\n" );
+				if ( StringUtils.startsWithIgnoreCase ( line.trim (), "[SCD]" ) )
+					break;
+			}
+			
+			// The parser accept 0-samples, but not the lack of this headers
+			sb.append ( "[SCD]\n" );
+			sb.append ( "Sample Accession\n" );
+			
+			return sb;
+		}
+ }
