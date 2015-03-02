@@ -268,8 +268,89 @@ public class Exporter {
         }
         */
         
-        //SCD section
+        //SCD section 
         
+        //got all owned samples
+        for (BioSample s : msi.getSamples()) {            
+            SampleNode sn = new SampleNode();
+            sn.setSampleAccession(s.getAcc());
+                            
+            for (ExperimentalPropertyValue<ExperimentalPropertyType> v : s.getPropertyValues()) {
+                
+
+                ExperimentalPropertyType t = v.getType();
+                SCDNodeAttribute attr = null;
+
+                if (t.getTermText().equals("Sample Name")) {
+                    sn.setNodeName(v.getTermText());
+                    
+                } else if (t.getTermText().equals("Sample Description")) {
+                    sn.setSampleDescription(v.getTermText());
+                    
+                } else { 
+                    attr = getAttribute(v, sd);
+                }
+                    
+                //database attributes are below                    
+                
+                if (attr != null) {
+                    if (AbstractNodeAttributeOntology.class.isInstance(attr)) {
+                        AbstractNodeAttributeOntology attrOnt = (AbstractNodeAttributeOntology) attr;
+                        //this can have an ontology, check for it
+                        OntologyEntry oe = v.getSingleOntologyTerm();
+                        if (oe != null) {
+                            attrOnt.setTermSourceID(oe.getAcc());
+                            ReferenceSource source = oe.getSource();
+                            if (source != null) {
+                                String url = source.getUrl();
+                                String version = source.getVersion();
+                                String name = source.getName();
+                                TermSource ts = new TermSource(name, url, version);
+                                attrOnt.setTermSourceREF(sd.msi.getOrAddTermSource(ts));
+                            }
+                        }
+                    }
+                    
+                    sn.addAttribute(attr);
+                }
+            }
+                            
+            for (DatabaseRecordRef db : s.getDatabaseRecordRefs () ) {
+                //sanity check
+                if (db == null) continue;
+                String dbName = db.getDbName();
+                String dbAcc = db.getAcc();
+                String dbUrl = db.getUrl();
+                //sanity check
+                if (dbName != null && dbAcc != null && dbUrl != null) {
+                    DatabaseAttribute dba = new DatabaseAttribute(dbName, dbAcc, dbUrl);
+                    sn.addAttribute(dba);
+                }
+            }                
+            
+            sd.scd.addNode(sn);
+        }
+        //add all referenced samples that aren't owned
+        //only add name and accession
+        for (BioSample s : msi.getSampleRefs()) {
+            SampleNode sn = new SampleNode();
+            sn.setSampleAccession(s.getAcc());
+            
+            for (ExperimentalPropertyValue<ExperimentalPropertyType> v : s.getPropertyValues()) {
+                ExperimentalPropertyType t = v.getType();
+                SCDNodeAttribute attr = null;
+
+                if (t.getTermText().equals("Sample Name")) {
+                    sn.setNodeName(v.getTermText());
+                }
+            }
+            
+            if (sd.scd.getNode(sn.getNodeName(), SampleNode.class) == null) {
+                sd.scd.addNode(sn);	
+            }
+        }
+        
+        //add all owned groups
         for( BioSampleGroup g : msi.getSampleGroups()) {
             GroupNode gn = new GroupNode();
             gn.setGroupAccession(g.getAcc());
@@ -314,73 +395,38 @@ public class Exporter {
             for (DatabaseRecordRef db : g.getDatabaseRecordRefs()) {
                 DatabaseAttribute dba = new DatabaseAttribute(db.getDbName (), db.getAcc(), db.getUrl());
                 gn.addAttribute(dba);
-            }  
+            } 
             
+            sd.scd.addNode(gn);
+            //add links to samples that the group has
             for (BioSample s : g.getSamples()) {
-                //TODO check if this node already exists
-                
-                SampleNode sn = new SampleNode();
-                sn.setSampleAccession(s.getAcc());
-                                
+            	String sampleName = null;
                 for (ExperimentalPropertyValue<ExperimentalPropertyType> v : s.getPropertyValues()) {
-                    
-
                     ExperimentalPropertyType t = v.getType();
                     SCDNodeAttribute attr = null;
 
                     if (t.getTermText().equals("Sample Name")) {
-                        sn.setNodeName(v.getTermText());
-                        
-                    } else if (t.getTermText().equals("Sample Description")) {
-                        sn.setSampleDescription(v.getTermText());
-                        
-                    } else { 
-                        attr = getAttribute(v, sd);
-                    }
-                        
-                    //database attributes are below                    
-                    
-                    if (attr != null) {
-                        if (AbstractNodeAttributeOntology.class.isInstance(attr)) {
-                            AbstractNodeAttributeOntology attrOnt = (AbstractNodeAttributeOntology) attr;
-                            //this can have an ontology, check for it
-                            OntologyEntry oe = v.getSingleOntologyTerm();
-                            if (oe != null) {
-                                attrOnt.setTermSourceID(oe.getAcc());
-                                ReferenceSource source = oe.getSource();
-                                if (source != null) {
-                                    String url = source.getUrl();
-                                    String version = source.getVersion();
-                                    String name = source.getName();
-                                    TermSource ts = new TermSource(name, url, version);
-                                    attrOnt.setTermSourceREF(sd.msi.getOrAddTermSource(ts));
-                                }
-                            }
-                        }
-                        
-                        sn.addAttribute(attr);
+                    	sampleName = v.getTermText();
                     }
                 }
-                                
-                for (DatabaseRecordRef db : s.getDatabaseRecordRefs () ) {
-                    //sanity check
-                    if (db == null) continue;
-                    String dbName = db.getDbName();
-                    String dbAcc = db.getAcc();
-                    String dbUrl = db.getUrl();
-                    //sanity check
-                    if (dbName != null && dbAcc != null && dbUrl != null) {
-                        DatabaseAttribute dba = new DatabaseAttribute(dbName, dbAcc, dbUrl);
-                        sn.addAttribute(dba);
-                    }
-                }                
-                
-                sd.scd.addNode(sn);
-                gn.addParentNode(sn);
-                sn.addChildNode(gn);
+                SampleNode sn = sd.scd.getNode(sampleName, SampleNode.class);
+                sn.addParentNode(gn);
+                gn.addChildNode(sn);
             }
-            
-            sd.scd.addNode(gn);
+        }
+        //add all referenced groups that aren't owned
+        //only add name and accession
+        for( BioSampleGroup g : msi.getSampleGroupRefs()) {
+            GroupNode gn = new GroupNode();
+            for (ExperimentalPropertyValue<ExperimentalPropertyType> v : g.getPropertyValues()) {
+                ExperimentalPropertyType t = v.getType();
+                if (t.getTermText().equals("Group Name")) {
+                    gn.setNodeName(v.getTermText());
+                }
+            }
+            if (sd.scd.getNode(gn.getNodeName(), GroupNode.class) == null) {
+                sd.scd.addNode(gn);	
+            }
         }
         
         if (sd.scd.getNodeCount() == 0) {
