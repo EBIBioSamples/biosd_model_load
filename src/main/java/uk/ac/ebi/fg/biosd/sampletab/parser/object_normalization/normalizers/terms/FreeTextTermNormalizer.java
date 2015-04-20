@@ -40,8 +40,15 @@ public class FreeTextTermNormalizer<FT extends FreeTextTerm> extends Annotatable
 		for ( OntologyEntry oe: oes )
 		{
 			ReferenceSource src = oe.getSource ();
-			if ( src == null ) continue; // This is actually an error and will pop-up later.
-			OntologyEntry oeS = store.find ( oe, oe.getAcc (), src.getAcc (), src.getVersion (), src.getUrl () );
+			String srcAcc, srcVer, srcUrl;
+			if ( src == null )
+				srcAcc = srcVer = srcUrl = null;
+			else {
+				srcAcc = src.getAcc ();
+				srcVer = src.getVersion ();
+				srcUrl = src.getUrl ();
+			}
+			OntologyEntry oeS = store.find ( oe, oe.getAcc (), srcAcc, srcVer, srcUrl );
 			
 			if ( oeS == null ) {
 				oeNormalizer.normalize ( oe );

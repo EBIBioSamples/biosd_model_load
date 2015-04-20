@@ -10,10 +10,10 @@ dir=/ebi/microarray/ma-exp/biosamples
 ct=1
 for d in $(find $dir -mindepth 1 -maxdepth 1 -type d)
 do
-  find $d \
-  -type d \( -name 'age' -or -name '*_log' \) -prune \
-  -name '*.sampletab.toload.txt' -or -name 'sampletab.toload.txt' >_files_$ct.lst 2>_files_$ct.err &
-  ct=$(($ct + 1))
+	find $d \
+		-type d \( -name 'age' -or -name '*_log' -or -name 'pride_old' \) -prune \
+		-name '*.sampletab.toload.txt' -or -name 'sampletab.toload.txt' >_files_$ct.lst 2>_files_$ct.err &
+	ct=$(($ct + 1))
 done
 
 echo "Parallel Sampletab search launched, please have a break while I rummage the file system..."

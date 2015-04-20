@@ -49,7 +49,7 @@
 		<dependency>
 			<groupId>uk.ac.ebi.arrayexpress2</groupId>
 			<artifactId>limpopo-sampletab</artifactId>
-			<version>1.1.5-SNAPSHOT</version>
+			<version>1.1.6-SNAPSHOT</version>
 			<exclusions>
 				<exclusion>
 					<groupId>log4j</groupId>
@@ -99,8 +99,8 @@
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.7</source>
+					<target>1.7</target>
 					<encoding>utf-8</encoding>
 				</configuration>
 			</plugin>

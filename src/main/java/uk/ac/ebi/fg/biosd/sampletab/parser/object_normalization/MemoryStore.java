@@ -70,6 +70,10 @@ public class MemoryStore extends ForwardingTable<Class, Object, Object> implemen
 	{
 		if ( newObject instanceof Annotation )
 			return getOrPut ( newObject, newObject );
+
+		// When IDs are not specified, use the object itself
+		if ( targetIds == null )
+			return getOrPut ( newObject, newObject );
 		
 		StringBuilder encodedId = new StringBuilder ();
 		for ( String id: targetIds ) {

@@ -4,6 +4,8 @@ import javax.persistence.EntityManager;
 
 import uk.ac.ebi.fg.biosd.model.persistence.hibernate.xref.DatabaseRecRefDAO;
 import uk.ac.ebi.fg.biosd.model.xref.DatabaseRecordRef;
+import uk.ac.ebi.fg.core_model.expgraph.properties.dataitems.DataItem;
+import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.expgraph.properties.dataitems.DataItemDAO;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.terms.CVTermDAO;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.terms.OntologyEntryDAO;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.toplevel.AccessibleDAO;
@@ -30,6 +32,7 @@ public class DBStore implements Store
 	private final ReferenceSourceDAO<ReferenceSource> refSrcDao;
 	private final DatabaseRecRefDAO dbRecDao;
 	private final OntologyEntryDAO<OntologyEntry> oeDao;
+	private final DataItemDAO dataItemDao;
 	private final EntityManager entityManager;
 	
 	/**
@@ -45,6 +48,7 @@ public class DBStore implements Store
 		refSrcDao = new ReferenceSourceDAO<ReferenceSource> ( ReferenceSource.class, entityManager );
 		dbRecDao = new DatabaseRecRefDAO ( entityManager );
 		oeDao = new OntologyEntryDAO<OntologyEntry> ( OntologyEntry.class, entityManager );
+		dataItemDao = new DataItemDAO ( DataItem.class, entityManager );
 	}
 	
 	/**
@@ -69,6 +73,9 @@ public class DBStore implements Store
 		if ( newObject instanceof OntologyEntry ) 
 			return (T) findOE ( targetIds [ 0 ], targetIds [ 1 ], targetIds [ 2 ], targetIds [ 3 ] );
 
+		if ( newObject instanceof DataItem )
+			return (T) dataItemDao.find ( (DataItem) newObject );
+		
 		if ( newObject instanceof Annotation )
 			// TODO: For the moment we don't recycle any annotation
 			return null;
@@ -101,6 +108,7 @@ public class DBStore implements Store
 		return oeDao.find ( acc, srcAcc, srcVer, srcUrl );
 	}
 
+	
 	public EntityManager getEntityManager () {
 		return entityManager;
 	}

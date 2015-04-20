@@ -36,7 +36,7 @@ public class AnnotatableNormalizer<A extends Annotatable> extends Normalizer<A>
 	{
 		if ( annotatable == null || annotatable.getId () != null ) return false;
 		
-		Set<Annotation> annotations = ( (Annotatable) annotatable ).getAnnotations (), 
+		Set<Annotation> annotations = annotatable.getAnnotations (), 
 										delAnns = new HashSet<Annotation> (), addAnns = new HashSet<Annotation> ();
 		
 		for ( Annotation ann: annotations )
