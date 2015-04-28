@@ -175,9 +175,15 @@ public class Loader
                 }
             }
             
-            //referenceLayer is in MSI in SampleTab, but group in SCD in DB
-            bg.setInReferenceLayer(st.msi.submissionReferenceLayer);
             
+            //determine if this is "owned" or "references"
+            //is only a reference if it has no attributes (i.e. name & accession only)
+            //NB at the moment this is in the opposite tables i.e ref is for ownership and group is for refs
+            if (g.getAttributes().size() > 0) {
+              msi.addSampleGroupRef(bg);
+              //referenceLayer is in MSI in SampleTab, but group in SCD in DB
+              bg.setInReferenceLayer(st.msi.submissionReferenceLayer);
+            }
             msi.addSampleGroup(bg);
         }
         
@@ -389,8 +395,13 @@ public class Loader
               bs.addDerivedInto(derivedInto);
           }
       }
-      
-      msi.addSample(bs);
+
+      //is only a reference if it has no attributes (i.e. name & accession only)
+      //NB at the moment this is in the opposite tables i.e ref is for ownership and sample is for refs
+      if (s.getAttributes().size() > 0) {
+    	  msi.addSampleRef(bs);
+      }
+	  msi.addSample(bs);
       
       return bs;
       
