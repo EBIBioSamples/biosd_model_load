@@ -175,15 +175,15 @@ public class Loader
                 }
             }
             
+            //reference layer is a msi propert in SampleTab but a group one in DB
+            //TODO fix this
+            bg.setInReferenceLayer(st.msi.submissionReferenceLayer);
             
             //determine if this is "owned" or "references"
             //is only a reference if it has no attributes (i.e. name & accession only)
-            //NB at the moment this is in the opposite tables i.e ref is for ownership and group is for refs
-            if (g.getAttributes().size() > 0) {
-              msi.addSampleGroupRef(bg);
-              //referenceLayer is in MSI in SampleTab, but group in SCD in DB
-              bg.setInReferenceLayer(st.msi.submissionReferenceLayer);
-            }
+            //except most groups have no attributes so need to come up with a better solution
+            //assume groups are in in one submission only for the moment
+            //TODO come up with a better solution
             msi.addSampleGroup(bg);
         }
         
@@ -397,11 +397,12 @@ public class Loader
       }
 
       //is only a reference if it has no attributes (i.e. name & accession only)
-      //NB at the moment this is in the opposite tables i.e ref is for ownership and sample is for refs
+      //only add it to ownership or reference since ownership implies reference
       if (s.getAttributes().size() > 0) {
+    	  msi.addSample(bs);
+      } else {
     	  msi.addSampleRef(bs);
       }
-	  msi.addSample(bs);
       
       return bs;
       
