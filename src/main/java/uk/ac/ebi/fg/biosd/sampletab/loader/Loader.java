@@ -401,7 +401,11 @@ public class Loader
       if (s.getAttributes().size() > 0) {
     	  msi.addSample(bs);
       } else {
-    	  msi.addSampleRef(bs);
+    	  //don't add references at the moment since it will unintentionally persist 
+    	  //old versions through updates
+    	  //msi.addSampleRef(bs);
+    	  //instead use the ownerships again
+    	  msi.addSample(bs);
       }
       
       return bs;
