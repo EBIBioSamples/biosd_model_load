@@ -1,6 +1,10 @@
-2.0.1-SNAPSHOT
-  - Just started
-  
+2.1-SNAPSHOT
+  - Next dev release
+
+2.0.1
+  - Handling of sample refs added, but temporary disabled, due to pending bug 
+  	https://www.ebi.ac.uk/panda/jira/browse/BSD-233
+	  
 2.0
   - New model, with unified annotations and data items
   
