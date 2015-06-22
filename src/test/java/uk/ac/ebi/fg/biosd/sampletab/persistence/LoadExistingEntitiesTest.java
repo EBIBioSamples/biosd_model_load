@@ -8,6 +8,7 @@ import java.io.PrintStream;
 import java.io.StringWriter;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 
@@ -21,6 +22,7 @@ import uk.ac.ebi.fg.biosd.model.expgraph.BioSample;
 import uk.ac.ebi.fg.biosd.model.organizational.BioSampleGroup;
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
 import uk.ac.ebi.fg.biosd.model.persistence.hibernate.application_mgmt.JobRegisterDAO;
+import uk.ac.ebi.fg.biosd.model.persistence.hibernate.organizational.MSIDAO;
 import uk.ac.ebi.fg.biosd.model.utils.MSIDumper;
 import uk.ac.ebi.fg.biosd.model.utils.test.TestModel;
 import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.MemoryStore;
@@ -189,7 +191,7 @@ public class LoadExistingEntitiesTest
 			msi.addSample ( smp1 );
 			msi.addSample ( smp2 );
 			msi.addSample ( smp3 );
-			msi.addSampleRef ( smp4 );
+			msi.addSampleRef ( smp4.getAcc () );
 			msi.addSample ( smp5 );
 			msi.addSample ( smp6 );
 			msi.addSample ( smp7 );
@@ -259,7 +261,7 @@ public class LoadExistingEntitiesTest
 		
 		// TODO: check other non-graph objects too. 
 		
-		AccessibleDAO<MSI> dao = new AccessibleDAO<MSI> ( MSI.class, em );
+		MSIDAO dao = new MSIDAO ( em );
 		MSI msi2DB = dao.find ( m2.msi.getAcc () );
 		
 		// Avoid to mix the output with logs 
@@ -278,7 +280,7 @@ public class LoadExistingEntitiesTest
 		 */
 		assertTrue ( "Reloaded m2 doesn't contain smp1->msi!", msi2DB.getSamples ().contains ( m1.smp1 ) );
 		assertTrue ( "Reloaded m2 doesn't contain smp2->msi!", msi2DB.getSamples ().contains ( m1.smp2 ) );
-		assertTrue ( "Reloaded m2 doesn't contain smp4->msi (ref)!", msi2DB.getSampleRefs ().contains ( m1.smp4 ) );
+		assertTrue ( "Reloaded m2 doesn't contain smp4->msi (ref)!", msi2DB.getSampleRefs ().contains ( m1.smp4.getAcc () ) );
 
 		assertTrue ( "Reloaded m2 doesn't contain sg1->msi!", msi2DB.getSampleGroups ().contains ( m2.sg1 ) );
 		assertTrue ( "Reloaded m2 doesn't contain sg2->msi!", msi2DB.getSampleGroups ().contains ( m2.sg2 ) );
@@ -289,7 +291,9 @@ public class LoadExistingEntitiesTest
 			if ( "test2.smp3".equals ( smp.getAcc () ) ) smp3 = smp;
 			else if ( "test1.smp4".equals ( smp.getAcc () ) ) smp4 = smp;
 			else if ( "test2.smp7".equals ( smp.getAcc () ) ) smp7 = smp;
-		for ( BioSample smp: msi2DB.getSampleRefs () )
+		
+		List<BioSample> smpRefs = dao.getSampleRefs ( msi2DB );
+		for ( BioSample smp: smpRefs )
 			if ( "test1.smp4".equals ( smp.getAcc () ) ) smp4 = smp;
 
 		assertNotNull ( "test2.smp3 not found in reloaded model!", smp3 );

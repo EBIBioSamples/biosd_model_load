@@ -333,19 +333,11 @@ public class Exporter {
         }
         //add all referenced samples that aren't owned
         //only add name and accession
-        for (BioSample s : msi.getSampleRefs()) {
-            SampleNode sn = new SampleNode();
-            sn.setSampleAccession(s.getAcc());
-            
-            for (ExperimentalPropertyValue<ExperimentalPropertyType> v : s.getPropertyValues()) {
-                ExperimentalPropertyType t = v.getType();
-                SCDNodeAttribute attr = null;
-
-                if (t.getTermText().equals("Sample Name")) {
-                    sn.setNodeName(v.getTermText());
-                }
-            }
-            
+        for (String smpAcc : msi.getSampleRefs()) 
+        {
+            SampleNode sn = new SampleNode( smpAcc );
+            sn.setSampleAccession ( smpAcc );
+                        
             if (sd.scd.getNode(sn.getNodeName(), SampleNode.class) == null) {
                 sd.scd.addNode(sn);	
             }
@@ -417,14 +409,10 @@ public class Exporter {
         }
         //add all referenced groups that aren't owned
         //only add name and accession
-        for( BioSampleGroup g : msi.getSampleGroupRefs()) {
-            GroupNode gn = new GroupNode();
-            for (ExperimentalPropertyValue<ExperimentalPropertyType> v : g.getPropertyValues()) {
-                ExperimentalPropertyType t = v.getType();
-                if (t.getTermText().equals("Group Name")) {
-                    gn.setNodeName(v.getTermText());
-                }
-            }
+        for( String sgAcc : msi.getSampleGroupRefs()) 
+        {
+            GroupNode gn = new GroupNode ( sgAcc );
+            gn.setGroupAccession ( sgAcc );
             if (sd.scd.getNode(gn.getNodeName(), GroupNode.class) == null) {
                 sd.scd.addNode(gn);	
             }
