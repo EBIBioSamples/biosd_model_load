@@ -23,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.ebi.arrayexpress2.magetab.exception.ParseException;
 import uk.ac.ebi.fg.biosd.model.application_mgmt.LoadingDiagnosticEntry;
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
 import uk.ac.ebi.fg.biosd.sampletab.persistence.Persister;
@@ -77,70 +78,61 @@ public class LoaderCmd
 			// you're attempting to re-create such objects. Maybe there is a smarter way to sort this out, but I have enough 
 			// of struggling with it and it's not something that happens so often anyway.
 			//
-			for ( int attempts = 5; ; )
-			{
-				try 
-				{
-					long time0 = System.currentTimeMillis ();
-					
-					Loader loader = new Loader();
-					MSI msi = loader.fromSampleData ( path );
-					msiAcc = msi.getAcc ();
-					
-					parsingTime = System.currentTimeMillis () - time0;
-					nitems = msi.getSamples ().size () + msi.getSampleGroups ().size ();
-					log.info ( 
-						"" + nitems + " samples+groups loaded in " + formatTimeDuration ( parsingTime ) + ". Now persisting it in the DB" 
-					);
 
-					// First remove it if that's required
-					if ( attempts == 5 && cli.hasOption ( 'u' ) ) 
+			MSI msi = null;
+			
+			if ( cli.hasOption ( 'u' ) )
+			{
+				for ( int attempts = 5; ; )
+				{
+					try 
 					{
+						msi = loadSampleTab ( path );
+						msiAcc = msi.getAcc ();
+					
 						log.info ( "Unloading previous version of " + msiAcc + " (if any)" );
 						new Unloader()
 							.setDoForcedPurge ( cli.hasOption ( 'f' ) )
 							.setDoPurge ( cli.hasOption ( 'g' ) )
 							.unload ( msi );
 						log.info ( "done." );
+						break;
+					}
+					catch ( RuntimeException aex ) {
+						handleFailedPersistenceAttempt ( --attempts, aex, path );
+					}
+				} // for attempts
+			} // if cli.hasOption ( 'u' )
+			
+			
+			// Now persist it, using the same approach
+			//
+			for ( int attempts = 5; ; )
+			{
+				try 
+				{
+					if ( msi == null )
+					{
+						msi = loadSampleTab ( path );
+						msiAcc = msi.getAcc ();
 					}
 					
-					// Now persist it
-					//
-					// only persist if there is something worth persisting
+					// only persist if there is something worth it persisting
           if (msi.getSamples().size() + msi.getSampleGroups().size() > 0) 
           {
-						time0 = System.currentTimeMillis ();
+          	log.info ( "Now persisting data" );
+						long time0 = System.currentTimeMillis ();
 						new Persister ().persist ( msi );
-					
 						persistenceTime = System.currentTimeMillis () - time0;
 											
 						log.info ( 
-							"Submission persisted in " + formatTimeDuration ( persistenceTime ) + ". Total time " +
-							formatTimeDuration ( parsingTime + persistenceTime ) 
+							"Submission persisted in " + formatTimeDuration ( persistenceTime ) + "."
 						);
           }
 					break;
 				}
-				catch ( RuntimeException aex ) 
-				{
-					if ( --attempts == 0 )
-						throw new RuntimeException ( "Error while saving '" + path + "': " + aex.getMessage (), aex );
-
-					Throwable aex1 = ExceptionUtils.getRootCause ( aex );
-					if ( !( aex1 instanceof BatchUpdateException && StringUtils.contains ( aex1.getMessage (), "unique constraint" ) ) )
-						throw new RuntimeException ( "Error while saving '" + path + "': " + aex.getMessage (), aex );
-					
-					log.warn ( "SQL exception: {}, this is likely due to concurrency, will retry {} more times", 
-						aex.getMessage (), attempts 
-					);
-					
-					// Have a random pause, minimises the likelihood to clash again 
-					try {
-						Thread.sleep ( RandomUtils.nextInt ( 2500 - 500 + 1 ) + 500 );
-					} 
-					catch ( InterruptedException sex ) { 
-						throw new RuntimeException ( "Internal error while trying to get loader lock:" + sex.getMessage (), sex );
-					}
+				catch ( RuntimeException aex ) {
+					handleFailedPersistenceAttempt ( --attempts, aex, path );
 				}
 				
 			} // for attempts
@@ -265,4 +257,52 @@ public class LoaderCmd
 		
 		return opts;		
 	}
+	
+	/**
+	 * Loads a sample tab, prints logging messages and alike
+	 * @throws ParseException 
+	 */
+	private static MSI loadSampleTab ( String path ) throws ParseException 
+	{
+		Loader loader = new Loader();
+
+		long time0 = System.currentTimeMillis ();
+		MSI msi = loader.fromSampleData ( path );
+
+		long parsingTime = System.currentTimeMillis () - time0;
+		long nitems = msi.getSamples ().size () + msi.getSampleGroups ().size ();
+		log.info ( 
+			"" + nitems + " samples+groups loaded in " + formatTimeDuration ( parsingTime ) + "." 
+		);
+		
+		return msi;
+	}
+	
+	/**
+	 * Deal with a failed persistence attempt, to report error messages and start another attempt, after a random delay,
+	 * so that concurrency issues can hopefully be avoided again.
+	 * 
+	 */
+	private static void handleFailedPersistenceAttempt ( int attemptNo, RuntimeException attemptEx, String sampleTabPath )
+	{
+		if ( attemptNo == 0 )
+			throw new RuntimeException ( "Error while saving '" + sampleTabPath + "': " + attemptEx.getMessage (), attemptEx );
+
+		Throwable aex1 = ExceptionUtils.getRootCause ( attemptEx );
+		if ( !( aex1 instanceof BatchUpdateException && StringUtils.contains ( aex1.getMessage (), "unique constraint" ) ) )
+			throw new RuntimeException ( "Error while saving '" + sampleTabPath + "': " + attemptEx.getMessage (), attemptEx );
+		
+		log.warn ( "SQL exception: {}, this is likely due to concurrency, will retry {} more times", 
+			attemptEx.getMessage (), attemptNo 
+		);
+		
+		// Have a random pause, minimises the likelihood to clash again 
+		try {
+			Thread.sleep ( RandomUtils.nextInt ( 2500 - 500 + 1 ) + 500 );
+		} 
+		catch ( InterruptedException sex ) { 
+			throw new RuntimeException ( "Internal error while trying to get loader lock:" + sex.getMessage (), sex );
+		}		
+	}
+	
 }
