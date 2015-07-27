@@ -5,7 +5,7 @@ import static java.lang.System.out;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.BatchUpdateException;
+import java.sql.SQLException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -19,7 +19,6 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.lang.math.RandomUtils;
 import org.apache.commons.lang.time.DurationFormatUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -289,8 +288,9 @@ public class LoaderCmd
 			throw new RuntimeException ( "Error while saving '" + sampleTabPath + "': " + attemptEx.getMessage (), attemptEx );
 
 		Throwable aex1 = ExceptionUtils.getRootCause ( attemptEx );
-		if ( !( aex1 instanceof BatchUpdateException && StringUtils.contains ( aex1.getMessage (), "unique constraint" ) ) )
-			throw new RuntimeException ( "Error while saving '" + sampleTabPath + "': " + attemptEx.getMessage (), attemptEx );
+		if ( !(aex1 instanceof SQLException) ) throw new RuntimeException ( 
+			"Error while saving '" + sampleTabPath + "': " + attemptEx.getMessage (), attemptEx 
+		);
 		
 		log.warn ( "SQL exception: {}, this is likely due to concurrency, will retry {} more times", 
 			attemptEx.getMessage (), attemptNo 
