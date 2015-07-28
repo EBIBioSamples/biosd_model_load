@@ -130,8 +130,10 @@ public class LoaderCmd
           }
 					break;
 				}
-				catch ( RuntimeException aex ) {
+				catch ( RuntimeException aex )
+				{
 					handleFailedPersistenceAttempt ( --attempts, aex, path );
+					msi = null;
 				}
 				
 			} // for attempts
@@ -298,7 +300,7 @@ public class LoaderCmd
 		
 		// Have a random pause, minimises the likelihood to clash again 
 		try {
-			Thread.sleep ( RandomUtils.nextInt ( 2500 - 500 + 1 ) + 500 );
+			Thread.sleep ( RandomUtils.nextInt ( 3000 - 500 + 1 ) + 500 );
 		} 
 		catch ( InterruptedException sex ) { 
 			throw new RuntimeException ( "Internal error while trying to get loader lock:" + sex.getMessage (), sex );

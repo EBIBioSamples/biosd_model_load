@@ -42,7 +42,7 @@ public class Unloader
 		ts.begin ();
 		if ( msiAcc != null )
 		{
-			msi = dao.find ( msiAcc );
+			msi = dao.find ( msiAcc, false, true );
 			if ( msi == null ) {
 				log.warn ( "Unloading request for a non-existing submission: '" + msiAcc + "'" );
 				return 0;
