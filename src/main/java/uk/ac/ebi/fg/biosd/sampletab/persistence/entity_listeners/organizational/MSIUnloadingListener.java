@@ -16,7 +16,6 @@ import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.expgraph.proper
 import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.expgraph.properties.ExpPropValUnloadingListener;
 import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.expgraph.properties.UnitDimUnloadingListener;
 import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.expgraph.properties.UnitUnloadingListener;
-import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.expgraph.properties.dataitems.DataItemUnloadingUnlistener;
 import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.terms.CVTermUnloadingListener;
 import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.terms.OntologyEntryUnloadingListener;
 import uk.ac.ebi.fg.biosd.sampletab.persistence.entity_listeners.toplevel.AnnotationUnloaderListener;
@@ -91,7 +90,6 @@ public class MSIUnloadingListener extends UnloadingListener<MSI>
 			result += new OntologyEntryUnloadingListener ( entityManager ).postRemoveGlobally ();
 			result += new DatabaseRecRefUnloadingListener ( entityManager ).postRemoveGlobally ();
 			result += new CVTermUnloadingListener ( entityManager ).postRemoveGlobally ();
-			result += new DataItemUnloadingUnlistener ( entityManager ).postRemoveGlobally ();
 			result += new AnnotationUnloaderListener ( entityManager ).postRemoveGlobally ();
 			result += new ReferenceSourceUnloadingListener ( entityManager ).postRemoveGlobally ();
 			// Again for ref source's annotations?!

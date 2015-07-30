@@ -33,14 +33,10 @@ import uk.ac.ebi.fg.core_model.expgraph.properties.ExperimentalPropertyType;
 import uk.ac.ebi.fg.core_model.expgraph.properties.ExperimentalPropertyValue;
 import uk.ac.ebi.fg.core_model.expgraph.properties.Unit;
 import uk.ac.ebi.fg.core_model.expgraph.properties.UnitDimension;
-import uk.ac.ebi.fg.core_model.expgraph.properties.dataitems.DataItem;
-import uk.ac.ebi.fg.core_model.expgraph.properties.dataitems.DateRangeItem;
-import uk.ac.ebi.fg.core_model.expgraph.properties.dataitems.NumberItem;
 import uk.ac.ebi.fg.core_model.organizational.Contact;
 import uk.ac.ebi.fg.core_model.organizational.ContactRole;
 import uk.ac.ebi.fg.core_model.organizational.Publication;
 import uk.ac.ebi.fg.core_model.organizational.PublicationStatus;
-import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.expgraph.properties.dataitems.DataItemDAO;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.terms.CVTermDAO;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.terms.OntologyEntryDAO;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.toplevel.AccessibleDAO;
@@ -221,19 +217,7 @@ public class LoadExistingEntitiesTest
 		pub.addAnnotation ( xr );
 		
 		m2.msi.addPublication ( pub );
-		
-		// Testing Data items too
-		DataItem 
-			dataItem1 = new NumberItem ( 10d ), 
-			dataItem2 = new DateRangeItem ( 
-				new DateTime ( 2013, 1, 1, 0, 0 ).toDate (), 
-				new DateTime ( 2014, 12, 31, 0, 0 ).toDate () 
-			);
-		
-		m2.cv6.addDataItem ( dataItem1 );
-		m2.cv6b.addDataItem ( dataItem1 );
-		m2.cv6b.addDataItem ( dataItem2 );
-		
+						
 		new MSINormalizer ( new MemoryStore () ).normalize ( m1.msi );
 		Persister persister = new Persister ();
 		persister.persist ( m1.msi );
@@ -251,13 +235,6 @@ public class LoadExistingEntitiesTest
 		ProcessBasedTestModel.verifyTestModel ( em, m1, true );
 		ProcessBasedTestModel.verifyTestModel ( em, m2, true );
 
-		Long dataItem1Id = dataItem1.getId (), dataItem2Id = dataItem2.getId ();
-		assertNotNull ( "dataItem1 not created!", dataItem1Id );
-		assertNotNull ( "dataItem2 not created!", dataItem2Id );
-		
-		DataItemDAO dataItemDao = new DataItemDAO ( DataItem.class, em );
-		assertTrue ( "dataItem1 not found after saving!", dataItemDao.contains ( dataItem1Id, dataItem1.getClass () ) );
-		assertTrue ( "dataItem2 not found after saving!", dataItemDao.contains ( dataItem2Id, dataItem2.getClass () ) );
 		
 		// TODO: check other non-graph objects too. 
 		
@@ -388,13 +365,7 @@ public class LoadExistingEntitiesTest
 		
 		IdentifiableDAO<UnitDimension> unitDimDao = new IdentifiableDAO<UnitDimension> ( UnitDimension.class, em );
 		assertFalse ( "scv6b.unit.dimension not deleted!", unitDimDao.contains ( m2.cv6b.getUnit ().getDimension ().getId () ) );
-		
-
-		// Verifies data items
-		dataItemDao = new DataItemDAO ( DataItem.class, em );
-		assertTrue ( "dataItem1 shouldn't be removed!", dataItemDao.contains ( dataItem1Id, dataItem1.getClass () ) );
-		assertFalse ( "dataItem2 not removed!", dataItemDao.contains ( dataItem2Id, dataItem2.getClass () ) );
-		
+				
 		
 		// Verifies unloading log
 		// 
