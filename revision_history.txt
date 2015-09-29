@@ -1,5 +1,6 @@
-2.1-SNAPSHOT
-  - Next dev release
+3.0-SNAPSHOT
+  - Entities moved to feature annotator
+  - New mechanism to define model extensions at Hibernate level (see the Resources class).
 
 2.0.1
   - Handling of sample refs added, but temporary disabled, due to pending bug 

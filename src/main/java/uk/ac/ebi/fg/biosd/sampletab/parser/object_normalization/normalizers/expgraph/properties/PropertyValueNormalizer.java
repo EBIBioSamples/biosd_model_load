@@ -1,11 +1,7 @@
 package uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.expgraph.properties;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.Store;
 import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.terms.FreeTextTermNormalizer;
-import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.toplevel.AnnotatableNormalizer;
 import uk.ac.ebi.fg.core_model.expgraph.properties.ExperimentalPropertyType;
 import uk.ac.ebi.fg.core_model.expgraph.properties.ExperimentalPropertyValue;
 import uk.ac.ebi.fg.core_model.expgraph.properties.Unit;
