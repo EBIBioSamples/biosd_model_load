@@ -13,7 +13,6 @@ import java.util.List;
 import javax.persistence.EntityManager;
 
 import org.apache.commons.io.output.WriterOutputStream;
-import org.joda.time.DateTime;
 import org.junit.Rule;
 import org.junit.Test;
 

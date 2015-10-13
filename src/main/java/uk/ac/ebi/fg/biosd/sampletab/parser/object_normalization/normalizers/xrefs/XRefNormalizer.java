@@ -6,7 +6,6 @@ package uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.xre
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.Normalizer;
 import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.Store;
 import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.toplevel.AnnotationNormalizer;
 import uk.ac.ebi.fg.core_model.xref.ReferenceSource;

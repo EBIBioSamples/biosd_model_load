@@ -3,7 +3,6 @@ package uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.ter
 import java.util.HashSet;
 import java.util.Set;
 
-import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.Normalizer;
 import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.Store;
 import uk.ac.ebi.fg.biosd.sampletab.parser.object_normalization.normalizers.toplevel.AnnotatableNormalizer;
 import uk.ac.ebi.fg.core_model.terms.FreeTextTerm;

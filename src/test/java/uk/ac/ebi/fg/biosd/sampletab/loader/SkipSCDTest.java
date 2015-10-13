@@ -1,7 +1,7 @@
 package uk.ac.ebi.fg.biosd.sampletab.loader;
 
-import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 
 import java.net.URL;
 

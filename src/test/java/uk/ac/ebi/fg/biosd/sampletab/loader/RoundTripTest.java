@@ -18,7 +18,6 @@ import uk.ac.ebi.arrayexpress2.sampletab.parser.SampleTabSaferParser;
 import uk.ac.ebi.arrayexpress2.sampletab.renderer.SampleTabWriter;
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
 import uk.ac.ebi.fg.biosd.sampletab.exporter.Exporter;
-import uk.ac.ebi.fg.biosd.sampletab.loader.Loader;
 
 /**
  * This test applies to the conversion between Limpopo SampleTab objects and relational objects,
