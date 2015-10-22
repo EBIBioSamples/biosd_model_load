@@ -54,6 +54,22 @@
 					<groupId>log4j</groupId>
 					<artifactId>log4j</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>org.isatools</groupId>
+					<artifactId>graph2tab</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.isatools</groupId>
+			<artifactId>graph2tab</artifactId>
+			<version>4.5.1-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<groupId>uk.ac.ebi</groupId>
+					<artifactId>jutils</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 
@@ -74,8 +90,8 @@
 		</dependency>
 
 		<dependency>
-				<groupId>uk.ac.ebi</groupId>
-				<artifactId>jutils</artifactId>
+			<groupId>uk.ac.ebi</groupId>
+			<artifactId>jutils</artifactId>
 		</dependency>
 		
 		<dependency>

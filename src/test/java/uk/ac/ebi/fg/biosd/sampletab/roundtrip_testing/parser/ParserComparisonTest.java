@@ -18,7 +18,8 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import au.com.bytecode.opencsv.CSVWriter;
+import com.opencsv.CSVWriter;
+
 
 /**
  * Performs sample-tab parsing tests, by comparing original SampleTab files to what the exporter produced after having loaded

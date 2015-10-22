@@ -16,6 +16,8 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 
+import com.opencsv.CSVReader;
+
 import uk.ac.ebi.arrayexpress2.sampletab.datamodel.SampleData;
 import uk.ac.ebi.arrayexpress2.sampletab.renderer.SampleTabWriter;
 import uk.ac.ebi.fg.biosd.model.organizational.MSI;
@@ -23,7 +25,6 @@ import uk.ac.ebi.fg.biosd.sampletab.exporter.Exporter;
 import uk.ac.ebi.fg.biosd.sampletab.loader.Loader;
 import uk.ac.ebi.fg.core_model.persistence.dao.hibernate.toplevel.AccessibleDAO;
 import uk.ac.ebi.fg.core_model.resources.Resources;
-import au.com.bytecode.opencsv.CSVReader;
 
 /**
  * Compares an original SampleTab file to the one exported after SampleTab parsing.
