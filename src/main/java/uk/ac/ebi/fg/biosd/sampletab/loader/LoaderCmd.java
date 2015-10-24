@@ -29,6 +29,7 @@ import uk.ac.ebi.fg.biosd.sampletab.persistence.Persister;
 import uk.ac.ebi.fg.biosd.sampletab.persistence.Unloader;
 import uk.ac.ebi.fg.core_model.resources.Resources;
 import uk.ac.ebi.utils.exceptions.ExceptionUtils;
+import uk.ac.ebi.utils.runcontrol.MultipleAttemptsExecutor;
 
 /**
  * 
@@ -43,6 +44,9 @@ public class LoaderCmd
 {
 	protected static Logger log = LoggerFactory.getLogger ( LoaderCmd.class );
 
+	/**
+	 * TODO: Multiple attempts should be factorised into the new {@link MultipleAttemptsExecutor jutils wrapper}.
+	 */
 	public static void main ( String[] args ) throws Throwable
 	{
 		CommandLineParser clparser = new GnuParser ();
