@@ -369,18 +369,8 @@ public class Loader
           }
           if (isDatabaseAttribute) {
               DatabaseAttribute da = (DatabaseAttribute) a;
-              //do not store some sources as they should be in myEquivalents instead
-              if (da.getAttributeValue().equals("ENA SRA")
-                      || da.getAttributeValue().equals("ArrayExpress")
-                      || da.getAttributeValue().equals("COSMIC")
-                      || da.getAttributeValue().equals("PRIDE")) {
-                  log.trace("Skipping storage of "+da.getAttributeValue()+" database reference");
-              } else {
-                  DatabaseRecordRef dbref = new DatabaseRecordRef ( da.getAttributeValue(), da.databaseID, null, da.databaseURI, null );
-                  bs.addDatabaseRecordRef ( dbref );
-              }
-              
-              
+              DatabaseRecordRef dbref = new DatabaseRecordRef ( da.getAttributeValue(), da.databaseID, null, da.databaseURI, null );
+              bs.addDatabaseRecordRef ( dbref );
           } else {
               bs.addPropertyValue(convertAtttribute(a, st));
           }
