@@ -402,8 +402,10 @@ public class Exporter {
                     }
                 }
                 SampleNode sn = sd.scd.getNode(sampleName, SampleNode.class);
-                sn.addParentNode(gn);
-                gn.addChildNode(sn);
+//                sn.addParentNode(gn);
+//                gn.addChildNode(sn);
+                gn.addParentNode(sn);
+                sn.addChildNode(gn);
             }
         }
         //add all referenced groups that aren't owned
